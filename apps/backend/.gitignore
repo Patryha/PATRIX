@@ -1,0 +1,11 @@
+/dist
+/build
+/uploads
+/node_modules
+.env
+.medusa
+.cache
+coverage
+dump.rdb
+*.log
+./tsconfig.tsbuildinfo

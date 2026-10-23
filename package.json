@@ -1,0 +1,13 @@
+{
+  "name": "patrix",
+  "private": true,
+  "description": "PATRIX: sklep internetowy z oryginalnymi produktami z Niemiec",
+  "scripts": {
+    "install:all": "npm --prefix apps/backend ci && npm --prefix apps/storefront ci",
+    "dev:backend": "npm --prefix apps/backend run dev",
+    "dev:storefront": "npm --prefix apps/storefront run dev",
+    "test": "npm --prefix apps/backend run test:unit && npm --prefix apps/storefront run test",
+    "typecheck": "npm --prefix apps/backend run typecheck && npm --prefix apps/storefront run typecheck"
+  },
+  "engines": { "node": ">=20" }
+}
