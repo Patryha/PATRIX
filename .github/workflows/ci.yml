@@ -1,0 +1,123 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: "22"
+
+jobs:
+  backend:
+    name: Backend (typy, testy jednostkowe i integracyjne)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 10
+    defaults:
+      run:
+        working-directory: apps/backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: apps/backend/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run test:unit
+      - run: npm run test:integration:http
+        env:
+          DB_USERNAME: postgres
+          DB_HOST: localhost
+
+  storefront:
+    name: Storefront (lint, typy, testy, build, E2E)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 10
+      redis:
+        image: redis:7
+        ports: ["6379:6379"]
+    env:
+      DATABASE_URL: postgres://postgres@localhost:5432/patrix_ci
+      REDIS_URL: redis://localhost:6379
+      JWT_SECRET: ci-only-jwt-secret
+      COOKIE_SECRET: ci-only-cookie-secret
+      AUTH_MFA_ENCRYPTION_KEY: ci-only-auth-mfa-key
+      PATRIX_ENCRYPTION_KEY: Y2ktb25seS0zMi1ieXRlLWtleS1mb3ItcGF0cml4ISE=
+      MEDUSA_BACKEND_URL: http://localhost:9000
+      STORE_CORS: http://localhost:8000
+      ADMIN_CORS: http://localhost:9000
+      AUTH_CORS: http://localhost:9000,http://localhost:8000
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: |
+            apps/backend/package-lock.json
+            apps/storefront/package-lock.json
+      - name: Backend dla testów E2E
+        working-directory: apps/backend
+        run: |
+          npm ci
+          createdb -h localhost -U postgres patrix_ci
+          npx medusa db:migrate
+          npm run seed | tee seed.log
+          echo "NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=$(grep -o 'pk_[a-f0-9]*' seed.log | tail -1)" >> "$GITHUB_ENV"
+          nohup npx medusa start > backend.log 2>&1 &
+          for i in $(seq 1 60); do curl -sf http://localhost:9000/health && break; sleep 2; done
+      - name: Storefront
+        working-directory: apps/storefront
+        run: |
+          npm ci
+          npm run lint
+          npm run typecheck
+          npm test
+          npm run build
+      - name: E2E (Playwright)
+        working-directory: apps/storefront
+        run: |
+          npx playwright install --with-deps chromium
+          npm run test:e2e
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: |
+            apps/storefront/playwright-report
+            apps/backend/backend.log
+
+  dependency-audit:
+    name: Skan zależności
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      # Storefront: blokujemy już od poziomu "high". Backend: znane, nienaprawione jeszcze w Medusie
+      # podatności tranzytywne (patrz SECURITY.md) — blokujemy "critical", raport zapisujemy jako artefakt.
+      - run: npm audit --omit=dev --audit-level=high
+        working-directory: apps/storefront
+      - run: npm audit --omit=dev --audit-level=critical
+        working-directory: apps/backend

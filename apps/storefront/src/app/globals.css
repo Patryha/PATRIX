@@ -1,0 +1,78 @@
+@import "tailwindcss";
+
+/* Zmienne kolorów (--px-*) wstrzykuje <ThemeStyle> z design-system/theme.ts. */
+@theme inline {
+  --color-background: var(--px-background);
+  --color-surface: var(--px-surface);
+  --color-surface-muted: var(--px-surface-muted);
+  --color-foreground: var(--px-foreground);
+  --color-muted: var(--px-muted);
+  --color-border: var(--px-border);
+  --color-primary: var(--px-primary);
+  --color-primary-foreground: var(--px-primary-foreground);
+  --color-accent: var(--px-accent);
+  --color-accent-strong: var(--px-accent-strong);
+  --color-accent-foreground: var(--px-accent-foreground);
+  --color-highlight: var(--px-highlight);
+  --color-highlight-strong: var(--px-highlight-strong);
+  --color-highlight-foreground: var(--px-highlight-foreground);
+  --color-success: var(--px-success);
+  --color-warning: var(--px-warning);
+  --color-danger: var(--px-danger);
+  --color-focus: var(--px-focus);
+  --color-hero: var(--px-hero);
+  --color-hero-foreground: var(--px-hero-foreground);
+  --color-hero-accent: var(--px-hero-accent);
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-manrope), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --ease-patrix: cubic-bezier(0.2, 0, 0, 1);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: 80px;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: "cv11", "ss01";
+  }
+  h1, h2, h3, h4 {
+    @apply font-display text-foreground;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+  :focus-visible {
+    outline: 3px solid var(--px-focus);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  ::selection {
+    background: color-mix(in srgb, var(--px-accent) 30%, transparent);
+  }
+}
+
+/* Szkielety ładowania. */
+@keyframes patrix-shimmer {
+  from { background-position: -200% 0; }
+  to { background-position: 200% 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, var(--px-surface-muted) 25%, var(--px-border) 50%, var(--px-surface-muted) 75%);
+  background-size: 200% 100%;
+  animation: patrix-shimmer 1.4s linear infinite;
+}
+
+/* Ograniczony ruch: wyłączamy animacje i przejścia. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
