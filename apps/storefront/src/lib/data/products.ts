@@ -3,6 +3,7 @@ import type { HttpTypes } from "@medusajs/types"
 import { cacheLife, cacheTag } from "next/cache"
 import { sdk } from "../medusa"
 import type { UnitMeasure } from "../format"
+import { sortVariants } from "../variant-order"
 import { getDefaultRegion } from "./regions"
 
 export type ProductSummary = {
@@ -184,7 +185,7 @@ export async function getProductByHandle(handle: string): Promise<ProductDetail 
   const { products } = await sdk.store.product.list({
     handle,
     region_id: region?.id,
-    fields: `${FIELDS},description,*images,*categories,*options,*options.values,variants.title,variants.sku,variants.ean,*variants.options`,
+    fields: `${FIELDS},description,*images,*categories,*options,*options.values,variants.title,variants.sku,variants.ean,variants.variant_rank,*variants.options`,
     limit: 1,
   })
   const product = products[0]
@@ -202,7 +203,7 @@ export async function getProductByHandle(handle: string): Promise<ProductDetail 
     images: (product.images ?? []).map((i) => ({ id: i.id, url: i.url })),
     categories: (product.categories ?? []).map((c) => ({ id: c.id, name: c.name, handle: c.handle })),
     options: (product.options ?? []).map((o) => ({ id: o.id, title: o.title, values: (o.values ?? []).map((v) => v.value) })),
-    variants: (product.variants ?? []).map((v) => {
+    variants: sortVariants(product.variants ?? []).map((v) => {
       const p = v.calculated_price
       const amount = typeof p?.calculated_amount === "number" ? p.calculated_amount : null
       return {
