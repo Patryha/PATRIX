@@ -5,7 +5,7 @@ Ostatnie uruchomienie: 2026-10-23 (Etap 2), lokalnie (PostgreSQL 16, Redis 7, Ch
 | Zestaw | Polecenie | Wynik |
 |---|---|---|
 | Backend: typy | `npm run typecheck` | OK |
-| Backend: jednostkowe | `npm run test:unit` | 46/46 OK |
+| Backend: jednostkowe | `npm run test:unit` | 43/43 OK |
 | Backend: integracyjne HTTP | `npm run test:integration:http` | 18/18 OK |
 | Backend: build (API + panel) | `npx medusa build` | OK |
 | Storefront: lint | `npm run lint` | OK |
