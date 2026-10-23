@@ -42,8 +42,8 @@ export async function login(_prev: FormState, formData: FormData): Promise<FormS
     const token = await emailpass("", parsed.data.email, parsed.data.password)
     await setAuthToken(token)
     await attachCart(token)
-  } catch {
-    return { ok: false, message: "Nieprawidłowy e-mail lub hasło.", values: formValues(formData) }
+  } catch (e) {
+    return { ok: false, message: friendlyError(e, "Nieprawidłowy e-mail lub hasło."), values: formValues(formData) }
   }
   redirect(safeRedirect(formData.get("next")))
 }

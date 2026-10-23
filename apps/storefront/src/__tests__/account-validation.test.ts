@@ -25,3 +25,12 @@ describe("safeRedirect", () => {
     expect(safeRedirect(null)).toBe("/konto")
   })
 })
+
+describe("friendlyError", () => {
+  it("rozpoznaje limit prób i nie ujawnia szczegółów technicznych", async () => {
+    const { friendlyError } = await import("../lib/actions/errors")
+    expect(friendlyError(new Error("Zbyt wiele prób. Spróbuj ponownie za chwilę."))).toBe("Zbyt wiele prób. Spróbuj ponownie za kilka minut.")
+    expect(friendlyError(new Error("Invalid email or password"))).toBe("Nieprawidłowy e-mail lub hasło.")
+    expect(friendlyError(new Error("ECONNREFUSED 10.0.0.1"), "Błąd")).toBe("Błąd")
+  })
+})

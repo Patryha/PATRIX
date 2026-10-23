@@ -7,11 +7,16 @@ import { Field } from "@/components/ui/field"
 import { login } from "@/lib/actions/account"
 import type { FormState } from "@/lib/actions/checkout"
 
-export function LoginForm({ next }: { next?: string }) {
-  const [state, action, pending] = useActionState<FormState, FormData>(login, null)
+/** Adres powrotu (`?next=`) dopisujemy przy wysyłce: strona renderuje się raz, bez podmiany formularza w trakcie wpisywania. */
+async function loginWithNext(prev: FormState, formData: FormData) {
+  formData.set("next", new URLSearchParams(window.location.search).get("next") ?? "")
+  return login(prev, formData)
+}
+
+export function LoginForm() {
+  const [state, action, pending] = useActionState<FormState, FormData>(loginWithNext, null)
   return (
     <form action={action} noValidate className="flex flex-col gap-4">
-      {next ? <input type="hidden" name="next" value={next} /> : null}
       <Field label="E-mail" name="email" type="email" autoComplete="email" required defaultValue={state?.values?.email ?? ""} error={state?.errors?.email} />
       <Field label="Hasło" name="password" type="password" autoComplete="current-password" required error={state?.errors?.password} />
       <p role="alert" className="min-h-5 text-sm text-danger">

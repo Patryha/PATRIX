@@ -10,7 +10,7 @@ Ostatnie uruchomienie: 2026-10-23 (Etap 2), lokalnie (PostgreSQL 16, Redis 7, Ch
 | Backend: build (API + panel) | `npx medusa build` | OK |
 | Storefront: lint | `npm run lint` | OK |
 | Storefront: typy | `npm run typecheck` | OK |
-| Storefront: jednostkowe/komponenty | `npm test` | 28/28 OK |
+| Storefront: jednostkowe/komponenty | `npm test` | 30/30 OK |
 | Storefront: build produkcyjny | `npm run build` | OK |
 | Storefront: E2E (desktop + Pixel 7) | `npm run test:e2e` | 52/52 OK (backend w trybie produkcyjnym, katalog [TEST]) |
 | Skan zależności | `npm audit --omit=dev` | storefront: 0; backend: 0 critical, podatności high w zależnościach Medusy (patrz SECURITY.md) |

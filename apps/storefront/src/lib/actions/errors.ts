@@ -1,6 +1,9 @@
 /** Komunikaty błędów API w języku polskim (bez szczegółów technicznych). */
 export function friendlyError(error: unknown, fallback = "Coś poszło nie tak. Spróbuj ponownie."): string {
   const message = error instanceof Error ? error.message : String(error ?? "")
+  if (/Zbyt wiele prób|Too many/i.test(message)) {
+    return "Zbyt wiele prób. Spróbuj ponownie za kilka minut."
+  }
   if (/inventory|stock/i.test(message)) {
     return "Brak wystarczającej liczby sztuk w magazynie."
   }

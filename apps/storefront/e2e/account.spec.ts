@@ -68,7 +68,12 @@ test.describe("konto klienta", () => {
   })
 
   test("logowanie nie przekierowuje poza sklep", async ({ page }) => {
+    // Nieistniejące konto: sprawdzamy, że po błędzie zostajemy w sklepie (adres powrotu jest i tak filtrowany na serwerze).
     await page.goto("/logowanie?next=//evil.example")
-    await expect(page.locator('input[name="next"]')).toHaveValue("/konto")
+    await page.getByLabel("E-mail").fill("nikt@example.test")
+    await page.getByLabel("Hasło").fill("dowolne-haslo-1")
+    await page.getByRole("button", { name: "Zaloguj się" }).click()
+    await expect(page.getByText("Nieprawidłowy e-mail lub hasło.")).toBeVisible()
+    await expect(page).toHaveURL(/^http:\/\/localhost:\d+\/logowanie/)
   })
 })
