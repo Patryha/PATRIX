@@ -26,20 +26,22 @@ Statusy: TODO · IN PROGRESS · BLOCKED · TESTING · DONE
 | E1-11 | Testy i CI | DONE | Backend 31 unit + 12 integracyjnych; storefront 14 unit + 24 E2E (axe WCAG 2.2 AA); GitHub Actions + Dependabot |
 | E1-12 | Docker Compose, Caddy | TESTING | Pliki gotowe; nie uruchomione (brak daemona Dockera w środowisku) — do weryfikacji na stagingu |
 
-## Etap 2: Frontend sklepu (następny)
-| ID | Zadanie | Status |
-|---|---|---|
-| E2-1 | Moduł danych produktu PATRIX (nazwa oryginalna, EAN/GTIN, marka/producent, pojemność/masa, skład, alergeny, ostrzeżenia CLP, dane kosmetyku, kraj pochodzenia, GPSR) + kontrola kompletności | TODO |
-| E2-2 | Listing: filtry (marka, cena, atrybuty kategorii), sortowanie, paginacja, produkty niedostępne | TODO |
-| E2-3 | Pełna karta produktu: galeria, warianty, cena jednostkowa, Omnibus, dane prawne, powiązane | TODO |
-| E2-4 | Strona główna z sekcjami (dane z CMS w Etapie 4; do tego czasu z konfiguracji) | TODO |
-| E2-5 | Mega menu z grafikami, ostatnio oglądane (lokalnie, bez śledzenia) | TODO |
-| E2-6 | Historia cen (Omnibus) w backendzie | TODO |
+## Etap 2: Katalog i frontend sklepu
+| ID | Zadanie | Status | Rozwiązanie / weryfikacja |
+|---|---|---|---|
+| E2-1 | Moduł danych produktu PATRIX + kontrola kompletności | DONE | Moduł `patrix-catalog` (marki, dane produktu, ceny zakupu, historia cen). Hooki `productsCreated`/`productsUpdated` blokują publikację niekompletnego produktu z każdej ścieżki (panel, API, import). Testy integracyjne |
+| E2-2 | Listing: filtry, sortowanie, paginacja, produkty niedostępne | DONE | Filtry marki i dostępności, sortowanie (nowości, cena, nazwa), strony, działa bez JS (formularz GET). Do 500 produktów na listę; większy katalog: Meilisearch (E7). Filtry atrybutów kategorii: po CMS kategorii (E4) |
+| E2-3 | Pełna karta produktu | DONE | Galeria, warianty z ceną/SKU/EAN, cena jednostkowa, Omnibus, skład, alergeny, wartości odżywcze, CLP, producent (GPSR), JSON-LD Product + BreadcrumbList. Produkty powiązane: E7 (rekomendacje) |
+| E2-4 | Strona główna z sekcjami (dane z CMS w Etapie 4) | TODO | Przeniesione do Etapu 4 razem z CMS (sekcje edytowalne z panelu) |
+| E2-5 | Mega menu z grafikami, ostatnio oglądane (lokalnie, bez śledzenia) | TODO | Grafiki kategorii zależą od CMS (E4) |
+| E2-6 | Historia cen (Omnibus) w backendzie | DONE | Zapis przy utworzeniu/edycji produktu + zadanie co 15 min (łapie cenniki promocyjne); najniższa cena z 30 dni przed wprowadzeniem obecnej ceny |
+| E2-7 | Panel: formularz danych produktu, ceny zakupu, marki | DONE | Widżety na karcie produktu, strona „Marki”; ceny zakupu tylko z uprawnieniem `finance` (test 403) |
+| E2-8 | Katalog testowy dla E2E | DONE | `npm run seed:test-catalog`, produkty z prefiksem [TEST], EAN z puli 200, blokada na produkcji |
 
 ## Zadania wymagające właściciela
 | ID | Czego potrzeba | Status |
 |---|---|---|
-| OWN-1 | Puste repozytorium GitHub (np. `Patryha/patrix-shop`) | BLOCKED |
+| OWN-1 | Repozytorium GitHub | DONE (`Patryha/PATRIX`) |
 | OWN-2 | Dane firmy (nazwa, adres, NIP, REGON, kontakt) do regulaminu, stopki, faktur | BLOCKED (potrzebne od Etapu 3/8) |
 | OWN-3 | Ceny, progi darmowej dostawy, cennik wysyłek | BLOCKED (Etap 3) |
 | OWN-4 | Konta i klucze sandbox operatorów płatności i przewoźników | BLOCKED (Etap 6) |

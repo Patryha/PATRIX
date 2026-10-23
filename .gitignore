@@ -12,3 +12,4 @@ test-results/
 .medusa/
 dist/
 *.log
+dump.rdb

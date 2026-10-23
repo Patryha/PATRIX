@@ -2,12 +2,17 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { Suspense } from "react"
-import { ProductGrid, ProductGridSkeleton } from "@/components/product/product-card"
+import { CatalogListing } from "@/components/catalog/listing"
+import { ProductGridSkeleton } from "@/components/product/product-card"
 import { Container } from "@/components/ui/container"
 import { getCategoryByHandle } from "@/lib/data/categories"
-import { listProducts } from "@/lib/data/products"
+import { parseListingParams } from "@/lib/catalog-filters"
+import { listBrands, listCatalog } from "@/lib/data/products"
 
-type Props = { params: Promise<{ handle: string }> }
+type Props = {
+  params: Promise<{ handle: string }>
+  searchParams: Promise<Record<string, string | string[] | undefined>>
+}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { handle } = await params
@@ -22,13 +27,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-async function CategoryContent({ params }: Props) {
+async function CategoryContent({ params, searchParams }: Props) {
   const { handle } = await params
   const category = await getCategoryByHandle(handle)
   if (!category) {
     notFound()
   }
-  const { products, count } = await listProducts({ categoryId: category.id, limit: 24 })
+  const [products, brands, listing] = await Promise.all([
+    listCatalog({ categoryId: category.id }),
+    listBrands(),
+    searchParams.then(parseListingParams),
+  ])
   return (
     <>
       <nav aria-label="Ścieżka nawigacji" className="text-sm text-muted">
@@ -47,9 +56,6 @@ async function CategoryContent({ params }: Props) {
       <header className="flex flex-col gap-2">
         <h1 className="text-3xl font-extrabold md:text-4xl">{category.name}</h1>
         {category.description ? <p className="max-w-2xl text-muted">{category.description}</p> : null}
-        <p className="text-sm text-muted" aria-live="polite">
-          {count === 1 ? "1 produkt" : `${count} produktów`}
-        </p>
       </header>
       {category.category_children?.length ? (
         <ul className="flex flex-wrap gap-2" aria-label="Podkategorie">
@@ -65,13 +71,13 @@ async function CategoryContent({ params }: Props) {
           ))}
         </ul>
       ) : null}
-      {products.length ? (
-        <ProductGrid products={products} />
-      ) : (
-        <p className="rounded-lg border border-dashed border-border p-8 text-center text-muted">
-          W tej kategorii nie ma jeszcze produktów.
-        </p>
-      )}
+      <CatalogListing
+        pathname={`/kategoria/${category.handle}`}
+        products={products}
+        brands={brands.map((b) => ({ handle: b.handle, name: b.name, productIds: b.product_ids }))}
+        params={listing}
+        emptyText="W tej kategorii nie ma jeszcze produktów."
+      />
     </>
   )
 }

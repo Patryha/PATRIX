@@ -34,3 +34,12 @@ Etap 1 używa wyszukiwania Medusy (`q`). Etap 7: Meilisearch (literówki, synoni
 
 ## D-010 Nagłówki bezpieczeństwa na brzegu
 Medusa zwraca część odpowiedzi (np. 401 z uwierzytelniania) przed middleware aplikacji. Komplet nagłówków (HSTS, nosniff, X-Frame-Options, Referrer-Policy) ustawia reverse proxy Caddy; aplikacje ustawiają je dodatkowo dla własnych odpowiedzi.
+
+## D-011 Dane prawne produktu we własnym module, blokada publikacji w hookach workflow
+Dane wymagane prawem (GPSR, 1169/2011, CLP, 1223/2009) trzymamy w module `patrix-catalog` (tabela `product_compliance`, jeden rekord na produkt), a nie w `metadata`, żeby mieć typy, walidację i zapytania. Publikację blokują hooki `createProductsWorkflow.productsCreated` i `updateProductsWorkflow.productsUpdated`: błąd wycofuje cały workflow, więc blokada działa dla panelu, API, operacji masowych i importu CSV. Klient widzi dane dopiero po potwierdzeniu zgodności z polską etykietą (`polish_label_verified`).
+
+## D-012 Omnibus: historia cen sprzedaży
+Zapisujemy cenę wyliczoną dla regionu PLN (z cennikami promocyjnymi) przy każdej zmianie: od razu po zmianie produktu i co 15 minut (zadanie cykliczne). Najniższa cena z 30 dni liczona jest przed momentem wprowadzenia obecnej ceny, z uwzględnieniem ceny obowiązującej na początku okna. Przekreśloną cenę i znaczek promocji pokazujemy tylko razem z tą informacją.
+
+## D-013 Filtry listingu po stronie sklepu do czasu Meilisearch
+Store API Medusy nie sortuje po cenie wyliczonej. Do Etapu 7 listing pobiera do 500 produktów kategorii lub wyników i filtruje/sortuje je na serwerze Next.js (z cache). Wystarcza dla katalogu startowego; Meilisearch zastąpi to w Etapie 7.
