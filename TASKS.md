@@ -38,6 +38,20 @@ Statusy: TODO · IN PROGRESS · BLOCKED · TESTING · DONE
 | E2-7 | Panel: formularz danych produktu, ceny zakupu, marki | DONE | Widżety na karcie produktu, strona „Marki”; ceny zakupu tylko z uprawnieniem `finance` (test 403) |
 | E2-8 | Katalog testowy dla E2E | DONE | `npm run seed:test-catalog`, produkty z prefiksem [TEST], EAN z puli 200, blokada na produkcji |
 
+## Etap 3: Koszyk, checkout, klienci
+| ID | Zadanie | Status | Rozwiązanie / weryfikacja |
+|---|---|---|---|
+| E3-1 | Koszyk | DONE | Dodawanie (też z paska na telefonie), zmiana ilości, usuwanie, licznik w nagłówku; koszyk w ciasteczku httpOnly; działa bez JS (akcje serwera) |
+| E3-2 | Kody rabatowe | DONE | Naliczanie i usuwanie kodów (wielkość liter bez znaczenia), komunikaty po polsku; testowy kod TEST10 w katalogu [TEST] |
+| E3-3 | Checkout: dane, adres, dostawa, płatność, podsumowanie | DONE | Walidacja (telefon, kod pocztowy PL), formy dostawy z backendu, płatność przy odbiorze (`pp_system_default`); zakup jako gość |
+| E3-4 | Faktura na firmę | DONE | Nazwa firmy + NIP z kontrolą sumy; NIP w adresie rozliczeniowym zamówienia i w metadanych |
+| E3-5 | Potwierdzenie zamówienia | DONE | Widoczne tylko w przeglądarce, która złożyła zamówienie (ciasteczko, 1 h), bez identyfikatora w adresie |
+| E3-6 | Konto klienta | DONE | Rejestracja (silne hasło, regulamin), logowanie, przeniesienie koszyka gościa na konto, historia zamówień, wylogowanie czyści koszyk; token tylko w ciasteczku httpOnly |
+| E3-7 | Reset hasła, e-maile transakcyjne | TODO | Wymaga dostawcy e-mail i zgody właściciela na wysyłkę (Etap 6) |
+| E3-8 | Paczkomaty/punkty odbioru, progi darmowej dostawy | BLOCKED | Integracje przewoźników (Etap 6) i stawki od właściciela (OWN-3); w testach „[TEST] Kurier testowy” |
+| E3-9 | Zwroty | TODO | Etap 5 (zamówienia i magazyn w panelu) |
+| E3-10 | Regulamin i polityka prywatności | BLOCKED | Strony istnieją z informacją „w przygotowaniu”; treść od właściciela/prawnika (OWN-6) |
+
 ## Zadania wymagające właściciela
 | ID | Czego potrzeba | Status |
 |---|---|---|
@@ -46,3 +60,4 @@ Statusy: TODO · IN PROGRESS · BLOCKED · TESTING · DONE
 | OWN-3 | Ceny, progi darmowej dostawy, cennik wysyłek | BLOCKED (Etap 3) |
 | OWN-4 | Konta i klucze sandbox operatorów płatności i przewoźników | BLOCKED (Etap 6) |
 | OWN-5 | Domena i hosting/staging | BLOCKED (Etap 10) |
+| OWN-6 | Treść regulaminu i polityki prywatności (zatwierdzona prawnie) | BLOCKED (przed startem sprzedaży) |

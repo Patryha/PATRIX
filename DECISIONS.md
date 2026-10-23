@@ -43,3 +43,12 @@ Zapisujemy cenę wyliczoną dla regionu PLN (z cennikami promocyjnymi) przy każ
 
 ## D-013 Filtry listingu po stronie sklepu do czasu Meilisearch
 Store API Medusy nie sortuje po cenie wyliczonej. Do Etapu 7 listing pobiera do 500 produktów kategorii lub wyników i filtruje/sortuje je na serwerze Next.js (z cache). Wystarcza dla katalogu startowego; Meilisearch zastąpi to w Etapie 7.
+
+## D-014 Sesja klienta w ciasteczkach httpOnly, SDK bez stanu
+Koszyk (`patrix_cart`) i token klienta (`patrix_customer`) trzymamy w ciasteczkach httpOnly, SameSite=Lax, Secure na produkcji. Token przekazujemy w nagłówku `Authorization` przy każdym żądaniu; nie używamy `sdk.auth.login`, bo SDK jest współdzielone przez wszystkie żądania serwera. Po wylogowaniu koszyk jest usuwany z przeglądarki.
+
+## D-015 Płatność przy odbiorze do czasu integracji operatorów
+Jedyną metodą płatności w Etapie 3 jest płatność przy odbiorze (`pp_system_default`). Płatności online (Etap 6) będą potwierdzane wyłącznie zweryfikowanym powiadomieniem operatora (webhook z podpisem). Potwierdzenie zamówienia jest powiązane z ciasteczkiem przeglądarki, a nie z identyfikatorem w adresie.
+
+## D-016 Dane do faktury w adresie rozliczeniowym
+Nazwa firmy trafia do `billing_address.company`, NIP do `billing_address.metadata.nip` (oraz metadanych koszyka/zamówienia). API sklepu nie zwraca metadanych zamówienia, a adres rozliczeniowy tak; dane przechodzą też do panelu.

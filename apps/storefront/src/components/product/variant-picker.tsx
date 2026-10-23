@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import { AddToCart } from "@/components/cart/add-to-cart"
 import { Badge } from "@/components/ui/badge"
 import { Price } from "@/components/ui/price"
 import type { ProductDetail } from "@/lib/data/products"
@@ -67,6 +68,12 @@ export function VariantPicker({ options, variants, lowest30d, measure }: Props) 
           </div>
         </fieldset>
       ))}
+
+      <AddToCart
+        variantId={variant?.id ?? null}
+        available={variant?.inStock ?? false}
+        price={variant?.price ? { amount: variant.price.amount, currency: variant.price.currency } : null}
+      />
 
       {variant ? (
         <div className="flex flex-col gap-1 text-sm" aria-live="polite">
