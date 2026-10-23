@@ -1,5 +1,12 @@
 import { defineMiddlewares, validateAndTransformBody } from "@medusajs/framework/http"
-import { CreateRoleSchema, SetUserRolesSchema } from "./admin/patrix/validators"
+import {
+  CreateBrandSchema,
+  CreateRoleSchema,
+  SetUserRolesSchema,
+  SetVariantCostSchema,
+  UpdateBrandSchema,
+  UpsertComplianceSchema,
+} from "./admin/patrix/validators"
 import { authorizeAdminRequest } from "./middlewares/authorize"
 import { auditAdminLogin, auditAdminMutations } from "./middlewares/audit"
 import { enforceAdminMfaEnrollment } from "./middlewares/mfa"
@@ -34,6 +41,18 @@ export default defineMiddlewares({
       matcher: "/admin/patrix/users/:id/roles",
       methods: ["POST"],
       middlewares: [validateAndTransformBody(SetUserRolesSchema)],
+    },
+    { matcher: "/admin/patrix/brands", methods: ["POST"], middlewares: [validateAndTransformBody(CreateBrandSchema)] },
+    { matcher: "/admin/patrix/brands/:id", methods: ["POST"], middlewares: [validateAndTransformBody(UpdateBrandSchema)] },
+    {
+      matcher: "/admin/patrix/products/:id/compliance",
+      methods: ["POST"],
+      middlewares: [validateAndTransformBody(UpsertComplianceSchema)],
+    },
+    {
+      matcher: "/admin/patrix/variants/:id/cost",
+      methods: ["POST"],
+      middlewares: [validateAndTransformBody(SetVariantCostSchema)],
     },
   ],
 })
