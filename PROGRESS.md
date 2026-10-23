@@ -21,3 +21,12 @@
 - Katalog testowy [TEST] do E2E.
 - Testy: wszystkie zielone (`TEST_REPORT.md`).
 - Następny krok: Etap 3 (koszyk, checkout, klienci, podatki, zwroty).
+
+## 2026-10-23: Etap 3 (koszyk, checkout, klienci)
+- Koszyk z kodami rabatowymi, licznik w nagłówku, pasek zakupu na telefonie.
+- Checkout w jednym widoku: dane i adres (walidacja PL), dostawa z backendu, płatność przy odbiorze, faktura na firmę z kontrolą NIP, akceptacja regulaminu, potwierdzenie zamówienia.
+- Konto klienta: rejestracja, logowanie, przeniesienie koszyka, historia zamówień, wylogowanie. Token klienta tylko w ciasteczku httpOnly, nigdy we współdzielonym SDK.
+- Katalog testowy: dodane „[TEST] Kurier testowy” (12,99 zł, kwota testowa) i kod TEST10.
+- Strony regulaminu i polityki prywatności istnieją, ale bez treści: tekst przygotowuje właściciel (OWN-6).
+- Testy: E2E 52/52 (pełny zakup jako gość i jako klient, axe WCAG 2.2 AA), storefront unit 28/28.
+- Następny krok: Etap 4 (CMS strony głównej, sekcje edytowalne).

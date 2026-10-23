@@ -10,9 +10,9 @@ Ostatnie uruchomienie: 2026-10-23 (Etap 2), lokalnie (PostgreSQL 16, Redis 7, Ch
 | Backend: build (API + panel) | `npx medusa build` | OK |
 | Storefront: lint | `npm run lint` | OK |
 | Storefront: typy | `npm run typecheck` | OK |
-| Storefront: jednostkowe/komponenty | `npm test` | 20/20 OK |
+| Storefront: jednostkowe/komponenty | `npm test` | 28/28 OK |
 | Storefront: build produkcyjny | `npm run build` | OK |
-| Storefront: E2E (desktop + Pixel 7) | `npm run test:e2e` | 42/42 OK (backend w trybie produkcyjnym, katalog [TEST]) |
+| Storefront: E2E (desktop + Pixel 7) | `npm run test:e2e` | 52/52 OK (backend w trybie produkcyjnym, katalog [TEST]) |
 | Skan zależności | `npm audit --omit=dev` | storefront: 0; backend: 0 critical, podatności high w zależnościach Medusy (patrz SECURITY.md) |
 
 ## Co jest sprawdzane
@@ -30,3 +30,6 @@ Ostatnie uruchomienie: 2026-10-23 (Etap 2), lokalnie (PostgreSQL 16, Redis 7, Ch
 - Docker Compose i obrazy nie zostały zbudowane (brak daemona Dockera w środowisku budowy).
 - Skan DAST (HawkScan) nie uruchomiony: brak klucza API StackHawk; zaplanowany w Etapie 9.
 - Strona 404 dla nieistniejącej kategorii/produktu zwraca HTTP 200 z `noindex` (ograniczenie strumieniowania w Next.js z Cache Components); do rozwiązania w Etapie 8 (SEO) przez `generateStaticParams`/weryfikację w proxy.
+
+- **E2E (Etap 3):** koszyk (dodanie, licznik w nagłówku, błędny i poprawny kod rabatowy, usunięcie kodu i produktu), zamówienie jako gość z fakturą na firmę (walidacja pól i NIP, dostawa, pobranie, kwota 31,97 zł, potwierdzenie z danymi faktury, pusty koszyk po zamówieniu), przekierowanie pustego koszyka, potwierdzenie bez ciasteczka nic nie ujawnia; konto (rejestracja z walidacją hasła, przeniesienie koszyka, zakup jako klient, zamówienie w historii, wylogowanie, błędne i poprawne logowanie, ochrona przed przekierowaniem poza sklep); axe WCAG 2.2 AA w koszyku, checkoutcie i rejestracji.
+- **Unit (Etap 3):** NIP (suma kontrolna), kod pocztowy, schemat adresu i faktury, rejestracja (siła hasła, regulamin), `safeRedirect`.

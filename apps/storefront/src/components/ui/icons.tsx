@@ -75,3 +75,16 @@ export const FlagDeIcon = (p: IconProps) => (
     <rect x="3" y="14.3" width="18" height="4.7" rx="1" fill="#ffce00" />
   </Icon>
 )
+export const CartIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M3 4h2l2.4 11.2a1 1 0 0 0 1 .8h9.2a1 1 0 0 0 1-.8L20 8H6.2" />
+    <circle cx="9" cy="20" r="1.3" />
+    <circle cx="17" cy="20" r="1.3" />
+  </Icon>
+)
+export const UserIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <circle cx="12" cy="8" r="4" />
+    <path d="M4 21a8 8 0 0 1 16 0" />
+  </Icon>
+)

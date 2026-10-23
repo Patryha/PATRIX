@@ -1,6 +1,12 @@
 import type { ExecArgs } from "@medusajs/framework/types"
 import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils"
-import { createPriceListsWorkflow, createProductsWorkflow, updateProductsWorkflow } from "@medusajs/medusa/core-flows"
+import {
+  createPriceListsWorkflow,
+  createProductsWorkflow,
+  createPromotionsWorkflow,
+  createShippingOptionsWorkflow,
+  updateProductsWorkflow,
+} from "@medusajs/medusa/core-flows"
 import { snapshotPrices } from "../lib/catalog/price-snapshot"
 import { PATRIX_CATALOG_MODULE, type PatrixCatalogService } from "../modules/patrix-catalog"
 
@@ -175,4 +181,63 @@ export default async function seedTestCatalog({ container }: ExecArgs) {
     logger.info(`Katalog testowy: utworzono ${item.handle}`)
   }
   await snapshotPrices(container)
+  await ensureTestShippingOption(container, profile.id)
+  await ensureTestPromotion(container)
+}
+
+/** Testowa forma dostawy (kwota umowna, oznaczona [TEST]): prawdziwe stawki ustala właściciel (OWN-3). */
+async function ensureTestShippingOption(container: ExecArgs["container"], profileId: string) {
+  const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
+  const fulfillmentService = container.resolve(Modules.FULFILLMENT)
+  const name = "[TEST] Kurier testowy"
+  const [existing] = await fulfillmentService.listShippingOptions({ name })
+  if (existing) {
+    return
+  }
+  const [set] = await fulfillmentService.listFulfillmentSets({ name: "Dostawa na terenie Polski" }, { relations: ["service_zones"] })
+  const zone = set?.service_zones?.[0]
+  if (!zone) {
+    throw new Error("Brak strefy wysyłki: uruchom podstawowy seed (npm run seed).")
+  }
+  await createShippingOptionsWorkflow(container).run({
+    input: [
+      {
+        name,
+        price_type: "flat",
+        provider_id: "manual_manual",
+        service_zone_id: zone.id,
+        shipping_profile_id: profileId,
+        type: { label: "Kurier testowy", description: "[TEST] Dostawa testowa", code: "test-courier" },
+        prices: [{ currency_code: "pln", amount: 12.99 }],
+        rules: [
+          { attribute: "enabled_in_store", value: "true", operator: "eq" },
+          { attribute: "is_return", value: "false", operator: "eq" },
+        ],
+      },
+    ],
+  })
+  logger.info("Katalog testowy: utworzono testową formę dostawy")
+}
+
+/** Testowy kod rabatowy TEST10 (10% na zamówienie) do testów kuponów. */
+async function ensureTestPromotion(container: ExecArgs["container"]) {
+  const promotionService = container.resolve(Modules.PROMOTION)
+  const [existing] = await promotionService.listPromotions({ code: "TEST10" })
+  if (existing) {
+    return
+  }
+  await createPromotionsWorkflow(container).run({
+    input: {
+      promotionsData: [
+        {
+          code: "TEST10",
+          type: "standard",
+          status: "active",
+          is_automatic: false,
+          application_method: { type: "percentage", target_type: "order", allocation: "across", value: 10, currency_code: "pln" },
+        },
+      ],
+    },
+  })
+  container.resolve(ContainerRegistrationKeys.LOGGER).info("Katalog testowy: utworzono kod TEST10")
 }

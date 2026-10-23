@@ -2,6 +2,7 @@ import { Suspense } from "react"
 import { Container } from "@/components/ui/container"
 import { listTopCategories } from "@/lib/data/categories"
 import { CategoryMenu } from "./category-menu"
+import { HeaderActions, HeaderActionsFallback } from "./header-actions"
 import { Logo } from "./logo"
 import { SearchForm } from "./search-form"
 import { ThemeToggle } from "./theme-toggle"
@@ -19,7 +20,7 @@ function CategoryMenuFallback() {
   )
 }
 
-/** Przyklejony nagłówek: logo, wyszukiwarka, kategorie, motyw. */
+/** Przyklejony nagłówek: logo, wyszukiwarka, kategorie, motyw, konto i koszyk. */
 export function Header() {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/75">
@@ -29,6 +30,9 @@ export function Header() {
           <SearchForm className="hidden md:block md:max-w-xl md:flex-1" id="search-desktop" />
           <div className="ml-auto flex items-center gap-1">
             <ThemeToggle />
+            <Suspense fallback={<HeaderActionsFallback />}>
+              <HeaderActions />
+            </Suspense>
           </div>
         </div>
         <div className="flex items-center gap-2">
