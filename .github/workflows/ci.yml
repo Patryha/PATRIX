@@ -84,8 +84,14 @@ jobs:
           npx medusa db:migrate
           npm run seed | tee seed.log
           echo "NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=$(grep -o 'pk_[a-f0-9]*' seed.log | tail -1)" >> "$GITHUB_ENV"
-          nohup npx medusa start > backend.log 2>&1 &
-          for i in $(seq 1 60); do curl -sf http://localhost:9000/health && break; sleep 2; done
+          # Produkty oznaczone [TEST] wyłącznie dla testów E2E (baza CI jest tymczasowa).
+          npm run seed:test-catalog
+          # Produkcyjny tryb uruchomienia: build, potem start z katalogu .medusa/server (wg dokumentacji Medusy).
+          npx medusa build
+          (cd .medusa/server && npm ci --omit=dev --no-audit --no-fund)
+          (cd .medusa/server && NODE_ENV=production nohup npx medusa start > ../../backend.log 2>&1 &)
+          for i in $(seq 1 90); do curl -sf http://localhost:9000/health && exit 0; sleep 2; done
+          echo "Backend nie wystartował:"; tail -100 backend.log; exit 1
       - name: Storefront
         working-directory: apps/storefront
         run: |

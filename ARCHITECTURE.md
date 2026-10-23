@@ -18,6 +18,7 @@
 |---|---|---|
 | Storefront | `apps/storefront` (Next.js 16, Tailwind 4, design system `src/design-system`) | Etap 1 |
 | Commerce backend | Medusa v2 (`apps/backend`), moduły rdzenia | Etap 1 |
+| Katalog PATRIX | moduł `patrix-catalog`: marki, dane prawne produktu, ceny zakupu, historia cen; hooki blokujące publikację | Etap 2 |
 | Admin | Medusa Admin `/app` + rozszerzenia (`src/admin`), API `src/api/admin/patrix` | Etap 1 (API ról, audyt) |
 | Bezpieczeństwo | moduł `patrix-security`: role, audyt; natywne MFA; rate limit | Etap 1 |
 | Magazyn | moduły Inventory/Stock Location Medusy + moduł `patrix-inventory` (partie, FEFO) | Etap 5 |
@@ -34,8 +35,14 @@
 - `src/lib/permissions.ts`: katalog uprawnień, mapa tras → zasób, role systemowe.
 - `src/lib/crypto.ts`: AES-256-GCM dla sekretów integracji (Etap 6).
 - `src/scripts/seed.ts`: idempotentna konfiguracja bazowa (bez produktów i cen).
+- `src/workflows/hooks/product-publish-guard.ts` + `src/lib/compliance.ts`: kontrola kompletności przed publikacją.
+- `src/lib/catalog/price-snapshot.ts`, `src/jobs/snapshot-prices.ts`, `src/subscribers/product-price-history.ts`: historia cen (Omnibus).
+- API: `/admin/patrix/brands`, `/admin/patrix/products/:id/compliance|price-history|costs`, `/admin/patrix/variants/:id/cost` (finance); `/store/patrix/brands`, `/store/patrix/products/:id/details`.
+- Panel: `src/admin/widgets/product-compliance.tsx`, `product-costs.tsx`, `src/admin/routes/brands`.
+- `src/scripts/seed-test-catalog.ts`: katalog [TEST] dla E2E (zablokowany na produkcji).
 
 ## Storefront: ważne elementy
+- Listing: `src/lib/catalog-filters.ts` (parametry URL, filtry, sortowanie), `src/components/catalog/listing.tsx`; karta produktu: `src/components/product/*`, JSON-LD w `src/lib/seo/json-ld.ts`.
 - Dane: `src/lib/data/*` (`"use cache"`, `cacheLife("minutes")`, `cacheTag`), komponenty danych w `<Suspense>` ze szkieletami.
 - Motyw: `buildThemeCss()` generuje zmienne `--px-*` dla jasnego i ciemnego trybu; skrypt inicjujący ustawia zapisany motyw przed pierwszym malowaniem.
 - Dostępność: link „Przejdź do treści”, widoczny fokus, menu kategorii jako disclosure (Escape, powrót fokusu), cele dotyku ≥ 44 px, `prefers-reduced-motion`.

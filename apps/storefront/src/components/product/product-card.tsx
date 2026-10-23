@@ -20,13 +20,8 @@ export function ProductCard({ product, priority = false }: { product: ProductSum
         ) : (
           <div className="flex h-full items-center justify-center text-sm text-muted">Brak zdjęcia</div>
         )}
-        {!product.inStock ? (
-          <Badge className="absolute left-2 top-2">Chwilowo niedostępny</Badge>
-        ) : product.price?.original ? (
-          <Badge tone="highlight" className="absolute left-2 top-2">
-            Promocja
-          </Badge>
-        ) : null}
+        {/* Znaczek „Promocja” dopiero z najniższą ceną z 30 dni na karcie (Omnibus), więc tu go nie ma. */}
+        {!product.inStock ? <Badge className="absolute left-2 top-2">Chwilowo niedostępny</Badge> : null}
       </div>
       <div className="flex flex-1 flex-col gap-2 p-4">
         <h3 className="line-clamp-2 font-sans text-base font-semibold leading-snug">

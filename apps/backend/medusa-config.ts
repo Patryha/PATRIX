@@ -99,5 +99,6 @@ module.exports = defineConfig({
     ...redisModules,
     ...(fileModule ? [fileModule] : []),
     { resolve: "./src/modules/patrix-security" },
+    { resolve: "./src/modules/patrix-catalog" },
   ],
 })
