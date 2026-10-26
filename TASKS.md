@@ -63,7 +63,7 @@ Statusy: TODO · IN PROGRESS · BLOCKED · TESTING · DONE
 | E4-6 | Ulubione | DONE | Przycisk na karcie produktu (formularz, działa bez JS), strona `/ulubione`, licznik w nagłówku; gość: ciasteczko httpOnly, klient: metadane konta (przeniesienie po zalogowaniu); E2E + axe |
 | E4-7 | Zestawy (bundles) | DONE | Natywne „inventory kits” Medusy (sprzedaż zestawu zdejmuje ze stanu składniki); sekcja „W zestawie” na karcie produktu z linkami do składników; źródło sekcji CMS „Zestawy”; zestaw testowy [TEST]; E2E |
 | E4-8 | Mega menu z grafikami, rozbudowana stopka z CMS | DONE | Panel „Menu i stopka” (strona CMS `layout`): grafiki kategorii z opisem alt, kolumny linków, kontakt tylko od właściciela; podgląd i wersje jak strona główna |
-| E4-9 | Dashboard KPI, import produktów CSV/XLSX, zmiany masowe, zarządzanie rolami w panelu | TODO | |
+| E4-9 | Dashboard KPI, import produktów CSV/XLSX, zmiany masowe, zarządzanie rolami w panelu | IN PROGRESS | DONE: „Pulpit sprzedaży” (KPI, kwoty tylko z finance:read), „Pracownicy i role” (przypisywanie ról, role własne). Zostało: import CSV, zmiany masowe |
 
 ## Zadania wymagające właściciela
 | ID | Czego potrzeba | Status |

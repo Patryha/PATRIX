@@ -68,12 +68,13 @@ const ROUTE_RULES: Rule[] = [
   { pattern: /^\/admin\/currencies(\/|$)/, methods: ["GET"], resource: "panel" },
 
   { pattern: /^\/admin\/patrix\/audit-logs(\/|$)/, resource: "audit_log" },
-  { pattern: /^\/admin\/patrix\/roles(\/|$)/, resource: "staff_role" },
+  { pattern: /^\/admin\/patrix\/(roles|staff)(\/|$)/, resource: "staff_role" },
   { pattern: /^\/admin\/patrix\/users\/[^/]+\/roles(\/|$)/, resource: "staff_role" },
   { pattern: /^\/admin\/patrix\/me(\/|$)/, resource: "panel" },
   { pattern: /^\/admin\/patrix\/(variants\/[^/]+\/cost|products\/[^/]+\/costs)(\/|$)/, resource: "finance" },
   { pattern: /^\/admin\/patrix\/(brands|products)(\/|$)/, resource: "product" },
   { pattern: /^\/admin\/patrix\/cms(\/|$)/, resource: "content" },
+  { pattern: /^\/admin\/patrix\/kpi(\/|$)/, resource: "order" },
 
   { pattern: /^\/admin\/orders\/[^/]+\/fulfillments(\/|$)/, resource: "fulfillment" },
   { pattern: /^\/admin\/fulfillments(\/|$)/, resource: "fulfillment" },

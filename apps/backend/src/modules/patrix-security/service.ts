@@ -64,6 +64,56 @@ class PatrixSecurityService extends MedusaService({ AuditLog, StaffRole, StaffRo
     })
   }
 
+  /** Zmienia rolę własną (nazwa, opis, uprawnienia); role systemowe są zdefiniowane w kodzie i nie podlegają edycji. */
+  async updateCustomRole(id: string, input: { name?: string; description?: string | null; permissions?: string[] }) {
+    const role = await this.retrieveStaffRole(id)
+    if (role.is_system) {
+      throw new MedusaError(MedusaError.Types.NOT_ALLOWED, "Ról systemowych nie można zmieniać.")
+    }
+    const invalid = (input.permissions ?? []).filter((p) => !isValidPermission(p))
+    if (invalid.length) {
+      throw new MedusaError(MedusaError.Types.INVALID_DATA, `Nieznane uprawnienia: ${invalid.join(", ")}`)
+    }
+    const updated = await this.updateStaffRoles({
+      id,
+      ...(input.name !== undefined ? { name: input.name } : {}),
+      ...(input.description !== undefined ? { description: input.description } : {}),
+      ...(input.permissions ? { permissions: { list: input.permissions } } : {}),
+    })
+    this.permissionCache.clear()
+    return updated
+  }
+
+  /** Usuwa rolę własną. Zwraca null (bez usuwania), gdy rola jest komuś przypisana. */
+  async deleteCustomRole(id: string) {
+    const role = await this.retrieveStaffRole(id)
+    if (role.is_system) {
+      throw new MedusaError(MedusaError.Types.NOT_ALLOWED, "Ról systemowych nie można usuwać.")
+    }
+    if ((await this.listStaffRoleAssignments({ role_id: id })).length) {
+      return null
+    }
+    await this.deleteStaffRoles(id)
+    return role
+  }
+
+  /** Role wszystkich podanych użytkowników jednym zapytaniem: user_id → uchwyty ról. */
+  async getRolesByUser(userIds: string[]): Promise<Map<string, string[]>> {
+    const result = new Map<string, string[]>(userIds.map((id) => [id, []]))
+    if (!userIds.length) {
+      return result
+    }
+    const assignments = await this.listStaffRoleAssignments({ user_id: userIds })
+    const roles = assignments.length ? await this.listStaffRoles({ id: [...new Set(assignments.map((a) => a.role_id))] }) : []
+    for (const a of assignments) {
+      const role = roles.find((r) => r.id === a.role_id)
+      if (role) {
+        result.get(a.user_id)?.push(role.handle)
+      }
+    }
+    return result
+  }
+
   /** Zastępuje role użytkownika podanym zestawem (po uchwytach ról). */
   async setUserRoles(userId: string, roleHandles: string[]) {
     const roles = roleHandles.length ? await this.listStaffRoles({ handle: roleHandles }) : []

@@ -5,8 +5,8 @@ Ostatnie uruchomienie: 2026-10-26 (Etap 4: ulubione, zestawy, menu i stopka), lo
 | Zestaw | Polecenie | Wynik |
 |---|---|---|
 | Backend: typy | `npm run typecheck` | OK |
-| Backend: jednostkowe | `npm run test:unit` | 52/52 OK |
-| Backend: integracyjne HTTP | `npm run test:integration:http` | 22/22 OK |
+| Backend: jednostkowe | `npm run test:unit` | 57/57 OK |
+| Backend: integracyjne HTTP | `npm run test:integration:http` | 25/25 OK |
 | Backend: build (API + panel) | `npx medusa build` | OK |
 | Storefront: lint | `npm run lint` | OK |
 | Storefront: typy | `npm run typecheck` | OK |
@@ -27,6 +27,8 @@ Ostatnie uruchomienie: 2026-10-26 (Etap 4: ulubione, zestawy, menu i stopka), lo
 - **E2E (Etap 2):** karta produktu (zmiana wariantu zmienia cenę i SKU, informacja o najniższej cenie z 30 dni tylko przy obniżce, CLP, producent, JSON-LD, cena jednostkowa za kg, tabela wartości odżywczych, galeria z klawiatury, produkt niedostępny), listing (sortowanie po cenie, filtr dostępności i marki, usuwanie filtra, strona marki), axe WCAG 2.2 AA na karcie i listingu.
 - **CMS (Etap 4):** pełny cykl (brak publikacji → 404 w sklepie, szkic, token podglądu, publikacja unieważnia token, nowa kolejność, archiwum, historia, przywrócenie jako nowa wersja), odrzucanie niepoprawnej treści i niebezpiecznych linków (`javascript:`, `//`, `http:`), nieznane pola i strony, 403 dla magazyniera. Jednostkowo: schematy sekcji (alt przy obrazie, pełne CTA, reguły sekcji produktów, unikalne id, jeden pasek).
 - **E2E (Etap 4):** kolejność sekcji z CMS, „Promocje tygodnia” tylko z produktami w promocji i bez przekreślonych cen na kartach, ostatnio oglądane (karta produktu i strona główna, kolejność), axe na stronie głównej, podgląd z błędnym tokenem i `noindex`; ulubione (gość → licznik → przeładowanie → `/ulubione` z axe → rejestracja przenosi listę → wylogowanie → logowanie → usunięcie), zestaw (sekcja „Zestawy”, skład „W zestawie” z linkiem do składnika), stopka z CMS (kolumny linków, brak danych kontaktowych bez wpisu właściciela). Integracyjnie: strona `layout` z własnym schematem (alt przy obrazie, telefon, odrzucenie treści strony głównej), podgląd i publikacja. Panel sprawdzony ręcznie w przeglądarce (przeciąganie, walidacja linku, podgląd, odrzucenie szkicu).
+
+- **Panel (Etap 4, E4-9):** KPI: okresy 7/30/90, strefa Europe/Warsaw (także po zmianie czasu), pominięcie anulowanych i szkiców, porównanie okresów, niski stan (suma lokalizacji minus rezerwacje); integracyjnie: właściciel widzi kwoty, magazynier tylko liczby, marketing 403. Role: lista pracowników z rolami (kierownik 403), edycja roli własnej, odrzucenie nieznanych uprawnień i zmiany uchwytu, blokada edycji i usuwania ról systemowych, 409 dla roli przypisanej, audyt usunięcia. Oba ekrany panelu sprawdzone w przeglądarce (Playwright, konto lokalne).
 
 ## Znane ograniczenia testów
 - Docker Compose i obrazy nie zostały zbudowane (brak daemona Dockera w środowisku budowy).

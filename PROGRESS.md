@@ -45,3 +45,8 @@
 - Menu i stopka z panelu: grafiki kategorii w menu (z opisem alt), kolumny linków, opis sklepu, kontakt i dopisek w stopce; szkic, podgląd, publikacja i historia wersji jak dla strony głównej. Wspólny kod panelu CMS w `src/admin/lib/cms-page.tsx` (D-023).
 - Testy integracyjne nie korzystają już z lokalnego Redisa (wcześniej działający backend deweloperski przechwytywał zdarzenia testów).
 - Testy: backend unit 52/52, integracyjne 22/22, storefront unit 33/33, E2E 66/66.
+
+## 2026-10-26: Etap 4 (panel: KPI, pracownicy i role)
+- „Pulpit sprzedaży”: zamówienia, sprzedaż brutto, średnia wartość zamówienia (7/30/90 dni, porównanie z poprzednim okresem), zamówienia dziennie (wykres i tabela), najczęściej kupowane, do wysłania, nowe konta, niski stan magazynu, stan danych produktów. Kwoty widzą tylko osoby z uprawnieniem do finansów (D-024).
+- „Pracownicy i role”: lista pracowników z rolami i ich zmiana, role własne z macierzą uprawnień (tworzenie, edycja, usuwanie; rola przypisana nie może zostać usunięta), podgląd ról systemowych. Zmiany ról w dzienniku audytu.
+- Testy: backend unit 57/57, integracyjne 25/25; oba ekrany panelu sprawdzone w przeglądarce.

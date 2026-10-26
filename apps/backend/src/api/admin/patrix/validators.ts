@@ -8,6 +8,9 @@ export const CreateRoleSchema = z.object({
 })
 export type CreateRoleBody = z.infer<typeof CreateRoleSchema>
 
+export const UpdateRoleSchema = CreateRoleSchema.omit({ handle: true }).partial().strict()
+export type UpdateRoleBody = z.infer<typeof UpdateRoleSchema>
+
 export const SetUserRolesSchema = z.object({ roles: z.array(z.string()).max(10) })
 export type SetUserRolesBody = z.infer<typeof SetUserRolesSchema>
 

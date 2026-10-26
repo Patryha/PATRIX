@@ -2,6 +2,7 @@ import { defineMiddlewares, validateAndTransformBody } from "@medusajs/framework
 import {
   CreateBrandSchema,
   CreateRoleSchema,
+  UpdateRoleSchema,
   SaveDraftSchema,
   SetUserRolesSchema,
   SetVariantCostSchema,
@@ -38,6 +39,7 @@ export default defineMiddlewares({
 
     { matcher: "/admin/*", middlewares: [enforceAdminMfaEnrollment, authorizeAdminRequest, auditAdminMutations] },
     { matcher: "/admin/patrix/roles", methods: ["POST"], middlewares: [validateAndTransformBody(CreateRoleSchema)] },
+    { matcher: "/admin/patrix/roles/:id", methods: ["POST"], middlewares: [validateAndTransformBody(UpdateRoleSchema)] },
     {
       matcher: "/admin/patrix/users/:id/roles",
       methods: ["POST"],
