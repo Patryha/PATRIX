@@ -1,4 +1,4 @@
-import { allocateFefo, expiryState, fefoOrder, signedDelta } from "../warehouse"
+import { allocateFefo, expiryState, fefoOrder, signedDelta, unitCosts } from "../warehouse"
 
 const batch = (id: string, quantity: number, expiry: string | null, received = "2026-10-01") => ({ id, quantity, expiry_date: expiry, received_at: received })
 
@@ -36,5 +36,23 @@ describe("magazyn: FEFO i daty ważności", () => {
     expect(() => signedDelta("receipt", 0)).toThrow()
     expect(() => signedDelta("issue", 1.5)).toThrow()
     expect(() => signedDelta("receipt", -1)).toThrow("ilość dodatnią")
+  })
+})
+
+describe("unitCosts", () => {
+  it("bierze cenę z wariantu z jedną sztuką towaru, pomija zestawy, przy sprzecznych cenach nie zgaduje", () => {
+    const link = (id: string, items: [string, number][]) => ({ id, inventory_items: items.map(([inventory_item_id, required_quantity]) => ({ inventory_item_id, required_quantity })) })
+    const costs = unitCosts(
+      [link("v1", [["i1", 1]]), link("kit", [["i1", 2]]), link("v2", [["i2", 1]]), link("v3", [["i2", 1]]), link("v4", [["i3", 1]])],
+      [
+        { variant_id: "v1", purchase_price: 4.5 },
+        { variant_id: "kit", purchase_price: 8 },
+        { variant_id: "v2", purchase_price: 3 },
+        { variant_id: "v3", purchase_price: 3.2 },
+      ]
+    )
+    expect(costs.get("i1")).toBe(4.5)
+    expect(costs.get("i2")).toBeNull()
+    expect(costs.has("i3")).toBe(false)
   })
 })

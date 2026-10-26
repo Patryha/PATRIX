@@ -133,6 +133,92 @@ medusaIntegrationTestRunner({
       expect(await level()).toBe(8)
     })
 
+    it("transfer (MM) moves stock and batches with lot and expiry, all or nothing", async () => {
+      const container = getContainer()
+      const target = await container.resolve(Modules.STOCK_LOCATION).createStockLocations({ name: "TEST Magazyn 2" })
+      const levelAt = async (loc: string) => {
+        const [l] = await container.resolve(Modules.INVENTORY).listInventoryLevels({ inventory_item_id: itemId, location_id: loc })
+        return l ? Number(l.stocked_quantity) : null
+      }
+      const transfer = (body: Record<string, unknown>) =>
+        api.post(
+          "/admin/patrix/warehouse/transfers",
+          { inventory_item_id: itemId, from_location_id: locationId, to_location_id: target.id, ...body },
+          warehouseStaff
+        )
+      await move({ type: "receipt", quantity: 5, lot_number: "LATER", expiry_date: "2027-03-01" })
+      await move({ type: "receipt", quantity: 3, lot_number: "SOONER", expiry_date: "2027-01-01" })
+
+      const { data } = await transfer({ quantity: 4, document_ref: "MM/1" })
+      expect(data.movements).toHaveLength(4)
+      expect(await levelAt(locationId)).toBe(4)
+      expect(await levelAt(target.id)).toBe(4)
+      const { data: stock } = await api.get(`/admin/patrix/warehouse/stock?location_id=${target.id}`, warehouseStaff)
+      const moved = stock.stock.find((r: { inventory_item_id: string }) => r.inventory_item_id === itemId)
+      expect(moved.batches.map((b: { lot_number: string; quantity: number }) => [b.lot_number, b.quantity])).toEqual([
+        ["SOONER", 3],
+        ["LATER", 1],
+      ])
+      expect(moved.untracked).toBe(0)
+
+      // Za dużo, ta sama lokalizacja, zła partia: nic się nie zmienia
+      expect((await errorOf(transfer({ quantity: 5 }))).status).toBe(400)
+      expect((await errorOf(transfer({ quantity: 1, to_location_id: locationId }))).status).toBe(400)
+      expect((await errorOf(transfer({ quantity: 1, batch_id: "batch_nie_istnieje" }))).status).toBe(404)
+      expect(await levelAt(locationId)).toBe(4)
+      expect(await levelAt(target.id)).toBe(4)
+      const { data: log } = await api.get("/admin/patrix/warehouse/movements?type=transfer", warehouseStaff)
+      expect(log.count).toBe(4)
+      expect((await errorOf(transfer({ quantity: 1 }).then(() => api.post("/admin/patrix/warehouse/transfers", {}, marketing)))).status).toBe(403)
+    })
+
+    it("exports the movement log as CSV for Excel, filtered by period", async () => {
+      await move({ type: "receipt", quantity: 4, lot_number: "=HACK()", expiry_date: "2027-01-01", document_ref: "PZ/1" })
+      await move({ type: "issue", quantity: 1, document_ref: "WZ/1" })
+      const res = await api.get("/admin/patrix/warehouse/movements/export", warehouseStaff)
+      expect(res.headers["content-type"]).toContain("text/csv")
+      expect(res.headers["content-disposition"]).toContain("ruchy-magazynowe")
+      const lines = (res.data as string).replace(/^\uFEFF/, "").trim().split("\r\n")
+      expect(lines[0]).toBe("data;rodzaj;sku;towar;lokalizacja;ilosc;partia;data_waznosci;dokument;powod")
+      expect(lines).toHaveLength(3)
+      expect(lines[1]).toContain(";przyjęcie;TEST-MAG-1;TEST towar;TEST Magazyn główny;4;'=HACK();2027-01-01;PZ/1;")
+      expect(lines[2]).toContain(";wydanie;TEST-MAG-1;TEST towar;TEST Magazyn główny;-1;'=HACK();2027-01-01;WZ/1;")
+      const future = await api.get("/admin/patrix/warehouse/movements/export?from=2099-01-01&to=2099-01-31", warehouseStaff)
+      expect((future.data as string).trim().split("\r\n")).toHaveLength(1)
+      expect((await errorOf(api.get("/admin/patrix/warehouse/movements/export?from=1.01.2026", warehouseStaff))).status).toBe(400)
+    })
+
+    it("stock value at purchase cost needs finance permission; items without cost are listed, not guessed", async () => {
+      await createStaff(getContainer(), "wlasciciel@patrix.test", ["owner"])
+      const owner = bearer((await login(api, "wlasciciel@patrix.test")).token)
+      const { data } = await api.post(
+        "/admin/products",
+        {
+          title: "TEST wartość",
+          handle: "test-wartosc",
+          status: "draft",
+          options: [{ title: "Rozmiar", values: ["1"] }],
+          variants: [{ title: "1", sku: "TEST-WART-1", manage_inventory: true, options: { Rozmiar: "1" }, prices: [{ amount: 9.99, currency_code: "pln" }] }],
+        },
+        owner
+      )
+      const variantId = data.product.variants[0].id
+      const { data: withLinks } = await api.get(`/admin/products/${data.product.id}?fields=variants.inventory_items.inventory_item_id`, owner)
+      const costedItem = withLinks.product.variants[0].inventory_items[0].inventory_item_id
+      await api.post("/admin/patrix/variants/" + variantId + "/cost", { purchase_price: 4.5 }, owner)
+      await api.post("/admin/patrix/warehouse/movements", { type: "receipt", inventory_item_id: costedItem, location_id: locationId, quantity: 10 }, owner)
+      await move({ type: "receipt", quantity: 3 })
+
+      const { data: value } = await api.get(`/admin/patrix/warehouse/value?location_id=${locationId}`, owner)
+      expect(value.total_value).toBe(45)
+      expect(value.missing_cost).toBe(1)
+      expect(value.rows).toEqual([
+        expect.objectContaining({ sku: "TEST-WART-1", quantity: 10, unit_cost: 4.5, value: 45 }),
+        expect.objectContaining({ sku: "TEST-MAG-1", quantity: 3, unit_cost: null, value: null }),
+      ])
+      expect((await errorOf(api.get("/admin/patrix/warehouse/value", warehouseStaff))).status).toBe(403)
+    })
+
     it("expiry report lists expired and soon-expiring batches; marketing has no access", async () => {
       const soon = new Date(Date.now() + 5 * 86_400_000).toISOString().slice(0, 10)
       const later = new Date(Date.now() + 200 * 86_400_000).toISOString().slice(0, 10)

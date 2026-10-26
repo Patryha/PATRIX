@@ -118,6 +118,20 @@ export const SaveCountLinesSchema = z
   .strict()
 export type SaveCountLinesBody = z.infer<typeof SaveCountLinesSchema>
 
+export const StockTransferSchema = z
+  .object({
+    inventory_item_id: z.string().min(1),
+    from_location_id: z.string().min(1),
+    to_location_id: z.string().min(1),
+    quantity: z.number().int().min(1).max(1_000_000),
+    batch_id: z.string().nullish(),
+    reason: optionalText(300),
+    document_ref: optionalText(120),
+  })
+  .strict()
+  .refine((t) => t.from_location_id !== t.to_location_id, { message: "Lokalizacja docelowa musi być inna niż źródłowa.", path: ["to_location_id"] })
+export type StockTransferBody = z.infer<typeof StockTransferSchema>
+
 export const SetVariantCostSchema = z.object({
   purchase_price: z.number().min(0).max(1_000_000),
   supplier: optionalText(200),

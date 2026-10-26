@@ -9,6 +9,7 @@ import {
   SetUserRolesSchema,
   SetVariantCostSchema,
   StockMovementSchema,
+  StockTransferSchema,
   CreateStockCountSchema,
   SaveCountLinesSchema,
   UpdateBrandSchema,
@@ -78,6 +79,7 @@ export default defineMiddlewares({
       methods: ["POST"],
       middlewares: [validateAndTransformBody(StockMovementSchema)],
     },
+    { matcher: "/admin/patrix/warehouse/transfers", methods: ["POST"], middlewares: [validateAndTransformBody(StockTransferSchema)] },
     { matcher: "/admin/patrix/warehouse/counts", methods: ["POST"], middlewares: [validateAndTransformBody(CreateStockCountSchema)] },
     {
       matcher: "/admin/patrix/warehouse/counts/:id/lines",

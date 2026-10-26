@@ -101,3 +101,22 @@ export function parseYesNo(value: string): boolean | null {
   }
   return null
 }
+
+type CsvCell = string | number | null | undefined
+
+/** Komórka tekstowa zaczynająca się od = + - @ (lub tabulatora) jest w Excelu formułą: poprzedzamy ją apostrofem. */
+function csvCell(value: CsvCell, delimiter: string) {
+  if (value === null || value === undefined) {
+    return ""
+  }
+  let text = typeof value === "number" ? String(value).replace(".", ",") : value
+  if (typeof value === "string" && /^[=+\-@\t\r]/.test(text)) {
+    text = `'${text}`
+  }
+  return /["\r\n]/.test(text) || text.includes(delimiter) ? `"${text.replace(/"/g, '""')}"` : text
+}
+
+/** CSV dla polskiego Excela: BOM, średnik, CRLF, przecinek dziesiętny. */
+export function toCsv(header: string[], rows: CsvCell[][], delimiter = ";") {
+  return "﻿" + [header, ...rows].map((row) => row.map((c) => csvCell(c, delimiter)).join(delimiter)).join("\r\n") + "\r\n"
+}

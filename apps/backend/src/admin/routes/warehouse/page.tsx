@@ -24,7 +24,7 @@ type StockRow = {
 }
 type Movement = {
   id: string
-  type: "receipt" | "issue" | "adjustment" | "count" | "sale"
+  type: "receipt" | "issue" | "adjustment" | "count" | "sale" | "transfer"
   quantity: number
   reason: string | null
   document_ref: string | null
@@ -43,6 +43,7 @@ const MOVEMENT_LABEL: Record<Movement["type"], string> = {
   adjustment: "korekta",
   count: "inwentaryzacja",
   sale: "sprzedaż",
+  transfer: "przesunięcie (MM)",
 }
 const COUNT_STATUS: Record<StockCount["status"], { text: string; color: "blue" | "green" | "grey" }> = {
   open: { text: "otwarta", color: "blue" },
@@ -215,8 +216,9 @@ function ItemPicker({ value, onChange }: { value: InventoryItem | null; onChange
 function MovementForm() {
   const queryClient = useQueryClient()
   const locations = useLocations()
-  const [type, setType] = useState<"receipt" | "issue" | "adjustment">("receipt")
+  const [type, setType] = useState<"receipt" | "issue" | "adjustment" | "transfer">("receipt")
   const [locationId, setLocationId] = useState("")
+  const [targetId, setTargetId] = useState("")
   const [item, setItem] = useState<InventoryItem | null>(null)
   const [quantity, setQuantity] = useState("")
   const [lot, setLot] = useState("")
@@ -236,13 +238,26 @@ function MovementForm() {
     queryKey: ["patrix-warehouse-stock", locationId, item?.id],
     queryFn: () =>
       sdk.client.fetch<{ stock: StockRow[] }>("/admin/patrix/warehouse/stock", { query: { location_id: locationId, q: item?.sku ?? item?.title ?? "" } }),
-    enabled: type === "issue" && !!item && !!locationId,
+    enabled: (type === "issue" || type === "transfer") && !!item && !!locationId,
     select: (d) => d.stock.find((r) => r.inventory_item_id === item?.id)?.batches ?? [],
   })
 
   const save = useMutation({
     mutationFn: () =>
-      sdk.client.fetch("/admin/patrix/warehouse/movements", {
+      type === "transfer"
+        ? sdk.client.fetch("/admin/patrix/warehouse/transfers", {
+            method: "POST",
+            body: {
+              inventory_item_id: item!.id,
+              from_location_id: locationId,
+              to_location_id: targetId,
+              quantity: Number(quantity),
+              ...(batchId !== "fefo" ? { batch_id: batchId } : {}),
+              ...(documentRef.trim() ? { document_ref: documentRef.trim() } : {}),
+              ...(reason.trim() ? { reason: reason.trim() } : {}),
+            },
+          })
+        : sdk.client.fetch("/admin/patrix/warehouse/movements", {
         method: "POST",
         body: {
           type,
@@ -273,7 +288,13 @@ function MovementForm() {
 
   const qty = Number(quantity)
   const valid =
-    !!item && !!locationId && Number.isInteger(qty) && qty !== 0 && (type === "adjustment" || qty > 0) && (type !== "adjustment" || reason.trim().length > 0)
+    !!item &&
+    !!locationId &&
+    Number.isInteger(qty) &&
+    qty !== 0 &&
+    (type === "adjustment" || qty > 0) &&
+    (type !== "adjustment" || reason.trim().length > 0) &&
+    (type !== "transfer" || (!!targetId && targetId !== locationId))
 
   return (
     <form
@@ -297,11 +318,12 @@ function MovementForm() {
               <Select.Item value="receipt">Przyjęcie (PZ)</Select.Item>
               <Select.Item value="issue">Wydanie (WZ / RW)</Select.Item>
               <Select.Item value="adjustment">Korekta stanu</Select.Item>
+              <Select.Item value="transfer">Przesunięcie między magazynami (MM)</Select.Item>
             </Select.Content>
           </Select>
         </div>
         <div className="flex flex-col gap-1">
-          <Label htmlFor="movement-location">Lokalizacja</Label>
+          <Label htmlFor="movement-location">{type === "transfer" ? "Z lokalizacji" : "Lokalizacja"}</Label>
           <Select value={locationId} onValueChange={setLocationId}>
             <Select.Trigger id="movement-location">
               <Select.Value placeholder="Wybierz" />
@@ -320,11 +342,33 @@ function MovementForm() {
           <Input id="movement-qty" type="number" step={1} value={quantity} onChange={(e) => setQuantity(e.target.value)} />
         </div>
       </div>
+      {type === "transfer" && (
+        <div className="flex flex-col gap-1">
+          <Label htmlFor="movement-target">Do lokalizacji</Label>
+          <Select value={targetId} onValueChange={setTargetId}>
+            <Select.Trigger id="movement-target">
+              <Select.Value placeholder="Wybierz" />
+            </Select.Trigger>
+            <Select.Content>
+              {locations.data
+                ?.filter((l) => l.id !== locationId)
+                .map((l) => (
+                  <Select.Item key={l.id} value={l.id}>
+                    {l.name}
+                  </Select.Item>
+                ))}
+            </Select.Content>
+          </Select>
+          {locations.data && locations.data.length < 2 && (
+            <Text size="small" className="text-ui-fg-subtle">Dodaj drugą lokalizację magazynową w ustawieniach panelu (lokalizacje i wysyłka), aby przesuwać towar.</Text>
+          )}
+        </div>
+      )}
       <div className="flex flex-col gap-1">
         <Label htmlFor="movement-item">Towar</Label>
         <ItemPicker value={item} onChange={setItem} />
       </div>
-      {type !== "issue" && (
+      {(type === "receipt" || type === "adjustment") && (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div className="flex flex-col gap-1">
             <Label htmlFor="movement-lot">Numer partii (opcjonalnie)</Label>
@@ -336,7 +380,7 @@ function MovementForm() {
           </div>
         </div>
       )}
-      {type === "issue" && item && (
+      {(type === "issue" || type === "transfer") && item && (
         <div className="flex flex-col gap-1">
           <Label htmlFor="movement-batch">Partia</Label>
           <Select value={batchId} onValueChange={setBatchId}>
@@ -378,6 +422,9 @@ const PAGE = 50
 function MovementsTab() {
   const [type, setType] = useState(ALL)
   const [offset, setOffset] = useState(0)
+  const [from, setFrom] = useState("")
+  const [to, setTo] = useState("")
+  const exportQuery = new URLSearchParams({ ...(from ? { from } : {}), ...(to ? { to } : {}), ...(type !== ALL ? { type } : {}) }).toString()
   const { data, isLoading, isError } = useQuery({
     queryKey: ["patrix-warehouse-movements", type, offset],
     queryFn: () =>
@@ -413,6 +460,21 @@ function MovementsTab() {
               </Select.Content>
             </Select>
           </div>
+        </div>
+        <div className="flex flex-wrap items-end gap-3">
+          <div className="flex flex-col gap-1">
+            <Label htmlFor="export-from">Eksport od</Label>
+            <Input id="export-from" type="date" value={from} onChange={(e) => setFrom(e.target.value)} />
+          </div>
+          <div className="flex flex-col gap-1">
+            <Label htmlFor="export-to">do</Label>
+            <Input id="export-to" type="date" value={to} onChange={(e) => setTo(e.target.value)} />
+          </div>
+          <Button asChild variant="secondary">
+            <a href={`/admin/patrix/warehouse/movements/export${exportQuery ? `?${exportQuery}` : ""}`} download>
+              Pobierz CSV
+            </a>
+          </Button>
         </div>
         {isLoading && <Text>Wczytywanie…</Text>}
         {isError && <Text className="text-ui-fg-error">Nie udało się wczytać dziennika.</Text>}
@@ -775,6 +837,66 @@ function CountsTab() {
   )
 }
 
+type ValueRow = { inventory_item_id: string; sku: string | null; title: string | null; location: string; quantity: number; unit_cost: number | null; value: number | null }
+const money = (n: number) => n.toLocaleString("pl-PL", { style: "currency", currency: "PLN" })
+
+function ValueTab() {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["patrix-warehouse-value"],
+    queryFn: () => sdk.client.fetch<{ total_value: number; missing_cost: number; rows: ValueRow[] }>("/admin/patrix/warehouse/value"),
+    retry: false,
+  })
+  if (isLoading) {
+    return <Text>Wczytywanie…</Text>
+  }
+  if (error) {
+    const status = (error as { status?: number }).status
+    return <Text className="text-ui-fg-subtle">{status === 403 ? "Wartość magazynu widzą tylko osoby z uprawnieniem do finansów." : "Nie udało się wczytać raportu."}</Text>
+  }
+  if (!data) {
+    return null
+  }
+  return (
+    <div className="flex flex-col gap-4">
+      <div>
+        <Heading level="h2">Wartość w cenach zakupu netto: {money(data.total_value)}</Heading>
+        {data.missing_cost > 0 && (
+          <Text size="small" className="text-ui-fg-subtle">
+            Pozycje bez ceny zakupu: {data.missing_cost}. Nie są wliczone; uzupełnij ceny zakupu na karcie produktu albo importem.
+          </Text>
+        )}
+      </div>
+      {data.rows.length === 0 && <Text className="text-ui-fg-subtle">Magazyn jest pusty.</Text>}
+      {data.rows.length > 0 && (
+        <Table>
+          <Table.Header>
+            <Table.Row>
+              <Table.HeaderCell>Towar</Table.HeaderCell>
+              <Table.HeaderCell>Lokalizacja</Table.HeaderCell>
+              <Table.HeaderCell className="text-right">Ilość</Table.HeaderCell>
+              <Table.HeaderCell className="text-right">Cena zakupu</Table.HeaderCell>
+              <Table.HeaderCell className="text-right">Wartość</Table.HeaderCell>
+            </Table.Row>
+          </Table.Header>
+          <Table.Body>
+            {data.rows.map((r) => (
+              <Table.Row key={`${r.inventory_item_id}:${r.location}`}>
+                <Table.Cell>
+                  {r.title ?? "–"} <span className="text-ui-fg-muted">({r.sku ?? "bez SKU"})</span>
+                </Table.Cell>
+                <Table.Cell>{r.location}</Table.Cell>
+                <Table.Cell className="text-right">{r.quantity}</Table.Cell>
+                <Table.Cell className="text-right">{r.unit_cost === null ? "brak ceny" : money(r.unit_cost)}</Table.Cell>
+                <Table.Cell className="text-right">{r.value === null ? "–" : money(r.value)}</Table.Cell>
+              </Table.Row>
+            ))}
+          </Table.Body>
+        </Table>
+      )}
+    </div>
+  )
+}
+
 const WarehousePage = () => (
   <Container className="flex flex-col gap-4 p-6">
     <div>
@@ -790,6 +912,7 @@ const WarehousePage = () => (
         <Tabs.Trigger value="movements">Ruchy</Tabs.Trigger>
         <Tabs.Trigger value="expiry">Daty ważności</Tabs.Trigger>
         <Tabs.Trigger value="counts">Inwentaryzacja</Tabs.Trigger>
+        <Tabs.Trigger value="value">Wartość</Tabs.Trigger>
       </Tabs.List>
       <div className="pt-4">
         <Tabs.Content value="stock">
@@ -803,6 +926,9 @@ const WarehousePage = () => (
         </Tabs.Content>
         <Tabs.Content value="counts">
           <CountsTab />
+        </Tabs.Content>
+        <Tabs.Content value="value">
+          <ValueTab />
         </Tabs.Content>
       </div>
     </Tabs>

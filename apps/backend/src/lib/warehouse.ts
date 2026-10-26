@@ -59,3 +59,26 @@ export function signedDelta(type: MovementKind, quantity: number): number {
   }
   return type === "receipt" ? quantity : -quantity
 }
+
+export type VariantInventoryLink = { id: string; inventory_items: { inventory_item_id: string; required_quantity: number }[] }
+
+/**
+ * Cena zakupu sztuki towaru magazynowego: z wariantu, który zawiera dokładnie jedną sztukę tego towaru
+ * (zestawy pomijamy). Różne ceny zakupu dla jednego towaru → brak ceny (do wyjaśnienia), nie zgadujemy.
+ */
+export function unitCosts(variants: VariantInventoryLink[], costs: { variant_id: string; purchase_price: number }[]) {
+  const found = new Map<string, number[]>()
+  for (const v of variants) {
+    const cost = costs.find((c) => c.variant_id === v.id)
+    if (!cost || v.inventory_items.length !== 1 || v.inventory_items[0].required_quantity !== 1) {
+      continue
+    }
+    const id = v.inventory_items[0].inventory_item_id
+    found.set(id, [...(found.get(id) ?? []), Number(cost.purchase_price)])
+  }
+  const result = new Map<string, number | null>()
+  for (const [id, prices] of found) {
+    result.set(id, prices.every((p) => p === prices[0]) ? prices[0] : null)
+  }
+  return result
+}

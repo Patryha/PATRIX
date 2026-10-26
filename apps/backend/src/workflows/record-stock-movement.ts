@@ -17,7 +17,7 @@ export type StockMovementInput = {
 }
 
 /** Krok 1: zmiana stanu w module magazynu Medusy (z kontrolą dostępnej ilości i cofnięciem przy błędzie). */
-const applyInventoryDeltaStep = createStep(
+export const applyInventoryDeltaStep = createStep(
   "patrix-apply-inventory-delta",
   async (input: { inventory_item_id: string; location_id: string; delta: number; type: MovementKind }, { container }) => {
     const inventory = container.resolve(Modules.INVENTORY)

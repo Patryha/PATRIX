@@ -61,3 +61,9 @@
 - Inwentaryzacja: arkusz dla lokalizacji, zatwierdzenie księguje różnice. Raport dat ważności (7/30/90 dni).
 - Panel „Magazyn” (stany, ruchy, daty ważności, inwentaryzacja) sprawdzony w przeglądarce kontem magazyniera.
 - Testy: backend unit 70/70, integracyjne 35/35, storefront unit 33/33, E2E 66/66.
+
+## 2026-10-26: Etap 5 (przesunięcia, raporty)
+- Przesunięcia między magazynami (MM): towar i partie przechodzą razem, z numerem partii i datą ważności.
+- Eksport dziennika ruchów do CSV (Excel: średnik, polskie znaki, okres od–do).
+- Wartość magazynu w cenach zakupu netto, tylko dla osób z uprawnieniem do finansów; towar bez ceny zakupu jest wykazany osobno, nie szacujemy go (D-028).
+- Testy: backend unit 72/72, integracyjne 38/38, storefront unit 33/33, E2E 66/66; panel sprawdzony w przeglądarce (magazynier i właściciel).

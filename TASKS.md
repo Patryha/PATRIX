@@ -75,8 +75,8 @@ Statusy: TODO · IN PROGRESS · BLOCKED · TESTING · DONE
 | E5-5 | Raport dat ważności | DONE | Partie z terminem w ciągu 7/30/90 dni i po terminie |
 | E5-6 | Panel „Magazyn” | DONE | Zakładki: stany z partiami, ruchy (formularz i dziennik), daty ważności, inwentaryzacja; sprawdzony w przeglądarce kontem magazyniera |
 | E5-7 | Wiele magazynów i lokalizacji | DONE | Natywne lokalizacje Medusy; stany, ruchy i inwentaryzacje osobno dla każdej lokalizacji |
-| E5-8 | Przesunięcia między magazynami (MM) | TODO | |
-| E5-9 | Raporty: wartość magazynu (z uprawnieniem do finansów), eksport ruchów do CSV | TODO | |
+| E5-8 | Przesunięcia między magazynami (MM) | DONE | Workflow `patrix-transfer-stock`: rozchód w źródle, przyjęcie w celu, partie przechodzą z numerem i datą ważności; wszystko albo nic; test integracyjny; w panelu jako rodzaj ruchu |
+| E5-9 | Raporty: wartość magazynu (z uprawnieniem do finansów), eksport ruchów do CSV | DONE | Wartość w cenach zakupu netto, pozycje bez ceny wykazane osobno (D-028), 403 dla magazyniera; eksport CSV dla Excela z filtrem okresu i ochroną przed formułami; zakładka „Wartość” i przycisk „Pobierz CSV” |
 | E5-10 | Gotowość pod POS | TODO | |
 
 ## Zadania wymagające właściciela
