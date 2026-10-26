@@ -23,7 +23,7 @@
 | Bezpieczeństwo | moduł `patrix-security`: role, audyt; natywne MFA; rate limit | Etap 1 |
 | Magazyn | moduły Inventory/Stock Location Medusy + moduł `patrix-warehouse` (partie, FEFO, dziennik ruchów, inwentaryzacje) | Etap 5 |
 | Płatności / Dostawy | providery Medusy budowane na adapterach Integration Center | Etap 6 |
-| Integracje | moduł `patrix-integrations` (manifest, sejf, webhooki, kolejka, logi) | Etap 6 |
+| Integracje | moduł `patrix-integrations` (połączenia, webhooki, dziennik) + `src/integrations` (manifest, adaptery) + `src/lib/integrations.ts`; `/hooks/patrix/:adapter`, `/admin/patrix/integrations/*`, panel `src/admin/routes/integrations`, zadanie `retry-integration-webhooks` | Etap 6 |
 | Wyszukiwanie | Medusa `q` → Meilisearch | Etap 7 |
 | CMS | moduł `patrix-cms` (sekcje strony głównej, wersje, podgląd) | Etap 4 |
 | Analityka | GA4/Meta przez CMP (za zgodą) | Etap 8 |

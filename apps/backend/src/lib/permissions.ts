@@ -95,6 +95,7 @@ const ROUTE_RULES: Rule[] = [
   { pattern: /^\/admin\/(promotions|campaigns|price-lists)(\/|$)/, resource: "promotion" },
   { pattern: /^\/admin\/uploads(\/|$)/, resource: "file" },
   { pattern: /^\/admin\/(api-keys|plugins)(\/|$)/, resource: "integration" },
+  { pattern: /^\/admin\/patrix\/integrations(\/|$)/, resource: "integration" },
   { pattern: /^\/admin\/(users|invites)(\/|$)/, resource: "user" },
   {
     pattern:

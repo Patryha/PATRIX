@@ -77,3 +77,10 @@
 - Wyszukiwanie po zeskanowanym kodzie (EAN, kod kreskowy, SKU) ze stanem w każdej lokalizacji; czytnik kodów działa w formularzu ruchów na stronie „Magazyn”.
 - Sprzedaż stacjonarna: osobny kanał sprzedaży i lokalizacja w Medusie; kasa fiskalna i terminal czekają na decyzję właściciela (D-030).
 - Testy: backend unit 72/72, integracyjne 40/40, storefront unit 33/33, E2E 66/66.
+
+## 2026-10-26: Etap 6 (centrum integracji: fundament)
+- Moduł `patrix-integrations`: połączenia z szyfrowanymi danymi dostępowymi, skrzynka webhooków z podpisem i idempotencją, ponowienia (1, 2, 4… min, maks. 8 prób), dziennik wywołań; zadanie ponowień co minutę.
+- Panel „Integracje”: płatności, dostawy, księgowość, inne kanały; bez adaptera status „w przygotowaniu” (nic nie udaje połączenia). Powiadomienia z ręcznym ponowieniem, dziennik z filtrem błędów.
+- Tryb produkcyjny integracji tylko po zgodzie właściciela w konfiguracji serwera (D-031).
+- Naprawiony klucz szyfrowania w `.env.test` (miał 33 bajty zamiast 32).
+- Testy: backend unit 74/74, integracyjne 43/43, storefront unit 33/33, E2E 66/66.

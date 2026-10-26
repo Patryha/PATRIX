@@ -12,6 +12,14 @@
 | Marketplace | Allegro, Google Merchant Center, Meta Commerce | TODO (Etap 6/8) | |
 | Pliki | S3-compatible (MinIO/R2/S3) | Skonfigurowane warunkowo (`S3_BUCKET`) | W dev pliki lokalne |
 
+## Centrum integracji (Etap 6, fundament)
+- Panel → „Integracje”: lista z manifestu (`src/integrations/manifest.ts`). Integracja bez adaptera ma status „w przygotowaniu” i nie da się jej włączyć ani zapisać do niej danych.
+- Dane dostępowe: szyfrowane AES-256-GCM w `integration_connection.credentials`; panel i API pokazują tylko podpowiedzi (końcówka sekretu). Zmiany w dzienniku audytu bez wartości.
+- Tryb: domyślnie testowy (sandbox). Produkcyjny wymaga `PATRIX_ALLOW_PRODUCTION_INTEGRATIONS=true` w konfiguracji serwera (decyzja właściciela).
+- Webhooki: `POST /hooks/patrix/<adapter>`; podpis sprawdza adapter na surowej treści; każde zdarzenie zapisywane raz (adapter + identyfikator zewnętrzny); błąd obsługi → ponowienia po 1, 2, 4… min (maks. 8 prób, potem „wymaga reakcji” i ręczne „Ponów teraz”).
+- Dziennik wywołań bez sekretów (`integration_log`).
+- Nowy adapter: obiekt `IntegrationAdapter` (`src/integrations/types.ts`) z polami danych dostępowych, testem połączenia (prawdziwe wywołanie API operatora), weryfikacją podpisu i idempotentną obsługą zdarzeń; rejestracja `registerAdapter`.
+
 ## Fundament gotowy w Etapie 1
 - `src/lib/crypto.ts`: szyfrowanie sekretów integracji AES-256-GCM (`PATRIX_ENCRYPTION_KEY`).
 - Uprawnienie `integration:*` w rolach; klucze API Medusy (`sk_…`) tylko dla `integration:write`.

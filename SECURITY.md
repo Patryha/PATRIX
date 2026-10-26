@@ -12,6 +12,12 @@
 - Sekrety tylko w zmiennych środowiskowych; w produkcji brak wartości domyślnych (start się nie powiedzie bez sekretów).
 - Skan zależności w CI + Dependabot.
 
+## Integracje (Etap 6)
+- Dane dostępowe operatorów tylko zaszyfrowane (AES-256-GCM, `PATRIX_ENCRYPTION_KEY`), nigdy w odpowiedziach API, logach ani audycie; panel widzi końcówkę sekretu.
+- Webhooki: weryfikacja podpisu na surowej treści przed jakimkolwiek przetwarzaniem, limit 600 żądań/min z IP, limit treści 1 MB, idempotencja na unikalnym indeksie.
+- Tryb produkcyjny integracji wyłącznie po jawnej zgodzie w konfiguracji serwera.
+- Treść zdarzeń (np. powiadomień o płatności) przechowywana do ponowień; polityka retencji do ustalenia z właścicielem przy RODO (Etap 8/10).
+
 ## Znane ryzyka
 - `npm audit` backendu: podatności „high” w zależnościach tranzytywnych Medusy (`@graphql-tools/utils` — prototype pollution w `mergeDeep`; `vite` — dotyczy serwera deweloperskiego panelu). `lodash` podniesiony przez `overrides` do 4.18.1. Pozostałe czekają na aktualizację Medusy (Dependabot grupuje `@medusajs/*`). Produkcja nie uruchamia serwera deweloperskiego Vite.
 - Ścisłe CSP `script-src` z nonce: Etap 9 (po wyborze dostawców płatności i analityki).
