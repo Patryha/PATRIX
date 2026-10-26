@@ -74,7 +74,7 @@ const ROUTE_RULES: Rule[] = [
   { pattern: /^\/admin\/patrix\/(variants\/[^/]+\/cost|products\/[^/]+\/costs)(\/|$)/, resource: "finance" },
   { pattern: /^\/admin\/patrix\/import\/costs(\/|$)/, resource: "finance" },
   { pattern: /^\/admin\/patrix\/warehouse\/value(\/|$)/, resource: "finance" },
-  { pattern: /^\/admin\/patrix\/(brands|products|import)(\/|$)/, resource: "product" },
+  { pattern: /^\/admin\/patrix\/(brands|products|import|search)(\/|$)/, resource: "product" },
   { pattern: /^\/admin\/patrix\/cms(\/|$)/, resource: "content" },
   { pattern: /^\/admin\/patrix\/kpi(\/|$)/, resource: "order" },
   { pattern: /^\/admin\/patrix\/warehouse(\/|$)/, resource: "inventory" },

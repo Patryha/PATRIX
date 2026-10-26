@@ -88,12 +88,44 @@ test.describe("nawigacja", () => {
 test.describe("wyszukiwarka", () => {
   test("wysyła zapytanie i informuje o braku wyników", async ({ page, isMobile }) => {
     await page.goto("/")
-    const input = page.getByRole("searchbox", { name: "Szukaj produktów" }).locator("visible=true")
+    const input = page.getByRole("combobox", { name: "Szukaj produktów" }).locator("visible=true")
     await input.fill("persil color")
     await input.press("Enter")
     await expect(page).toHaveURL(/\/szukaj\?q=persil(\+|%20)color/)
-    await expect(page.getByText(/Brak wyników dla „persil color”|Wyniki dla „persil color”/)).toBeVisible()
+    await expect(page.getByText(/Brak wyników dla „persil color”|Wyniki dla „persil color”|pasujących do całej frazy „persil color”/)).toBeVisible()
     expect(isMobile !== undefined).toBe(true)
+  })
+
+  test("rozumie brak polskich znaków i literówki, podpowiada poprawkę", async ({ page }) => {
+    await page.goto("/szukaj?q=zel%20do%20prania")
+    await expect(page.getByRole("article")).toHaveCount(1)
+    await expect(page.getByRole("article")).toContainText("[TEST] Żel do prania kolorów")
+    await expect(page.getByLabel("Sortuj")).toHaveValue("relevance")
+
+    await page.goto("/szukaj?q=krem%20do%20rak")
+    // trafność: sam krem przed zestawem kremów
+    await expect(page.getByRole("article").first()).toContainText("[TEST] Krem do rąk")
+
+    await page.goto("/szukaj?q=ciasteczka")
+    await expect(page.getByText("Brak wyników dla „ciasteczka”.")).toBeVisible()
+    await page.getByRole("link", { name: "ciastka" }).click()
+    await expect(page).toHaveURL(/\/szukaj\?q=ciastka/)
+    await expect(page.getByRole("article")).toContainText("[TEST] Ciastka maślane")
+  })
+
+  test("podpowiada produkty podczas pisania i obsługuje klawiaturę", async ({ page }) => {
+    await page.goto("/")
+    const input = page.getByRole("combobox", { name: "Szukaj produktów" }).locator("visible=true")
+    await input.fill("ciast")
+    const option = page.getByRole("option", { name: /\[TEST\] Ciastka maślane/ })
+    await expect(option).toBeVisible()
+    await expect(input).toHaveAttribute("aria-expanded", "true")
+    await input.press("Escape")
+    await expect(input).toHaveAttribute("aria-expanded", "false")
+    await input.press("ArrowDown")
+    await expect(option).toHaveAttribute("aria-selected", "true")
+    await input.press("Enter")
+    await expect(page).toHaveURL(/\/produkt\/test-ciastka/)
   })
 })
 

@@ -18,6 +18,10 @@
 - Tryb produkcyjny integracji wyłącznie po jawnej zgodzie w konfiguracji serwera.
 - Treść zdarzeń (np. powiadomień o płatności) przechowywana do ponowień; polityka retencji do ustalenia z właścicielem przy RODO (Etap 8/10).
 
+## Wyszukiwarka (Etap 7)
+- Publiczne `/store/patrix/search*`: limit 300 żądań/min z IP, fraza 1–100 znaków, tylko produkty opublikowane z kanałów sprzedaży klucza publicznego.
+- Statystyki fraz bez danych klienta (bez IP, identyfikatora, sesji); zmiana synonimów wymaga uprawnienia `product:write`.
+
 ## Znane ryzyka
 - `npm audit` backendu: podatności „high” w zależnościach tranzytywnych Medusy (`@graphql-tools/utils` — prototype pollution w `mergeDeep`; `vite` — dotyczy serwera deweloperskiego panelu). `lodash` podniesiony przez `overrides` do 4.18.1. Pozostałe czekają na aktualizację Medusy (Dependabot grupuje `@medusajs/*`). Produkcja nie uruchamia serwera deweloperskiego Vite.
 - Ścisłe CSP `script-src` z nonce: Etap 9 (po wyborze dostawców płatności i analityki).
