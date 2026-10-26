@@ -15,7 +15,7 @@ Cel: profesjonalny, bezpieczny i gotowy do wdrożenia sklep PATRIX z panelem adm
 | 6 | Integration Center: manifest adapterów, sejf sekretów, webhooki z podpisem, kolejki i idempotencja, logi i ponowienia; płatności (P24, PayU, Tpay, Stripe), dostawy (InPost, DPD, DHL, GLS, ORLEN, Poczta Polska), księgowość/ERP, marketplace | 3, 5 | W TOKU: fundament gotowy, adaptery czekają na konta sandbox (OWN-4) |
 | 7 | Inteligentne funkcje: wyszukiwarka (literówki, PL/DE, synonimy, EAN; własny silnik zamiast Meilisearch, D-032), rekomendacje, wsparcie AI dla admina z akceptacją człowieka, chatbot na zweryfikowanej wiedzy | 2, 4 | W TOKU |
 | 8 | Marketing i SEO: metadane, dane strukturalne, sitemap, 301, blog, newsletter (double opt-in), zgody (CMP), GA4/Meta za zgodą, Merchant Center | 2, 4 | GOTOWE poza newsletterem (E8-7 czeka na dostawcę e-mail i zgodę) |
-| 9 | Testy: pełne E2E zakupu, dostępność, wydajność (CWV), bezpieczeństwo (DAST), testy uprawnień | 2–8 | W TOKU |
+| 9 | Testy: pełne E2E zakupu, dostępność, wydajność (CWV), bezpieczeństwo (DAST), testy uprawnień | 2–8 | ZROBIONE lokalnie (CSP, wydajność, DAST ZAP, inwentarz uprawnień); pomiar CWV i DAST do powtórzenia na stagingu |
 | 10 | Wdrożenie: staging, konfiguracja produkcyjna, dokumentacja admina i integracji, checklista startu | 9 | TODO |
 
 ## Kryteria ukończenia projektu

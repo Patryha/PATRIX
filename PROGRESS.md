@@ -132,3 +132,7 @@
 - API backendu wysyła ścisłą politykę CSP (`default-src 'none'; frame-ancestors 'none'`), wynik skanu ZAP.
 - Testy: backend typy OK, unit 140/140, integracyjne 49/49; storefront lint OK, typy OK, unit 54/54, E2E zakupu 6/6.
 
+## 2026-10-26: Etap 9 (DAST) – Etap 9 zakończony
+- OWASP ZAP: skan aktywny sklepu 0 FAIL / 112 PASS, skan podstawowy API 0 FAIL. Ostrzeżenia CSP `'unsafe-inline'` i anty-CSRF przyjęte z uzasadnieniem (SECURITY.md). Raporty HTML w `/mnt/project-files/patrix/zap/`.
+- Do powtórzenia na stagingu z HTTPS (Etap 10). HawkScan nadal czeka na klucz `HAWK_API_KEY`.
+

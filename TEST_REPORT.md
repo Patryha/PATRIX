@@ -13,6 +13,8 @@ Ostatnie uruchomienie: 2026-10-26 (Etap 9: testy i bezpieczeństwo), lokalnie (P
 | Storefront: jednostkowe/komponenty | `npm test` | 54/54 OK |
 | Storefront: build produkcyjny | `npm run build` | OK |
 | Storefront: E2E (desktop + Pixel 7) | `npm run test:e2e` | 86/86 OK (backend w trybie produkcyjnym, katalog [TEST]) |
+| DAST (OWASP ZAP, sklep: skan aktywny) | `zap-full-scan.py` | 0 FAIL, 112 PASS, 2 WARN przyjęte (SECURITY.md) |
+| DAST (OWASP ZAP, API: skan podstawowy) | `zap-baseline.py` | 0 FAIL, 61 PASS; ostrzeżenie o CSP naprawione |
 | Skan zależności | `npm audit --omit=dev` | storefront: 0; backend: 0 critical, podatności high w zależnościach Medusy (patrz SECURITY.md) |
 
 ## Co jest sprawdzane
@@ -34,7 +36,7 @@ Ostatnie uruchomienie: 2026-10-26 (Etap 9: testy i bezpieczeństwo), lokalnie (P
 
 ## Znane ograniczenia testów
 - Docker Compose i obrazy nie zostały zbudowane (brak daemona Dockera w środowisku budowy).
-- Skan DAST (HawkScan) nie uruchomiony: brak klucza API StackHawk; zaplanowany w Etapie 9.
+- DAST wykonany lokalnie OWASP ZAP (nie HawkScan, brak klucza StackHawk) i bez HTTPS; skan aktywny ograniczony do 12 minut i jednego poziomu pająka. Do powtórzenia na stagingu (Etap 10).
 - Strona 404 dla nieistniejącej kategorii/produktu zwraca HTTP 200 z `noindex` (ograniczenie strumieniowania w Next.js z Cache Components); do rozwiązania w Etapie 8 (SEO) przez `generateStaticParams`/weryfikację w proxy.
 
 - **E2E (Etap 3):** koszyk (dodanie, licznik w nagłówku, błędny i poprawny kod rabatowy, usunięcie kodu i produktu), zamówienie jako gość z fakturą na firmę (walidacja pól i NIP, dostawa, pobranie, kwota 31,97 zł, potwierdzenie z danymi faktury, pusty koszyk po zamówieniu), przekierowanie pustego koszyka, potwierdzenie bez ciasteczka nic nie ujawnia; konto (rejestracja z walidacją hasła, przeniesienie koszyka, zakup jako klient, zamówienie w historii, wylogowanie, błędne i poprawne logowanie, ochrona przed przekierowaniem poza sklep); axe WCAG 2.2 AA w koszyku, checkoutcie i rejestracji.
