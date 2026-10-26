@@ -285,6 +285,36 @@ medusaIntegrationTestRunner({
       ])
     })
 
+    it("lookup by scanned EAN or SKU returns the stock item with stock per location", async () => {
+      await createStaff(getContainer(), "wl-skan@patrix.test", ["owner"])
+      const owner = bearer((await login(api, "wl-skan@patrix.test")).token)
+      const { data } = await api.post(
+        "/admin/products",
+        {
+          title: "TEST skan",
+          handle: "test-skan",
+          status: "draft",
+          options: [{ title: "Rozmiar", values: ["1"] }],
+          variants: [{ title: "1", sku: "TEST-SKAN-1", ean: "2000000009995", manage_inventory: true, options: { Rozmiar: "1" }, prices: [{ amount: 5, currency_code: "pln" }] }],
+        },
+        owner
+      )
+      const { data: withLinks } = await api.get(`/admin/products/${data.product.id}?fields=variants.inventory_items.inventory_item_id`, owner)
+      const item = withLinks.product.variants[0].inventory_items[0].inventory_item_id
+      await api.post("/admin/patrix/warehouse/movements", { type: "receipt", inventory_item_id: item, location_id: locationId, quantity: 7 }, owner)
+
+      const { data: byEan } = await api.get("/admin/patrix/warehouse/lookup?code=2000000009995", warehouseStaff)
+      expect(byEan.matches).toEqual([
+        expect.objectContaining({ sku: "TEST-SKAN-1", inventory_item_id: item, required_quantity: 1, stock: [expect.objectContaining({ location_id: locationId, stocked: 7, available: 7 })] }),
+      ])
+      const { data: bySku } = await api.get("/admin/patrix/warehouse/lookup?code=TEST-SKAN-1", warehouseStaff)
+      expect(bySku.matches).toHaveLength(1)
+      const { data: none } = await api.get("/admin/patrix/warehouse/lookup?code=0000000000000", warehouseStaff)
+      expect(none.matches).toEqual([])
+      expect((await errorOf(api.get("/admin/patrix/warehouse/lookup?code=", warehouseStaff))).status).toBe(400)
+      expect((await errorOf(api.get("/admin/patrix/warehouse/lookup?code=TEST-SKAN-1", marketing))).status).toBe(403)
+    })
+
     it("expiry report lists expired and soon-expiring batches; marketing has no access", async () => {
       const soon = new Date(Date.now() + 5 * 86_400_000).toISOString().slice(0, 10)
       const later = new Date(Date.now() + 200 * 86_400_000).toISOString().slice(0, 10)

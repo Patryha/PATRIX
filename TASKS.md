@@ -77,7 +77,7 @@ Statusy: TODO · IN PROGRESS · BLOCKED · TESTING · DONE
 | E5-7 | Wiele magazynów i lokalizacji | DONE | Natywne lokalizacje Medusy; stany, ruchy i inwentaryzacje osobno dla każdej lokalizacji |
 | E5-8 | Przesunięcia między magazynami (MM) | DONE | Workflow `patrix-transfer-stock`: rozchód w źródle, przyjęcie w celu, partie przechodzą z numerem i datą ważności; wszystko albo nic; test integracyjny; w panelu jako rodzaj ruchu |
 | E5-9 | Raporty: wartość magazynu (z uprawnieniem do finansów), eksport ruchów do CSV | DONE | Wartość w cenach zakupu netto, pozycje bez ceny wykazane osobno (D-028), 403 dla magazyniera; eksport CSV dla Excela z filtrem okresu i ochroną przed formułami; zakładka „Wartość” i przycisk „Pobierz CSV” |
-| E5-10 | Gotowość pod POS | TODO | |
+| E5-10 | Gotowość pod POS | DONE (API) | `GET /admin/patrix/warehouse/lookup?code=` (EAN, kod kreskowy, SKU → towar i stan w lokalizacjach), czytnik kodów w formularzu „Magazyn”; sprzedaż w sklepie stacjonarnym jako osobny kanał sprzedaży i lokalizacja Medusy. Kasa fiskalna i terminal płatniczy: decyzja i sprzęt właściciela (D-030) |
 
 ## Zadania wymagające właściciela
 | ID | Czego potrzeba | Status |
@@ -88,3 +88,5 @@ Statusy: TODO · IN PROGRESS · BLOCKED · TESTING · DONE
 | OWN-4 | Konta i klucze sandbox operatorów płatności i przewoźników | BLOCKED (Etap 6) |
 | OWN-5 | Domena i hosting/staging | BLOCKED (Etap 10) |
 | OWN-6 | Treść regulaminu i polityki prywatności (zatwierdzona prawnie) | BLOCKED (przed startem sprzedaży) |
+| OWN-7 | Sklep stacjonarny: czy będzie, kasa fiskalna (online) i terminal płatniczy | Do decyzji (D-030) |
+| OWN-8 | Zwroty: sposób odesłania i zasady (koszty, wyjątki) do formularza w koncie klienta | Do decyzji (karta w wątku) |

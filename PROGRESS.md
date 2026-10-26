@@ -72,3 +72,8 @@
 - Przyjęty zwrot klienta (w panelu Medusy) zapisuje ruch „zwrot klienta” i oddaje sztuki do partii, z których były sprzedane w tym zamówieniu; uszkodzone sztuki nie wracają na stan (D-029).
 - Formularz zwrotu dla klienta czeka na decyzję właściciela (sposób odesłania i zasady z regulaminu).
 - Testy: backend unit 72/72, integracyjne 39/39, storefront unit 33/33, E2E 66/66.
+
+## 2026-10-26: Etap 5 (gotowość pod POS)
+- Wyszukiwanie po zeskanowanym kodzie (EAN, kod kreskowy, SKU) ze stanem w każdej lokalizacji; czytnik kodów działa w formularzu ruchów na stronie „Magazyn”.
+- Sprzedaż stacjonarna: osobny kanał sprzedaży i lokalizacja w Medusie; kasa fiskalna i terminal czekają na decyzję właściciela (D-030).
+- Testy: backend unit 72/72, integracyjne 40/40, storefront unit 33/33, E2E 66/66.

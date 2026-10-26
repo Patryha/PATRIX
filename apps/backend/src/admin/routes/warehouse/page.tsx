@@ -181,6 +181,24 @@ function ItemPicker({ value, onChange }: { value: InventoryItem | null; onChange
     queryFn: () => sdk.client.fetch<{ inventory_items: InventoryItem[] }>("/admin/inventory-items", { query: { q, limit: 20, fields: "id,sku,title" } }),
     enabled: q.trim().length >= 2 && !value,
   })
+  // Czytnik kodów wpisuje kod i wysyła Enter: szukamy po EAN, kodzie kreskowym albo SKU.
+  const scan = useMutation({
+    mutationFn: (code: string) =>
+      sdk.client.fetch<{ matches: { inventory_item_id: string; sku: string | null; inventory_title: string | null; product_title: string | null }[] }>(
+        "/admin/patrix/warehouse/lookup",
+        { query: { code } }
+      ),
+    onSuccess: (r) => {
+      const items = [...new Map(r.matches.map((m) => [m.inventory_item_id, m])).values()]
+      if (items.length === 1) {
+        onChange({ id: items[0].inventory_item_id, sku: items[0].sku, title: items[0].product_title ?? items[0].inventory_title })
+        setQ("")
+      } else {
+        toast.error(items.length ? "Kod pasuje do kilku towarów: wybierz z listy." : "Nie znaleziono towaru o tym kodzie.")
+      }
+    },
+    onError: (e) => toast.error(errorMessage(e)),
+  })
   if (value) {
     return (
       <div className="flex items-center gap-2">
@@ -193,7 +211,20 @@ function ItemPicker({ value, onChange }: { value: InventoryItem | null; onChange
   }
   return (
     <div className="flex flex-col gap-1">
-      <Input id="movement-item" placeholder="Wpisz co najmniej 2 znaki SKU lub nazwy" value={q} onChange={(e) => setQ(e.target.value)} />
+      <Input
+        id="movement-item"
+        placeholder="Zeskanuj kod (EAN) albo wpisz co najmniej 2 znaki SKU lub nazwy"
+        value={q}
+        onChange={(e) => setQ(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault()
+            if (q.trim()) {
+              scan.mutate(q.trim())
+            }
+          }
+        }}
+      />
       {data && (
         <ul className="border-ui-border-base max-h-48 overflow-auto rounded-md border" aria-label="Wyniki wyszukiwania towaru">
           {data.inventory_items.length === 0 && (
