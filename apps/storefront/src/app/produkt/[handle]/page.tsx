@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { Suspense } from "react"
+import { RecentlyViewed, TrackRecent } from "@/components/cms/recently-viewed"
 import { ProductFacts } from "@/components/product/product-facts"
 import { ProductGallery } from "@/components/product/gallery"
 import { VariantPicker } from "@/components/product/variant-picker"
@@ -86,6 +87,10 @@ async function ProductContent({ params }: Props) {
           <VariantPicker options={product.options} variants={product.variants} lowest30d={product.lowest30d} measure={product.measure} />
           <ProductFacts compliance={product.compliance} description={product.description} />
         </div>
+      </div>
+      <TrackRecent handle={product.handle} />
+      <div className="pt-8">
+        <RecentlyViewed title="Ostatnio oglądane" id="ostatnio-ogladane" exclude={product.handle} />
       </div>
     </>
   )

@@ -32,8 +32,8 @@ Statusy: TODO · IN PROGRESS · BLOCKED · TESTING · DONE
 | E2-1 | Moduł danych produktu PATRIX + kontrola kompletności | DONE | Moduł `patrix-catalog` (marki, dane produktu, ceny zakupu, historia cen). Hooki `productsCreated`/`productsUpdated` blokują publikację niekompletnego produktu z każdej ścieżki (panel, API, import). Testy integracyjne |
 | E2-2 | Listing: filtry, sortowanie, paginacja, produkty niedostępne | DONE | Filtry marki i dostępności, sortowanie (nowości, cena, nazwa), strony, działa bez JS (formularz GET). Do 500 produktów na listę; większy katalog: Meilisearch (E7). Filtry atrybutów kategorii: po CMS kategorii (E4) |
 | E2-3 | Pełna karta produktu | DONE | Galeria, warianty z ceną/SKU/EAN, cena jednostkowa, Omnibus, skład, alergeny, wartości odżywcze, CLP, producent (GPSR), JSON-LD Product + BreadcrumbList. Produkty powiązane: E7 (rekomendacje) |
-| E2-4 | Strona główna z sekcjami (dane z CMS w Etapie 4) | TODO | Przeniesione do Etapu 4 razem z CMS (sekcje edytowalne z panelu) |
-| E2-5 | Mega menu z grafikami, ostatnio oglądane (lokalnie, bez śledzenia) | TODO | Grafiki kategorii zależą od CMS (E4) |
+| E2-4 | Strona główna z sekcjami (dane z CMS w Etapie 4) | DONE | Zrealizowane w E4-1..E4-4 |
+| E2-5 | Mega menu z grafikami, ostatnio oglądane (lokalnie, bez śledzenia) | IN PROGRESS | Ostatnio oglądane DONE (E4-4); mega menu z grafikami: E4-8 |
 | E2-6 | Historia cen (Omnibus) w backendzie | DONE | Zapis przy utworzeniu/edycji produktu + zadanie co 15 min (łapie cenniki promocyjne); najniższa cena z 30 dni przed wprowadzeniem obecnej ceny |
 | E2-7 | Panel: formularz danych produktu, ceny zakupu, marki | DONE | Widżety na karcie produktu, strona „Marki”; ceny zakupu tylko z uprawnieniem `finance` (test 403) |
 | E2-8 | Katalog testowy dla E2E | DONE | `npm run seed:test-catalog`, produkty z prefiksem [TEST], EAN z puli 200, blokada na produkcji |
@@ -51,6 +51,19 @@ Statusy: TODO · IN PROGRESS · BLOCKED · TESTING · DONE
 | E3-8 | Paczkomaty/punkty odbioru, progi darmowej dostawy | BLOCKED | Integracje przewoźników (Etap 6) i stawki od właściciela (OWN-3); w testach „[TEST] Kurier testowy” |
 | E3-9 | Zwroty | TODO | Etap 5 (zamówienia i magazyn w panelu) |
 | E3-10 | Regulamin i polityka prywatności | BLOCKED | Strony istnieją z informacją „w przygotowaniu”; treść od właściciela/prawnika (OWN-6) |
+
+## Etap 4: Panel treści (CMS) i administracja
+| ID | Zadanie | Status | Rozwiązanie / weryfikacja |
+|---|---|---|---|
+| E4-1 | Moduł CMS: wersje strony, szkic, publikacja, historia, przywracanie | DONE | Moduł `patrix-cms`, walidacja sekcji (zod) w backendzie, bezpieczne linki (tylko `/…` lub `https://`); test integracyjny pełnego cyklu, 403 dla roli bez `content` |
+| E4-2 | Panel „Strona główna”: kolejność sekcji (przeciągnij i upuść + przyciski), edycja, widoczność | DONE | Edytor wszystkich typów sekcji, czytelne błędy walidacji; sprawdzone w przeglądarce kontem z rolą marketing |
+| E4-3 | Podgląd szkicu przed publikacją | DONE | Jednorazowy token (w bazie tylko skrót SHA-256), ważny 60 min, unieważniany przy publikacji; `/podglad` z `noindex` |
+| E4-4 | Sekcje sklepu: pasek informacyjny, slider, kategorie, nowości, bestsellery, promocje tygodnia, polecane, ostatnio oglądane, o marce, dostawy i płatności | DONE | Slider z pauzą (WCAG 2.2.2) i bez autoodtwarzania przy `prefers-reduced-motion`; bestsellery z zamówień z 30 dni; ostatnio oglądane tylko w przeglądarce klienta; E2E + axe |
+| E4-5 | Newsletter (zapis z podwójnym potwierdzeniem) | TODO | Wymaga dostawcy e-mail i zgody właściciela na wysyłkę (Etap 6); sekcja nie jest pokazywana, dopóki nie działa |
+| E4-6 | Ulubione | TODO | |
+| E4-7 | Zestawy (bundles) | TODO | Sekcja „Zestawy” po dodaniu modelu zestawów |
+| E4-8 | Mega menu z grafikami, rozbudowana stopka z CMS | TODO | |
+| E4-9 | Dashboard KPI, import produktów CSV/XLSX, zmiany masowe, zarządzanie rolami w panelu | TODO | |
 
 ## Zadania wymagające właściciela
 | ID | Czego potrzeba | Status |

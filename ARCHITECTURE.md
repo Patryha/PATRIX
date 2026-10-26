@@ -38,12 +38,14 @@
 - `src/workflows/hooks/product-publish-guard.ts` + `src/lib/compliance.ts`: kontrola kompletności przed publikacją.
 - `src/lib/catalog/price-snapshot.ts`, `src/jobs/snapshot-prices.ts`, `src/subscribers/product-price-history.ts`: historia cen (Omnibus).
 - API: `/admin/patrix/brands`, `/admin/patrix/products/:id/compliance|price-history|costs`, `/admin/patrix/variants/:id/cost` (finance); `/store/patrix/brands`, `/store/patrix/products/:id/details`.
+- CMS: `src/modules/patrix-cms` (wersje, schematy sekcji `sections.ts`, startowa strona `default-home.ts`), API `/admin/patrix/cms/pages/:key` (szkic, publikacja, podgląd, przywracanie), `/store/patrix/cms/pages/:key`, `/store/patrix/cms/preview`, `/store/patrix/bestsellers`; panel `src/admin/routes/homepage`.
 - Panel: `src/admin/widgets/product-compliance.tsx`, `product-costs.tsx`, `src/admin/routes/brands`.
 - `src/scripts/seed-test-catalog.ts`: katalog [TEST] dla E2E (zablokowany na produkcji).
 
 ## Storefront: ważne elementy
 - Listing: `src/lib/catalog-filters.ts` (parametry URL, filtry, sortowanie), `src/components/catalog/listing.tsx`; karta produktu: `src/components/product/*`, JSON-LD w `src/lib/seo/json-ld.ts`.
 - Dane: `src/lib/data/*` (`"use cache"`, `cacheLife("minutes")`, `cacheTag`), komponenty danych w `<Suspense>` ze szkieletami.
+- Strona główna: `src/lib/data/cms.ts` + `src/components/cms/*` (sekcje, slider, ostatnio oglądane), zapasowy układ `src/lib/cms/fallback.ts`, podgląd `src/app/podglad`.
 - Motyw: `buildThemeCss()` generuje zmienne `--px-*` dla jasnego i ciemnego trybu; skrypt inicjujący ustawia zapisany motyw przed pierwszym malowaniem.
 - Dostępność: link „Przejdź do treści”, widoczny fokus, menu kategorii jako disclosure (Escape, powrót fokusu), cele dotyku ≥ 44 px, `prefers-reduced-motion`.
 

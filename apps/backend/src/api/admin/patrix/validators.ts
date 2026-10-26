@@ -80,3 +80,7 @@ export const SetVariantCostSchema = z.object({
   supplier: optionalText(200),
 })
 export type SetVariantCostBody = z.infer<typeof SetVariantCostSchema>
+
+/** Treść strony sprawdza schemat sekcji w module CMS (jedno źródło prawdy). */
+export const SaveDraftSchema = z.object({ content: z.unknown(), note: z.string().trim().max(300).nullish() }).strict()
+export type SaveDraftBody = z.infer<typeof SaveDraftSchema>

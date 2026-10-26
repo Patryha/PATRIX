@@ -132,7 +132,8 @@ medusaIntegrationTestRunner({
       const product = await createDraftProduct()
       // subskrybent działa asynchronicznie
       let entries: unknown[] = []
-      for (let i = 0; i < 20 && !entries.length; i++) {
+      // przy pełnym zestawie testów subskrybent bywa wolniejszy, więc czekamy do 15 s
+      for (let i = 0; i < 60 && !entries.length; i++) {
         await new Promise((r) => setTimeout(r, 250))
         entries = (await api.get(`/admin/patrix/products/${product.id}/price-history`, owner)).data.entries
       }

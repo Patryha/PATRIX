@@ -2,6 +2,7 @@ import { defineMiddlewares, validateAndTransformBody } from "@medusajs/framework
 import {
   CreateBrandSchema,
   CreateRoleSchema,
+  SaveDraftSchema,
   SetUserRolesSchema,
   SetVariantCostSchema,
   UpdateBrandSchema,
@@ -48,6 +49,11 @@ export default defineMiddlewares({
       matcher: "/admin/patrix/products/:id/compliance",
       methods: ["POST"],
       middlewares: [validateAndTransformBody(UpsertComplianceSchema)],
+    },
+    {
+      matcher: "/admin/patrix/cms/pages/:key/draft",
+      methods: ["POST"],
+      middlewares: [validateAndTransformBody(SaveDraftSchema)],
     },
     {
       matcher: "/admin/patrix/variants/:id/cost",

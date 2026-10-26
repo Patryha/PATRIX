@@ -100,5 +100,6 @@ module.exports = defineConfig({
     ...(fileModule ? [fileModule] : []),
     { resolve: "./src/modules/patrix-security" },
     { resolve: "./src/modules/patrix-catalog" },
+    { resolve: "./src/modules/patrix-cms" },
   ],
 })
