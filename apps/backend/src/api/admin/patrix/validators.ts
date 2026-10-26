@@ -150,3 +150,16 @@ export type SetVariantCostBody = z.infer<typeof SetVariantCostSchema>
 /** Treść strony sprawdza schemat sekcji w module CMS (jedno źródło prawdy). */
 export const SaveDraftSchema = z.object({ content: z.unknown(), note: z.string().trim().max(300).nullish() }).strict()
 export type SaveDraftBody = z.infer<typeof SaveDraftSchema>
+
+/** Grupa synonimów: 2–20 określeń (pojedyncze słowa lub krótkie frazy), bez powtórzeń. */
+export const SaveSynonymSchema = z
+  .object({
+    terms: z
+      .array(z.string().trim().min(2).max(60))
+      .min(2)
+      .max(20)
+      .refine((terms) => new Set(terms.map((t) => t.toLowerCase())).size === terms.length, "Określenia w grupie nie mogą się powtarzać."),
+    note: optionalText(300),
+  })
+  .strict()
+export type SaveSynonymBody = z.infer<typeof SaveSynonymSchema>

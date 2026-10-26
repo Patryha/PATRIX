@@ -5,6 +5,7 @@ import { Suspense } from "react"
 import { CartSummary } from "@/components/cart/cart-summary"
 import { LineQuantity } from "@/components/cart/line-quantity"
 import { PromoForm } from "@/components/cart/promo-form"
+import { CartRecommendations } from "@/components/product/recommendations"
 import { buttonClasses } from "@/components/ui/button"
 import { Container } from "@/components/ui/container"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -62,6 +63,11 @@ async function CartContent() {
           Kontynuuj zakupy
         </Link>
       </aside>
+      <div className="lg:col-span-2">
+        <Suspense fallback={null}>
+          <CartRecommendations productIds={items.flatMap((i) => (i.product_id ? [i.product_id] : []))} />
+        </Suspense>
+      </div>
     </div>
   )
 }

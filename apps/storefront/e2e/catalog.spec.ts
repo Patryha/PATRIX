@@ -65,6 +65,23 @@ test.describe("karta produktu", () => {
   })
 })
 
+test.describe("rekomendacje", () => {
+  test("podobne produkty z tej samej kategorii; bez danych sekcje się nie pokazują", async ({ page }) => {
+    await page.goto("/produkt/test-krem-do-rak")
+    const similar = page.getByRole("region", { name: "Podobne produkty" })
+    await expect(similar).toBeVisible()
+    await expect(similar.getByRole("article")).toHaveCount(1)
+    await expect(similar).toContainText("[TEST] Zestaw: 2 × Krem do rąk")
+    // ciastka są tej samej marki testowej, ale z innej kategorii
+    await expect(similar).not.toContainText("[TEST] Ciastka maślane")
+
+    await page.goto("/produkt/test-zel-do-prania")
+    await expect(page.getByRole("heading", { name: "[TEST] Żel do prania kolorów", level: 1 })).toBeVisible()
+    await expect(page.getByRole("heading", { name: "Podobne produkty" })).toHaveCount(0)
+    await expect(page.getByRole("heading", { name: "Często kupowane razem" })).toHaveCount(0)
+  })
+})
+
 test.describe("listing", () => {
   test("filtruje po dostępności i sortuje po cenie (bez JavaScriptu też działa przez GET)", async ({ page }) => {
     await page.goto("/szukaj?q=TEST")

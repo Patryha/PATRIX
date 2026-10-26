@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { ProductGrid } from "@/components/product/product-card"
 import { buttonClasses } from "@/components/ui/button"
-import { applyListing, listingHref, SORTS, type BrandFacet, type ListingParams } from "@/lib/catalog-filters"
+import { applyListing, listingHref, sortOptions, type BrandFacet, type ListingParams } from "@/lib/catalog-filters"
 import type { ProductSummary } from "@/lib/data/products"
 
 type Props = {
@@ -39,7 +39,7 @@ export function CatalogListing({ pathname, products, brands, params, extra = {},
             defaultValue={params.sort}
             className="min-h-11 rounded-md border border-border bg-surface px-3 text-base"
           >
-            {Object.entries(SORTS).map(([value, label]) => (
+            {sortOptions(params.defaultSort).map(([value, label]) => (
               <option key={value} value={value}>
                 {label}
               </option>

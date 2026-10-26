@@ -1,6 +1,7 @@
 import type { ProductSummary } from "./data/products"
 
 export const SORTS = {
+  relevance: "Trafność",
   newest: "Najnowsze",
   price_asc: "Cena: od najniższej",
   price_desc: "Cena: od najwyższej",
@@ -10,13 +11,18 @@ export type Sort = keyof typeof SORTS
 
 export const PAGE_SIZE = 24
 
-export type ListingParams = { sort: Sort; brands: string[]; inStock: boolean; page: number }
+/** `defaultSort`: sortowanie pomijane w adresie; „Trafność” jest dostępna tylko tam, gdzie jest domyślna (wyszukiwarka). */
+export type ListingParams = { sort: Sort; defaultSort: Sort; brands: string[]; inStock: boolean; page: number }
 
 type Raw = Record<string, string | string[] | undefined>
 const first = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v)
 
+/** Sortowania do wyboru na danym listingu. */
+export const sortOptions = (defaultSort: Sort) =>
+  (Object.entries(SORTS) as [Sort, string][]).filter(([value]) => value !== "relevance" || defaultSort === "relevance")
+
 /** Odczyt parametrów listingu z adresu URL (wartości spoza listy są ignorowane). */
-export function parseListingParams(raw: Raw): ListingParams {
+export function parseListingParams(raw: Raw, defaultSort: Sort = "newest"): ListingParams {
   const sort = first(raw.sort)
   const brandParam = raw.marka
   const brands = (Array.isArray(brandParam) ? brandParam : brandParam ? [brandParam] : [])
@@ -26,7 +32,8 @@ export function parseListingParams(raw: Raw): ListingParams {
     .slice(0, 20)
   const page = Number.parseInt(first(raw.strona) ?? "1", 10)
   return {
-    sort: sort && sort in SORTS ? (sort as Sort) : "newest",
+    sort: sort && sort in SORTS && (sort !== "relevance" || defaultSort === "relevance") ? (sort as Sort) : defaultSort,
+    defaultSort,
     brands,
     inStock: first(raw.dostepne) === "1",
     page: Number.isFinite(page) && page > 0 ? Math.min(page, 1000) : 1,
@@ -36,7 +43,7 @@ export function parseListingParams(raw: Raw): ListingParams {
 export type BrandFacet = { handle: string; name: string; productIds: string[] }
 
 /**
- * Filtrowanie, sortowanie i stronicowanie listy produktów (kolejność „newest” zachowuje kolejność wejścia).
+ * Filtrowanie, sortowanie i stronicowanie listy produktów („newest” i „relevance” zachowują kolejność wejścia).
  * Produkty bez ceny trafiają na koniec przy sortowaniu po cenie.
  */
 export function applyListing(products: ProductSummary[], brands: BrandFacet[], params: ListingParams) {
@@ -76,7 +83,7 @@ export function listingHref(
 ) {
   const next = { ...params, ...patch }
   const search = new URLSearchParams(extra)
-  if (next.sort !== "newest") search.set("sort", next.sort)
+  if (next.sort !== next.defaultSort) search.set("sort", next.sort)
   if (next.brands.length) search.set("marka", next.brands.join(","))
   if (next.inStock) search.set("dostepne", "1")
   if (next.page > 1) search.set("strona", String(next.page))

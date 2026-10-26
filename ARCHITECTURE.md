@@ -24,9 +24,10 @@
 | Magazyn | moduły Inventory/Stock Location Medusy + moduł `patrix-warehouse` (partie, FEFO, dziennik ruchów, inwentaryzacje) | Etap 5 |
 | Płatności / Dostawy | providery Medusy budowane na adapterach Integration Center | Etap 6 |
 | Integracje | moduł `patrix-integrations` (połączenia, webhooki, dziennik) + `src/integrations` (manifest, adaptery) + `src/lib/integrations.ts`; `/hooks/patrix/:adapter`, `/admin/patrix/integrations/*`, panel `src/admin/routes/integrations`, zadanie `retry-integration-webhooks` | Etap 6 |
-| Wyszukiwanie | Medusa `q` → Meilisearch | Etap 7 |
+| Wyszukiwanie | silnik w pamięci `src/lib/search.ts` + indeks `src/lib/search-index.ts`, moduł `patrix-search` (synonimy, statystyki fraz); `/store/patrix/search(/suggest)`, `/admin/patrix/search/*`, panel `src/admin/routes/search-settings`; Meilisearch później za tym samym API (D-032) | Etap 7 |
 | CMS | moduł `patrix-cms` (sekcje strony głównej, wersje, podgląd) | Etap 4 |
 | Analityka | GA4/Meta przez CMP (za zgodą) | Etap 8 |
+| Rekomendacje | `src/lib/recommendations.ts` + `recommendations-data.ts`, `/store/patrix/recommendations`; sekcje na karcie produktu i w koszyku (D-033) | Etap 7 |
 | AI | warstwa propozycji z akceptacją człowieka | Etap 7 |
 
 ## Backend: ważne elementy

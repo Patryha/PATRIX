@@ -11,6 +11,7 @@ import {
   StockMovementSchema,
   StockTransferSchema,
   SaveIntegrationSchema,
+  SaveSynonymSchema,
   CreateStockCountSchema,
   SaveCountLinesSchema,
   UpdateBrandSchema,
@@ -52,6 +53,18 @@ export default defineMiddlewares({
       middlewares: [rateLimit({ name: "store-customers", limit: 30, windowSeconds: 300 })],
     },
 
+    // Wyszukiwarka i podpowiedzi: publiczne, więc z limitem żądań z jednego IP.
+    {
+      matcher: "/store/patrix/search*",
+      methods: ["GET"],
+      middlewares: [rateLimit({ name: "store-search", limit: 300, windowSeconds: 60 })],
+    },
+    {
+      matcher: "/store/patrix/recommendations",
+      methods: ["GET"],
+      middlewares: [rateLimit({ name: "store-recommendations", limit: 300, windowSeconds: 60 })],
+    },
+
     { matcher: "/admin/*", middlewares: [enforceAdminMfaEnrollment, authorizeAdminRequest, auditAdminMutations] },
     { matcher: "/admin/patrix/roles", methods: ["POST"], middlewares: [validateAndTransformBody(CreateRoleSchema)] },
     { matcher: "/admin/patrix/roles/:id", methods: ["POST"], middlewares: [validateAndTransformBody(UpdateRoleSchema)] },
@@ -60,6 +73,8 @@ export default defineMiddlewares({
       methods: ["POST"],
       middlewares: [validateAndTransformBody(SetUserRolesSchema)],
     },
+    { matcher: "/admin/patrix/search/synonyms", methods: ["POST"], middlewares: [validateAndTransformBody(SaveSynonymSchema)] },
+    { matcher: "/admin/patrix/search/synonyms/:id", methods: ["POST"], middlewares: [validateAndTransformBody(SaveSynonymSchema)] },
     { matcher: "/admin/patrix/brands", methods: ["POST"], middlewares: [validateAndTransformBody(CreateBrandSchema)] },
     { matcher: "/admin/patrix/brands/:id", methods: ["POST"], middlewares: [validateAndTransformBody(UpdateBrandSchema)] },
     {
