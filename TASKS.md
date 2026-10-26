@@ -102,7 +102,7 @@ Statusy: TODO · IN PROGRESS · BLOCKED · TESTING · DONE
 | E8-1 | Mapa strony i robots.txt | DONE | `app/sitemap.ts`, `app/robots.ts`, `lib/data/sitemap.ts`; indeksowanie tylko z `NEXT_PUBLIC_ALLOW_INDEXING=true` (D-034); E2E |
 | E8-2 | Przekierowania 301/302 | DONE | Moduł `patrix-seo`, `src/lib/redirects.ts` (walidacja: tylko ścieżki sklepu, bez łańcuchów i pętli), `/admin/patrix/redirects`, `/store/patrix/redirects`, panel „Przekierowania”, `src/proxy.ts` w sklepie; testy jednostkowe, integracyjne, E2E, panel sprawdzony w przeglądarce |
 | E8-3 | Metadane i dane strukturalne | DONE (Etap 2) | Kanoniczne adresy, Open Graph, JSON-LD produktu i ścieżki nawigacji |
-| E8-4 | Zgody na cookies (CMP), GA4/Meta za zgodą | TODO | |
+| E8-4 | Zgody na cookies (CMP), GA4/Meta za zgodą | DONE (gotowe do włączenia) | `lib/consent.ts`, `components/consent/*`; baner tylko przy skonfigurowanych narzędziach, skrypty dopiero po zgodzie, „Ustawienia cookies” w stopce (D-035); testy komponentów i jednorazowy test w przeglądarce z identyfikatorami testowymi (axe, brak skryptów po odrzuceniu). Włączenie: identyfikatory GA4/Meta od właściciela (OWN-9) |
 | E8-5 | Feed Google Merchant Center | TODO | Konto Merchant Center właściciela potrzebne dopiero do podpięcia feedu |
 | E8-6 | Blog | TODO | |
 | E8-7 | Newsletter z podwójnym potwierdzeniem | BLOCKED | = E4-5 (dostawca e-mail i zgoda na wysyłkę) |
@@ -116,5 +116,6 @@ Statusy: TODO · IN PROGRESS · BLOCKED · TESTING · DONE
 | OWN-4 | Konta i klucze sandbox operatorów płatności i przewoźników | BLOCKED (Etap 6) |
 | OWN-5 | Domena i hosting/staging | BLOCKED (Etap 10) |
 | OWN-6 | Treść regulaminu i polityki prywatności (zatwierdzona prawnie) | BLOCKED (przed startem sprzedaży) |
+| OWN-9 | Identyfikatory Google Analytics 4 i Meta Pixel (jeśli mają być używane) | Do decyzji (E8-4) |
 | OWN-7 | Sklep stacjonarny: czy będzie, kasa fiskalna (online) i terminal płatniczy | Do decyzji (D-030) |
 | OWN-8 | Zwroty: sposób odesłania i zasady (koszty, wyjątki) do formularza w koncie klienta | Do decyzji (karta w wątku) |

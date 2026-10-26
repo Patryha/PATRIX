@@ -100,3 +100,7 @@
 - `/sitemap.xml` (strona główna, kategorie, marki, produkty) i `/robots.txt`; indeksowanie włączy się dopiero na produkcji (D-034).
 - Panel „Przekierowania”: stare adresy na nowe (301 na stałe albo 302 tymczasowo), z ochroną przed pętlami, łańcuchami i adresami spoza sklepu; sklep stosuje zmiany w ciągu minuty. Sprawdzony w przeglądarce.
 - Testy: backend unit 89/89, integracyjne 48/48, storefront unit 35/35, build OK, E2E 78/78.
+
+## 2026-10-26: Etap 8 (zgody na cookies)
+- Baner zgód z równorzędnymi przyciskami „Akceptuj wszystkie” / „Odrzuć opcjonalne” i ustawieniami kategorii; „Ustawienia cookies” w stopce. Pojawia się dopiero po podaniu identyfikatorów Google Analytics 4 lub Meta Pixel (D-035); przed zgodą żaden skrypt narzędzia się nie ładuje.
+- Testy: storefront unit 40/40, build OK, E2E 78/78; baner sprawdzony w przeglądarce z identyfikatorami testowymi (axe bez błędów, brak zapytań do Google/Meta po odrzuceniu).

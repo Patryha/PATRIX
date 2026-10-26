@@ -1,6 +1,8 @@
 import { CmsLink } from "@/components/cms/cms-link"
+import { ConsentSettingsButton } from "@/components/consent/consent-manager"
 import { Container } from "@/components/ui/container"
 import type { LayoutContent } from "@/lib/cms/layout"
+import { trackingConfig } from "@/lib/consent"
 import { getLayout } from "@/lib/data/cms"
 import { Logo } from "./logo"
 
@@ -49,6 +51,7 @@ export function FooterContent({ footer, preview = false }: { footer: LayoutConte
         <Container className="flex flex-col gap-1 py-4 text-xs text-muted sm:flex-row sm:justify-between">
           <span>© PATRIX</span>
           {footer.note ? <span>{footer.note}</span> : null}
+          {preview ? null : <ConsentSettingsButton config={trackingConfig} />}
         </Container>
       </div>
     </Root>

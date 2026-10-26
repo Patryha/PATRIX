@@ -25,6 +25,7 @@
 
 ## SEO (Etap 8)
 - Przekierowania tylko na ścieżki sklepu (walidacja w backendzie i ponownie w proxy sklepu): brak otwartych przekierowań; adresów panelu nie można przekierować; uprawnienie `content`.
+- Zgody: bez zgody nie ładujemy skryptów firm trzecich; identyfikatory narzędzi walidowane (format GA4/Meta). Przy ścisłym CSP (Etap 9) trzeba dopuścić `googletagmanager.com`, `google-analytics.com`, `connect.facebook.net`, `facebook.com`.
 - Staging nie jest indeksowany (`robots.txt` i metatag robots), dopóki `NEXT_PUBLIC_ALLOW_INDEXING` nie jest `true`.
 
 ## Znane ryzyka
