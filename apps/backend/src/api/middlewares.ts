@@ -1,7 +1,10 @@
 import { defineMiddlewares, validateAndTransformBody } from "@medusajs/framework/http"
 import {
+  BulkProductsSchema,
   CreateBrandSchema,
+  ImportCsvSchema,
   CreateRoleSchema,
+  UpdateRoleSchema,
   SaveDraftSchema,
   SetUserRolesSchema,
   SetVariantCostSchema,
@@ -38,6 +41,7 @@ export default defineMiddlewares({
 
     { matcher: "/admin/*", middlewares: [enforceAdminMfaEnrollment, authorizeAdminRequest, auditAdminMutations] },
     { matcher: "/admin/patrix/roles", methods: ["POST"], middlewares: [validateAndTransformBody(CreateRoleSchema)] },
+    { matcher: "/admin/patrix/roles/:id", methods: ["POST"], middlewares: [validateAndTransformBody(UpdateRoleSchema)] },
     {
       matcher: "/admin/patrix/users/:id/roles",
       methods: ["POST"],
@@ -54,6 +58,17 @@ export default defineMiddlewares({
       matcher: "/admin/patrix/cms/pages/:key/draft",
       methods: ["POST"],
       middlewares: [validateAndTransformBody(SaveDraftSchema)],
+    },
+    {
+      matcher: "/admin/patrix/import/*",
+      methods: ["POST"],
+      bodyParser: { sizeLimit: "3mb" },
+      middlewares: [validateAndTransformBody(ImportCsvSchema)],
+    },
+    {
+      matcher: "/admin/patrix/products/bulk",
+      methods: ["POST"],
+      middlewares: [validateAndTransformBody(BulkProductsSchema)],
     },
     {
       matcher: "/admin/patrix/variants/:id/cost",

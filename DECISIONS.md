@@ -73,3 +73,12 @@ Zestaw to zwykły produkt, którego wariant ma kilka pozycji magazynowych (albo 
 
 ## D-023 Menu i stopka jako osobna strona CMS (`layout`)
 Ten sam mechanizm wersji, podglądu i publikacji co strona główna, z własnym schematem (`patrix-cms/layout.ts`). Startowa stopka zawiera tylko linki do istniejących stron; dane kontaktowe i opis firmy wpisuje właściciel, a puste pola nie są pokazywane. Obraz w menu wymaga opisu alt. Testy (`NODE_ENV=test`) używają modułów w pamięci i licznika limitów w pamięci, nawet jeśli `.env` ustawia `REDIS_URL`, aby nie dzielić zdarzeń z lokalnie działającym backendem.
+
+## D-024 KPI liczone na bieżąco, kwoty tylko z uprawnieniem do finansów
+Pulpit liczy wskaźniki przy każdym wejściu z zamówień z dwóch okresów (do 5000 zamówień), stanów magazynu i statusów danych produktów; przy dużym ruchu zastąpi to tabela agregatów (Etap 8). Dostęp: `order:read`; kwoty sprzedaży i średnia wartość zamówienia tylko z `finance:read` (np. magazynier widzi liczby, nie widzi kwot). Dni według strefy Europe/Warsaw.
+
+## D-025 Role systemowe w kodzie, role własne w panelu
+Role systemowe (właściciel, kierownik, magazyn, obsługa, marketing, księgowość) są definiowane w kodzie i synchronizowane przy starcie; panel ich nie zmienia. Właściciel tworzy role własne z macierzą obszar × odczyt/zapis/usuwanie; komplet operacji zapisuje się jako `obszar:*`. Roli przypisanej komuś nie można usunąć (409). Zaproszenia pracowników pozostają we wbudowanym ekranie Medusy (Ustawienia → Użytkownicy).
+
+## D-026 Import CSV: tylko dane PATRIX, „wszystko albo nic”, bez potwierdzania etykiety
+Produkty, warianty, EAN i ceny sprzedaży importuje wbudowany import Medusy (Produkty → Importuj); nie dublujemy go. Import PATRIX obejmuje dane z etykiety i producenta (po uchwycie) oraz ceny zakupu netto (po SKU, uprawnienie finansowe). Najpierw sprawdzenie (dry run) z wynikiem dla każdego wiersza; zapis tylko, gdy cały plik jest poprawny. Pusta komórka nie zmienia danych. Każda zmiana danych z etykiety cofa potwierdzenie etykiety (zmiana alergenów także ich potwierdzenie), więc dane wymagają weryfikacji przez człowieka; zmiana marki tego nie robi. Import nie zmienia danych produktów opublikowanych (najpierw wycofanie do szkicu albo edycja na karcie). XLSX: bez dodatkowej biblioteki (ryzyko podatności parserów); Excel zapisuje CSV, a panel rozpoznaje kodowanie UTF-8 i Windows-1250. Zmiany masowe wykonują się produkt po produkcie przez standardowy workflow Medusy, więc strażnik publikacji działa jak przy edycji pojedynczej.

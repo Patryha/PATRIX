@@ -24,6 +24,8 @@ test.describe("strona główna z CMS", () => {
     await expect(page.getByRole("region", { name: "Ostatnio oglądane" })).toHaveCount(0)
     await page.goto("/produkt/test-ciastka-maslane")
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible()
+    // Zapis następuje po hydratacji; bez czekania przejście dalej bywało szybsze niż zapis
+    await page.waitForFunction(() => (localStorage.getItem("patrix_recent") ?? "").includes("test-ciastka-maslane"))
     await page.goto("/produkt/test-zel-do-prania")
     const onProduct = page.getByRole("region", { name: "Ostatnio oglądane" })
     await expect(onProduct.getByRole("link", { name: "[TEST] Ciastka maślane" })).toBeVisible()

@@ -93,6 +93,38 @@ medusaIntegrationTestRunner({
           .catch((e: any) => e.response)
         expect(err.status).toBe(400)
       })
+
+      it("manages custom roles: list staff, edit, refuse system role changes and deleting assigned roles", async () => {
+        await createStaff(getContainer(), "wl4@patrix.test", ["owner"])
+        const worker = await createStaff(getContainer(), "pracownik4@patrix.test", [])
+        await createStaff(getContainer(), "kierownik4@patrix.test", ["store_manager"])
+        const owner = bearer((await login(api, "wl4@patrix.test")).token)
+        const manager = bearer((await login(api, "kierownik4@patrix.test")).token)
+
+        const { data: staff } = await api.get("/admin/patrix/staff", owner)
+        expect(staff.users.find((u: any) => u.email === "wl4@patrix.test").roles).toEqual(["owner"])
+        expect(staff.users.find((u: any) => u.email === "pracownik4@patrix.test").roles).toEqual([])
+        expect(await status(api.get("/admin/patrix/staff", manager))).toBe(403)
+
+        const { data: created } = await api.post("/admin/patrix/roles", { handle: "pakowanie", name: "Pakowanie", permissions: ["panel:read"] }, owner)
+        const id = created.role.id
+        const { data: updated } = await api.post(`/admin/patrix/roles/${id}`, { permissions: ["panel:read", "fulfillment:*"] }, owner)
+        expect(updated.role.permissions).toEqual(["panel:read", "fulfillment:*"])
+        expect(await status(api.post(`/admin/patrix/roles/${id}`, { permissions: ["hack:all"] }, owner))).toBe(400)
+        expect(await status(api.post(`/admin/patrix/roles/${id}`, { handle: "inna" }, owner))).toBe(400)
+
+        const { data: roles } = await api.get("/admin/patrix/roles", owner)
+        const ownerRole = roles.roles.find((r: any) => r.handle === "owner")
+        expect(await status(api.post(`/admin/patrix/roles/${ownerRole.id}`, { name: "Szef" }, owner))).toBe(400)
+        expect(await status(api.delete(`/admin/patrix/roles/${ownerRole.id}`, owner))).toBe(400)
+
+        await api.post(`/admin/patrix/users/${worker.id}/roles`, { roles: ["pakowanie"] }, owner)
+        expect(await status(api.delete(`/admin/patrix/roles/${id}`, owner))).toBe(409)
+        await api.post(`/admin/patrix/users/${worker.id}/roles`, { roles: [] }, owner)
+        expect(await status(api.delete(`/admin/patrix/roles/${id}`, owner))).toBe(200)
+        const audit = await api.get("/admin/patrix/audit-logs?action=staff.role_deleted", owner)
+        expect(audit.data.audit_logs[0].metadata).toEqual({ role: "pakowanie" })
+      })
     })
 
     describe("customers cannot reach the admin API", () => {
