@@ -53,3 +53,11 @@
 - „Import i zmiany masowe”: import CSV danych produktów (producent, skład, ilość, alergeny, marka i in.) po uchwycie oraz cen zakupu po SKU; najpierw sprawdzenie, zapis tylko całego poprawnego pliku; import nie potwierdza etykiety i nie zmienia produktów opublikowanych (D-026). Zmiany masowe: publikacja (ze strażnikiem kompletności), wycofanie do szkicu, marka, kategoria. Pliki z Excela w Windows-1250 są odczytywane poprawnie.
 - Naprawiony niestabilny test E2E „ostatnio oglądane” (czekanie na zapis po hydratacji).
 - Testy: backend unit 66/66, integracyjne 29/29, storefront unit 33/33, E2E 66/66 (test „ostatnio oglądane” 20/20 powtórzeń).
+
+## 2026-10-26: Etap 5 (magazyn: partie, FEFO, inwentaryzacja)
+- Moduł `patrix-warehouse`: partie z numerem i datą ważności, dziennik ruchów (przyjęcie, wydanie, korekta, sprzedaż, inwentaryzacja), inwentaryzacje. Stan towaru zostaje w natywnym module Medusy, więc koszyk i rezerwacje działają bez zmian (D-027).
+- Przyjęcia, wydania i korekty jako jedna operacja: zmiana stanu i wpis w dzienniku razem albo wcale. Wydanie nie zabiera towaru zarezerwowanego dla zamówień.
+- Sprzedaż zdejmuje towar z partii z najkrótszą datą ważności przy wysyłce; anulowanie wysyłki przywraca partie.
+- Inwentaryzacja: arkusz dla lokalizacji, zatwierdzenie księguje różnice. Raport dat ważności (7/30/90 dni).
+- Panel „Magazyn” (stany, ruchy, daty ważności, inwentaryzacja) sprawdzony w przeglądarce kontem magazyniera.
+- Testy: backend unit 70/70, integracyjne 35/35, storefront unit 33/33, E2E 66/66.
