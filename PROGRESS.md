@@ -53,3 +53,27 @@
 - „Import i zmiany masowe”: import CSV danych produktów (producent, skład, ilość, alergeny, marka i in.) po uchwycie oraz cen zakupu po SKU; najpierw sprawdzenie, zapis tylko całego poprawnego pliku; import nie potwierdza etykiety i nie zmienia produktów opublikowanych (D-026). Zmiany masowe: publikacja (ze strażnikiem kompletności), wycofanie do szkicu, marka, kategoria. Pliki z Excela w Windows-1250 są odczytywane poprawnie.
 - Naprawiony niestabilny test E2E „ostatnio oglądane” (czekanie na zapis po hydratacji).
 - Testy: backend unit 66/66, integracyjne 29/29, storefront unit 33/33, E2E 66/66 (test „ostatnio oglądane” 20/20 powtórzeń).
+
+## 2026-10-26: Etap 5 (magazyn: partie, FEFO, inwentaryzacja)
+- Moduł `patrix-warehouse`: partie z numerem i datą ważności, dziennik ruchów (przyjęcie, wydanie, korekta, sprzedaż, inwentaryzacja), inwentaryzacje. Stan towaru zostaje w natywnym module Medusy, więc koszyk i rezerwacje działają bez zmian (D-027).
+- Przyjęcia, wydania i korekty jako jedna operacja: zmiana stanu i wpis w dzienniku razem albo wcale. Wydanie nie zabiera towaru zarezerwowanego dla zamówień.
+- Sprzedaż zdejmuje towar z partii z najkrótszą datą ważności przy wysyłce; anulowanie wysyłki przywraca partie.
+- Inwentaryzacja: arkusz dla lokalizacji, zatwierdzenie księguje różnice. Raport dat ważności (7/30/90 dni).
+- Panel „Magazyn” (stany, ruchy, daty ważności, inwentaryzacja) sprawdzony w przeglądarce kontem magazyniera.
+- Testy: backend unit 70/70, integracyjne 35/35, storefront unit 33/33, E2E 66/66.
+
+## 2026-10-26: Etap 5 (przesunięcia, raporty)
+- Przesunięcia między magazynami (MM): towar i partie przechodzą razem, z numerem partii i datą ważności.
+- Eksport dziennika ruchów do CSV (Excel: średnik, polskie znaki, okres od–do).
+- Wartość magazynu w cenach zakupu netto, tylko dla osób z uprawnieniem do finansów; towar bez ceny zakupu jest wykazany osobno, nie szacujemy go (D-028).
+- Testy: backend unit 72/72, integracyjne 38/38, storefront unit 33/33, E2E 66/66; panel sprawdzony w przeglądarce (magazynier i właściciel).
+
+## 2026-10-26: Etap 5 (zwroty w magazynie)
+- Przyjęty zwrot klienta (w panelu Medusy) zapisuje ruch „zwrot klienta” i oddaje sztuki do partii, z których były sprzedane w tym zamówieniu; uszkodzone sztuki nie wracają na stan (D-029).
+- Formularz zwrotu dla klienta czeka na decyzję właściciela (sposób odesłania i zasady z regulaminu).
+- Testy: backend unit 72/72, integracyjne 39/39, storefront unit 33/33, E2E 66/66.
+
+## 2026-10-26: Etap 5 (gotowość pod POS)
+- Wyszukiwanie po zeskanowanym kodzie (EAN, kod kreskowy, SKU) ze stanem w każdej lokalizacji; czytnik kodów działa w formularzu ruchów na stronie „Magazyn”.
+- Sprzedaż stacjonarna: osobny kanał sprzedaży i lokalizacja w Medusie; kasa fiskalna i terminal czekają na decyzję właściciela (D-030).
+- Testy: backend unit 72/72, integracyjne 40/40, storefront unit 33/33, E2E 66/66.

@@ -1,7 +1,16 @@
 import { COMPLIANCE_COLUMNS, mergeCompliance, parseComplianceRow, parseCostRow, unknownColumns } from "../catalog/import"
-import { normalizeHeader, parseCsv, parseDecimal, parseYesNo } from "../csv"
+import { normalizeHeader, parseCsv, parseDecimal, parseYesNo, toCsv } from "../csv"
 
 describe("CSV", () => {
+  it("zapis dla Excela: BOM, średnik, przecinek dziesiętny, cytowanie, ochrona przed formułami, odczyt z powrotem", () => {
+    const csv = toCsv(["a", "b", "c"], [["=SUMA(A1)", -2.5, 'x;"y"'], [null, 3, "-1"]])
+    expect(csv.startsWith("\uFEFFa;b;c\r\n")).toBe(true)
+    expect(csv).toContain(`'=SUMA(A1);-2,5;"x;""y"""\r\n`)
+    expect(csv).toContain(";3;'-1\r\n")
+    const back = parseCsv(csv)
+    expect(back.rows[0]).toEqual({ a: "'=SUMA(A1)", b: "-2,5", c: 'x;"y"' })
+  })
+
   it("polski Excel: średnik, BOM, cudzysłowy, nowa linia w polu, CRLF", () => {
     const csv = '﻿Uchwyt;Skład;Ilość netto\r\ntest-a;"woda; ""aqua""\nperfum";1,5\r\n;;\r\ntest-b;;2\r\n'
     const { headers, rows } = parseCsv(csv)

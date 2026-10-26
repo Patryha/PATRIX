@@ -8,7 +8,7 @@ Statusy: TODO · IN PROGRESS · BLOCKED · TESTING · DONE
 | E0-1 | Audyt narzędzi i repozytoriów | DONE | Node 22, npm, PostgreSQL 16, Redis; brak daemona Dockera; brak repo PATRIX na GitHubie |
 | E0-2 | Ocena silników commerce i wybór architektury | DONE | Medusa 2.22 + Next.js 16 (DECISIONS D-001, D-002) |
 | E0-3 | Plan i dokumenty projektu | DONE | MASTER_PLAN.md i pozostałe dokumenty |
-| E0-4 | Repozytorium GitHub | BLOCKED | Czeka na utworzenie pustego repo przez właściciela (np. `Patryha/patrix-shop`); kod w lokalnym git + kopia `patrix.bundle` w plikach projektu |
+| E0-4 | Repozytorium GitHub | DONE | `Patryha/PATRIX`; każdy etap na osobnej gałęzi z PR, kopia `patrix.bundle` w plikach projektu |
 
 ## Etap 1: Fundament techniczny
 | ID | Zadanie | Status | Wynik / weryfikacja |
@@ -49,7 +49,7 @@ Statusy: TODO · IN PROGRESS · BLOCKED · TESTING · DONE
 | E3-6 | Konto klienta | DONE | Rejestracja (silne hasło, regulamin), logowanie, przeniesienie koszyka gościa na konto, historia zamówień, wylogowanie czyści koszyk; token tylko w ciasteczku httpOnly |
 | E3-7 | Reset hasła, e-maile transakcyjne | TODO | Wymaga dostawcy e-mail i zgody właściciela na wysyłkę (Etap 6) |
 | E3-8 | Paczkomaty/punkty odbioru, progi darmowej dostawy | BLOCKED | Integracje przewoźników (Etap 6) i stawki od właściciela (OWN-3); w testach „[TEST] Kurier testowy” |
-| E3-9 | Zwroty | TODO | Etap 5 (zamówienia i magazyn w panelu) |
+| E3-9 | Zwroty | IN PROGRESS | Magazyn gotowy: przyjęty zwrot (natywny w panelu Medusy) wraca do partii, z których była sprzedaż, uszkodzone sztuki nie wracają (D-029). Formularz dla klienta czeka na decyzję właściciela (sposób odesłania, zasady z regulaminu OWN-6) |
 | E3-10 | Regulamin i polityka prywatności | BLOCKED | Strony istnieją z informacją „w przygotowaniu”; treść od właściciela/prawnika (OWN-6) |
 
 ## Etap 4: Panel treści (CMS) i administracja
@@ -65,6 +65,20 @@ Statusy: TODO · IN PROGRESS · BLOCKED · TESTING · DONE
 | E4-8 | Mega menu z grafikami, rozbudowana stopka z CMS | DONE | Panel „Menu i stopka” (strona CMS `layout`): grafiki kategorii z opisem alt, kolumny linków, kontakt tylko od właściciela; podgląd i wersje jak strona główna |
 | E4-9 | Dashboard KPI, import produktów CSV/XLSX, zmiany masowe, zarządzanie rolami w panelu | DONE | „Pulpit sprzedaży” (KPI, kwoty tylko z finance:read), „Pracownicy i role” (role własne), „Import i zmiany masowe” (CSV: dane produktów i ceny zakupu; publikacja, marka, kategoria). XLSX: zapis jako CSV z Excela (D-026) |
 
+## Etap 5: Magazyn
+| ID | Zadanie | Status | Rozwiązanie / weryfikacja |
+|---|---|---|---|
+| E5-1 | Partie z numerem i datą ważności, dziennik ruchów | DONE | Moduł `patrix-warehouse` (partie, ruchy, inwentaryzacje); stan nadal w natywnym module Inventory Medusy (D-027) |
+| E5-2 | Przyjęcia, wydania, korekty | DONE | Workflow `patrix-record-stock-movement`: zmiana stanu i wpis w dzienniku razem albo wcale (cofnięcie przy błędzie); wydanie nie może zejść poniżej rezerwacji; korekta wymaga powodu; test integracyjny z wymuszonym błędem |
+| E5-3 | Sprzedaż według FEFO | DONE | Subskrybent wysyłki zdejmuje towar z partii z najkrótszą datą ważności (idempotentnie), anulowanie wysyłki przywraca partie; test integracyjny |
+| E5-4 | Inwentaryzacja | DONE | Arkusz dla lokalizacji, zapis ilości, zatwierdzenie księguje różnice względem stanu w chwili zatwierdzenia, nieprzeliczone pozycje bez zmian; anulowanie |
+| E5-5 | Raport dat ważności | DONE | Partie z terminem w ciągu 7/30/90 dni i po terminie |
+| E5-6 | Panel „Magazyn” | DONE | Zakładki: stany z partiami, ruchy (formularz i dziennik), daty ważności, inwentaryzacja; sprawdzony w przeglądarce kontem magazyniera |
+| E5-7 | Wiele magazynów i lokalizacji | DONE | Natywne lokalizacje Medusy; stany, ruchy i inwentaryzacje osobno dla każdej lokalizacji |
+| E5-8 | Przesunięcia między magazynami (MM) | DONE | Workflow `patrix-transfer-stock`: rozchód w źródle, przyjęcie w celu, partie przechodzą z numerem i datą ważności; wszystko albo nic; test integracyjny; w panelu jako rodzaj ruchu |
+| E5-9 | Raporty: wartość magazynu (z uprawnieniem do finansów), eksport ruchów do CSV | DONE | Wartość w cenach zakupu netto, pozycje bez ceny wykazane osobno (D-028), 403 dla magazyniera; eksport CSV dla Excela z filtrem okresu i ochroną przed formułami; zakładka „Wartość” i przycisk „Pobierz CSV” |
+| E5-10 | Gotowość pod POS | DONE (API) | `GET /admin/patrix/warehouse/lookup?code=` (EAN, kod kreskowy, SKU → towar i stan w lokalizacjach), czytnik kodów w formularzu „Magazyn”; sprzedaż w sklepie stacjonarnym jako osobny kanał sprzedaży i lokalizacja Medusy. Kasa fiskalna i terminal płatniczy: decyzja i sprzęt właściciela (D-030) |
+
 ## Zadania wymagające właściciela
 | ID | Czego potrzeba | Status |
 |---|---|---|
@@ -74,3 +88,5 @@ Statusy: TODO · IN PROGRESS · BLOCKED · TESTING · DONE
 | OWN-4 | Konta i klucze sandbox operatorów płatności i przewoźników | BLOCKED (Etap 6) |
 | OWN-5 | Domena i hosting/staging | BLOCKED (Etap 10) |
 | OWN-6 | Treść regulaminu i polityki prywatności (zatwierdzona prawnie) | BLOCKED (przed startem sprzedaży) |
+| OWN-7 | Sklep stacjonarny: czy będzie, kasa fiskalna (online) i terminal płatniczy | Do decyzji (D-030) |
+| OWN-8 | Zwroty: sposób odesłania i zasady (koszty, wyjątki) do formularza w koncie klienta | Do decyzji (karta w wątku) |

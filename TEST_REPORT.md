@@ -1,12 +1,12 @@
 # Raport testów
 
-Ostatnie uruchomienie: 2026-10-26 (Etap 4: ulubione, zestawy, menu i stopka), lokalnie (PostgreSQL 16, Redis 7, Chromium 1243).
+Ostatnie uruchomienie: 2026-10-26 (Etap 5: magazyn), lokalnie (PostgreSQL 16, Redis 7, Chromium 1243).
 
 | Zestaw | Polecenie | Wynik |
 |---|---|---|
 | Backend: typy | `npm run typecheck` | OK |
-| Backend: jednostkowe | `npm run test:unit` | 66/66 OK |
-| Backend: integracyjne HTTP | `npm run test:integration:http` | 29/29 OK |
+| Backend: jednostkowe | `npm run test:unit` | 72/72 OK |
+| Backend: integracyjne HTTP | `npm run test:integration:http` | 40/40 OK |
 | Backend: build (API + panel) | `npx medusa build` | OK |
 | Storefront: lint | `npm run lint` | OK |
 | Storefront: typy | `npm run typecheck` | OK |
@@ -38,3 +38,7 @@ Ostatnie uruchomienie: 2026-10-26 (Etap 4: ulubione, zestawy, menu i stopka), lo
 - **E2E (Etap 3):** koszyk (dodanie, licznik w nagłówku, błędny i poprawny kod rabatowy, usunięcie kodu i produktu), zamówienie jako gość z fakturą na firmę (walidacja pól i NIP, dostawa, pobranie, kwota 31,97 zł, potwierdzenie z danymi faktury, pusty koszyk po zamówieniu), przekierowanie pustego koszyka, potwierdzenie bez ciasteczka nic nie ujawnia; konto (rejestracja z walidacją hasła, przeniesienie koszyka, zakup jako klient, zamówienie w historii, wylogowanie, błędne i poprawne logowanie, ochrona przed przekierowaniem poza sklep); axe WCAG 2.2 AA w koszyku, checkoutcie i rejestracji.
 - **Unit (Etap 3):** NIP (suma kontrolna), kod pocztowy, schemat adresu i faktury, rejestracja (siła hasła, regulamin), `safeRedirect`.
 - Test historii cen (subskrybent asynchroniczny) bywał zbyt wolny przy pełnym zestawie; czas oczekiwania wydłużony do 15 s. Właściwa przyczyna: testy wczytują `.env` z `REDIS_URL`, więc działający lokalnie backend przejmował zdarzenia. Od D-023 testy (`NODE_ENV=test`) zawsze używają modułów w pamięci.
+- **Magazyn (Etap 5):** przyjęcie tworzy partię, wydanie według FEFO (najkrótsza data ważności najpierw, partie bez daty na końcu), wybór partii, za mało dostępnego towaru (z rezerwacjami) → błąd bez zmian w stanie i dzienniku, cofnięcie stanu przy błędzie zapisu w dzienniku, korekta z partią, wysyłka zamówienia zdejmuje partie FEFO i jest idempotentna, anulowanie wysyłki przywraca partie, inwentaryzacja (zapis, zatwierdzenie z różnicą, pozycje nieprzeliczone bez zmian, ponowne zatwierdzenie odrzucone), raport dat ważności. Jednostkowo: kolejność FEFO, przydział z partii z częścią poza partiami, stan daty ważności, znak ilości. Panel „Magazyn” sprawdzony w przeglądarce kontem magazyniera (przyjęcie, wydanie z wyborem partii, blokada korekty bez powodu, stany, raport dat, arkusz inwentaryzacji).
+- **Magazyn: przesunięcia i raporty:** przesunięcie MM rozdziela partie według FEFO i odtwarza je w celu z tą samą datą ważności; za duża ilość, ta sama lokalizacja i zła partia nic nie zmieniają; eksport CSV (nagłówki, wiersze, apostrof przed formułą, filtr okresu, błędna data → 400); wartość magazynu (cena zakupu × ilość, pozycja bez ceny osobno, 403 bez uprawnienia do finansów). Jednostkowo: zapis CSV dla Excela z odczytem z powrotem, cena zakupu sztuki (zestawy pominięte, sprzeczne ceny bez zgadywania).
+- **Zwroty w magazynie:** zamówienie wysłane z dwóch partii, zwrot 3 szt. (1 uszkodzona): przed przyjęciem bez zmian, po przyjęciu 2 szt. wracają do partii z najkrótszą datą ważności, ponowne przetworzenie nic nie dopisuje.
+- **Kod kreskowy:** wyszukanie po EAN i po SKU zwraca towar ze stanem w lokalizacji, nieznany kod → pusta lista, pusty kod → 400, marketing → 403. Panel: zeskanowany EAN (Enter z czytnika) wybiera towar, nieznany kod pokazuje komunikat.

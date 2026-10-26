@@ -21,7 +21,7 @@
 | Katalog PATRIX | moduł `patrix-catalog`: marki, dane prawne produktu, ceny zakupu, historia cen; hooki blokujące publikację | Etap 2 |
 | Admin | Medusa Admin `/app` + rozszerzenia (`src/admin`), API `src/api/admin/patrix` | Etap 1 (API ról, audyt) |
 | Bezpieczeństwo | moduł `patrix-security`: role, audyt; natywne MFA; rate limit | Etap 1 |
-| Magazyn | moduły Inventory/Stock Location Medusy + moduł `patrix-inventory` (partie, FEFO) | Etap 5 |
+| Magazyn | moduły Inventory/Stock Location Medusy + moduł `patrix-warehouse` (partie, FEFO, dziennik ruchów, inwentaryzacje) | Etap 5 |
 | Płatności / Dostawy | providery Medusy budowane na adapterach Integration Center | Etap 6 |
 | Integracje | moduł `patrix-integrations` (manifest, sejf, webhooki, kolejka, logi) | Etap 6 |
 | Wyszukiwanie | Medusa `q` → Meilisearch | Etap 7 |
@@ -39,6 +39,7 @@
 - `src/lib/catalog/price-snapshot.ts`, `src/jobs/snapshot-prices.ts`, `src/subscribers/product-price-history.ts`: historia cen (Omnibus).
 - API: `/admin/patrix/brands`, `/admin/patrix/products/:id/compliance|price-history|costs`, `/admin/patrix/variants/:id/cost` (finance); `/store/patrix/brands`, `/store/patrix/products/:id/details`.
 - CMS: `src/modules/patrix-cms` (wersje, schematy sekcji `sections.ts`, startowa strona `default-home.ts`), API `/admin/patrix/cms/pages/:key` (szkic, publikacja, podgląd, przywracanie), `/store/patrix/cms/pages/:key`, `/store/patrix/cms/preview`, `/store/patrix/bestsellers`; panel `src/admin/routes/homepage` i `src/admin/routes/menu-footer` (wspólny kod `src/admin/lib/cms-page.tsx`); strona `layout` (menu i stopka) ma schemat `layout.ts`. Zestawy: `src/lib/catalog/bundles.ts`, `/store/patrix/bundles`. KPI: `src/lib/kpi.ts`, `/admin/patrix/kpi`, panel `src/admin/routes/kpi`. Role: `/admin/patrix/staff`, `/admin/patrix/roles/:id`, panel `src/admin/routes/staff`. Import i zmiany masowe: `src/lib/csv.ts`, `src/lib/catalog/import.ts`, `/admin/patrix/import/{compliance,costs}`, `/admin/patrix/products/bulk`, panel `src/admin/routes/bulk`.
+- Magazyn: moduł `src/modules/patrix-warehouse`, logika `src/lib/warehouse.ts` (FEFO), workflow `src/workflows/record-stock-movement.ts`, sprzedaż z partii `src/lib/warehouse-sales.ts` + subskrybent `src/subscribers/warehouse-sales.ts` (`order.fulfillment_created`/`_canceled`), zwroty `src/lib/warehouse-returns.ts` + `src/subscribers/warehouse-returns.ts` (`order.return_received`), API `/admin/patrix/warehouse/{stock,movements,movements/export,transfers,batches,counts,value,lookup}` (przesunięcia: `src/workflows/transfer-stock.ts`; `value` wymaga `finance`), panel `src/admin/routes/warehouse`.
 - Panel: `src/admin/widgets/product-compliance.tsx`, `product-costs.tsx`, `src/admin/routes/brands`.
 - `src/scripts/seed-test-catalog.ts`: katalog [TEST] dla E2E (zablokowany na produkcji).
 

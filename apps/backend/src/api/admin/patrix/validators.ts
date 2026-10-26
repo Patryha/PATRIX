@@ -94,6 +94,44 @@ export const BulkProductsSchema = z
   })
 export type BulkProductsBody = z.infer<typeof BulkProductsSchema>
 
+export const StockMovementSchema = z
+  .object({
+    type: z.enum(["receipt", "issue", "adjustment"]),
+    inventory_item_id: z.string().min(1),
+    location_id: z.string().min(1),
+    quantity: z.number().int().min(-1_000_000).max(1_000_000).refine((q) => q !== 0, "Ilość nie może być zerem."),
+    lot_number: optionalText(80),
+    expiry_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Data ważności: RRRR-MM-DD").nullish(),
+    batch_id: z.string().nullish(),
+    reason: optionalText(300),
+    document_ref: optionalText(120),
+  })
+  .strict()
+  .refine((b) => b.type !== "adjustment" || !!b.reason, { message: "Podaj powód korekty.", path: ["reason"] })
+export type StockMovementBody = z.infer<typeof StockMovementSchema>
+
+export const CreateStockCountSchema = z.object({ location_id: z.string().min(1), note: optionalText(300) }).strict()
+export type CreateStockCountBody = z.infer<typeof CreateStockCountSchema>
+
+export const SaveCountLinesSchema = z
+  .object({ lines: z.array(z.object({ id: z.string().min(1), counted: z.number().int().min(0).max(1_000_000).nullable() }).strict()).min(1).max(5000) })
+  .strict()
+export type SaveCountLinesBody = z.infer<typeof SaveCountLinesSchema>
+
+export const StockTransferSchema = z
+  .object({
+    inventory_item_id: z.string().min(1),
+    from_location_id: z.string().min(1),
+    to_location_id: z.string().min(1),
+    quantity: z.number().int().min(1).max(1_000_000),
+    batch_id: z.string().nullish(),
+    reason: optionalText(300),
+    document_ref: optionalText(120),
+  })
+  .strict()
+  .refine((t) => t.from_location_id !== t.to_location_id, { message: "Lokalizacja docelowa musi być inna niż źródłowa.", path: ["to_location_id"] })
+export type StockTransferBody = z.infer<typeof StockTransferSchema>
+
 export const SetVariantCostSchema = z.object({
   purchase_price: z.number().min(0).max(1_000_000),
   supplier: optionalText(200),
