@@ -92,7 +92,7 @@ Statusy: TODO · IN PROGRESS · BLOCKED · TESTING · DONE
 | ID | Zadanie | Status | Rozwiązanie / weryfikacja |
 |---|---|---|---|
 | E7-1 | Wyszukiwarka: literówki, PL/DE, synonimy, EAN/SKU, podpowiedzi, trafność | DONE | `src/lib/search.ts` (silnik), `src/lib/search-index.ts` (indeks z katalogu), moduł `patrix-search` (synonimy, statystyki fraz); `/store/patrix/search`, `/store/patrix/search/suggest`; panel „Wyszukiwarka” (synonimy, frazy bez wyników, test); sklep: sortowanie „Trafność”, „Czy chodziło Ci o…”, podpowiedzi w nagłówku (combobox z klawiaturą); D-032; testy jednostkowe, integracyjne i E2E |
-| E7-2 | Rekomendacje produktów | TODO | |
+| E7-2 | Rekomendacje produktów | DONE | `src/lib/recommendations.ts` (kupowane razem, podobne), `src/lib/recommendations-data.ts`, `GET /store/patrix/recommendations`; sekcje „Często kupowane razem” i „Podobne produkty” na karcie produktu oraz „Klienci kupowali też” w koszyku (D-033); testy jednostkowe, integracyjne i E2E |
 | E7-3 | Wsparcie AI dla pracowników (propozycje opisów, tłumaczeń z etykiet) z akceptacją człowieka | TODO | Wymaga wyboru dostawcy modelu i zgody właściciela na płatną usługę |
 | E7-4 | Chatbot na zweryfikowanej wiedzy | TODO | Jak E7-3 |
 

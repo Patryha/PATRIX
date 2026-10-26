@@ -3,6 +3,7 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 import { Suspense } from "react"
 import { RecentlyViewed, TrackRecent } from "@/components/cms/recently-viewed"
+import { ProductRecommendations } from "@/components/product/recommendations"
 import { BundleContents } from "@/components/product/bundle-contents"
 import { FavoriteButton } from "@/components/product/favorite-button"
 import { ProductFacts } from "@/components/product/product-facts"
@@ -101,7 +102,10 @@ async function ProductContent({ params }: Props) {
         </div>
       </div>
       <TrackRecent handle={product.handle} />
-      <div className="pt-8">
+      <div className="flex flex-col gap-10 pt-8">
+        <Suspense fallback={null}>
+          <ProductRecommendations productId={product.id} />
+        </Suspense>
         <RecentlyViewed title="Ostatnio oglądane" id="ostatnio-ogladane" exclude={product.handle} />
       </div>
     </>

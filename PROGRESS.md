@@ -90,3 +90,8 @@
 - Sklep: wyniki według trafności (nowe sortowanie „Trafność”), „Czy chodziło Ci o…”, wyniki częściowe, gdy nic nie pasuje do całej frazy; podpowiedzi w polu wyszukiwania (kategorie, marki, produkty) obsługiwane z klawiatury.
 - Panel „Wyszukiwarka”: grupy synonimów, frazy klientów (z filtrem „bez wyników” i przyciskiem „Dodaj synonim”), test wyszukiwania z punktacją. Sprawdzony w przeglądarce.
 - Testy: backend unit 83/83, integracyjne 46/46, storefront unit 34/34, build OK, E2E 70/70.
+
+## 2026-10-26: Etap 7 (rekomendacje)
+- Karta produktu: „Często kupowane razem” (z zamówień, para z co najmniej 2 różnych zamówień) i „Podobne produkty” (ta sama kategoria, kolejność według marki, typu i tagów). Koszyk: „Klienci kupowali też”.
+- Bez danych osobowych i historii przeglądania (D-033); sekcja bez danych się nie pokazuje.
+- Testy: backend unit 86/86, integracyjne 47/47, storefront unit 34/34, build OK, E2E 72/72.

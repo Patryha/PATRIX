@@ -59,6 +59,11 @@ export default defineMiddlewares({
       methods: ["GET"],
       middlewares: [rateLimit({ name: "store-search", limit: 300, windowSeconds: 60 })],
     },
+    {
+      matcher: "/store/patrix/recommendations",
+      methods: ["GET"],
+      middlewares: [rateLimit({ name: "store-recommendations", limit: 300, windowSeconds: 60 })],
+    },
 
     { matcher: "/admin/*", middlewares: [enforceAdminMfaEnrollment, authorizeAdminRequest, auditAdminMutations] },
     { matcher: "/admin/patrix/roles", methods: ["POST"], middlewares: [validateAndTransformBody(CreateRoleSchema)] },

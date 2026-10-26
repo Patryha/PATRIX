@@ -1,18 +1,18 @@
 # Raport testów
 
-Ostatnie uruchomienie: 2026-10-26 (Etap 7: wyszukiwarka), lokalnie (PostgreSQL 16, Redis 7, Chromium 1243).
+Ostatnie uruchomienie: 2026-10-26 (Etap 7: wyszukiwarka i rekomendacje), lokalnie (PostgreSQL 16, Redis 7, Chromium 1243).
 
 | Zestaw | Polecenie | Wynik |
 |---|---|---|
 | Backend: typy | `npm run typecheck` | OK |
-| Backend: jednostkowe | `npm run test:unit` | 83/83 OK |
-| Backend: integracyjne HTTP | `npm run test:integration:http` | 46/46 OK |
+| Backend: jednostkowe | `npm run test:unit` | 86/86 OK |
+| Backend: integracyjne HTTP | `npm run test:integration:http` | 47/47 OK |
 | Backend: build (API + panel) | `npx medusa build` | OK |
 | Storefront: lint | `npm run lint` | OK |
 | Storefront: typy | `npm run typecheck` | OK |
 | Storefront: jednostkowe/komponenty | `npm test` | 34/34 OK |
 | Storefront: build produkcyjny | `npm run build` | OK |
-| Storefront: E2E (desktop + Pixel 7) | `npm run test:e2e` | 70/70 OK (backend w trybie produkcyjnym, katalog [TEST]) |
+| Storefront: E2E (desktop + Pixel 7) | `npm run test:e2e` | 72/72 OK (backend w trybie produkcyjnym, katalog [TEST]) |
 | Skan zależności | `npm audit --omit=dev` | storefront: 0; backend: 0 critical, podatności high w zależnościach Medusy (patrz SECURITY.md) |
 
 ## Co jest sprawdzane
@@ -44,3 +44,4 @@ Ostatnie uruchomienie: 2026-10-26 (Etap 7: wyszukiwarka), lokalnie (PostgreSQL 1
 - **Kod kreskowy:** wyszukanie po EAN i po SKU zwraca towar ze stanem w lokalizacji, nieznany kod → pusta lista, pusty kod → 400, marketing → 403. Panel: zeskanowany EAN (Enter z czytnika) wybiera towar, nieznany kod pokazuje komunikat.
 - **Integracje (Etap 6):** manifest bez adapterów nie daje się włączyć (404), 403 bez uprawnienia `integration`; dane dostępowe zaszyfrowane w bazie, w odpowiedziach i audycie tylko podpowiedzi; puste pole nie nadpisuje sekretu; włączenie bez kompletu pól i tryb produkcyjny bez zgody → 400; webhook: wyłączona integracja 404, zły podpis 401 (w dzienniku), poprawny raz (duplikat ignorowany), błąd obsługi → ponowienie po terminie, po 8 próbach „wymaga reakcji” i ręczne ponowienie. Jednostkowo: harmonogram ponowień, maskowanie sekretów. Panel „Integracje” sprawdzony w przeglądarce.
 - **Wyszukiwarka (Etap 7):** integracyjnie: brak polskich znaków i literówki, słowo złożone z nazwy oryginalnej, EAN i SKU, brak szkiców i produktów z innego kanału sprzedaży, 400 dla pustej i za długiej frazy, statystyki fraz (także bez wyników), synonimy z panelu działają od razu i po usunięciu przestają, 403 na zmianę synonimów bez `product:write`, podpowiedzi bez zapisu do statystyk. Jednostkowo: normalizacja znaków, odległość edycyjna, początek słowa, synonimy wielowyrazowe, wyniki częściowe i poprawka frazy, remis rozstrzygany krótszą nazwą, sortowanie „Trafność” tylko w wyszukiwarce. E2E: wyniki bez polskich znaków, kolejność trafności, „Czy chodziło Ci o…”, podpowiedzi z klawiatury (strzałki, Escape, Enter). Panel „Wyszukiwarka” sprawdzony w przeglądarce.
+- **Rekomendacje (Etap 7):** integracyjnie: „kupowane razem” tylko z par z 2+ ważnych zamówień (anulowane się nie liczą), bez szkiców i produktów z innego kanału, suma dla koszyka bez produktów z koszyka, „podobne” z tej samej kategorii, 400 dla pustych i niepoprawnych identyfikatorów. Jednostkowo: próg wsparcia, sumowanie dla koszyka, filtr kategorii i kolejność. E2E: „Podobne produkty” na karcie kremu (bez produktu tej samej marki z innej kategorii), brak pustych sekcji.

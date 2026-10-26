@@ -20,6 +20,7 @@
 
 ## Wyszukiwarka (Etap 7)
 - Publiczne `/store/patrix/search*`: limit 300 żądań/min z IP, fraza 1–100 znaków, tylko produkty opublikowane z kanałów sprzedaży klucza publicznego.
+- Rekomendacje: limit 300 żądań/min z IP, identyfikatory walidowane (`prod_…`, maks. 50); para „kupowane razem” dopiero z 2 różnych zamówień (D-033).
 - Statystyki fraz bez danych klienta (bez IP, identyfikatora, sesji); zmiana synonimów wymaga uprawnienia `product:write`.
 
 ## Znane ryzyka

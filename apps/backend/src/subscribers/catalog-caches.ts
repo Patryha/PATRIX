@@ -1,9 +1,11 @@
 import type { SubscriberArgs, SubscriberConfig } from "@medusajs/framework"
+import { invalidateRecommendations } from "../lib/recommendations-data"
 import { invalidateSearchIndex } from "../lib/search-index"
 
-/** Zmiana produktu, wariantu lub kategorii unieważnia indeks wyszukiwarki (zbuduje się przy następnym zapytaniu). */
-export default async function searchIndexInvalidation(_: SubscriberArgs<unknown>) {
+/** Zmiana produktu, wariantu lub kategorii unieważnia indeks wyszukiwarki i dane rekomendacji (zbudują się przy następnym zapytaniu). */
+export default async function catalogCachesInvalidation(_: SubscriberArgs<unknown>) {
   invalidateSearchIndex()
+  invalidateRecommendations()
 }
 
 export const config: SubscriberConfig = {
