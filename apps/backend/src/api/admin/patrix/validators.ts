@@ -1,4 +1,5 @@
 import { z } from "@medusajs/framework/zod"
+import { BLOG_BODY_MAX, blogBodyIssues } from "../../../modules/patrix-cms/blog"
 
 export const CreateRoleSchema = z.object({
   handle: z.string().regex(/^[a-z][a-z0-9_]{2,40}$/, "Uchwyt: małe litery, cyfry i _"),
@@ -173,3 +174,32 @@ export const SaveRedirectSchema = z
   })
   .strict()
 export type SaveRedirectBody = z.infer<typeof SaveRedirectSchema>
+
+/** Obraz okładki: ścieżka sklepu (/...) albo adres https:// (magazyn plików). */
+const imageHref = z
+  .string()
+  .trim()
+  .max(500)
+  .refine((v) => /^\/(?![/\\])\S*$/.test(v) || /^https:\/\/\S+$/.test(v), "Obraz: ścieżka sklepu (/...) lub adres https://")
+
+export const SaveBlogPostSchema = z
+  .object({
+    title: z.string().trim().min(3).max(150),
+    slug: handle.max(80),
+    excerpt: z.string().trim().min(10).max(300),
+    body: z
+      .string()
+      .trim()
+      .min(1)
+      .max(BLOG_BODY_MAX)
+      .superRefine((body, ctx) => blogBodyIssues(body).forEach((message) => ctx.addIssue({ code: "custom", message }))),
+    cover_url: imageHref.nullish(),
+    cover_alt: optionalText(200),
+    product_handles: z.array(handle).max(8).default([]),
+    seo_title: optionalText(70),
+    seo_description: optionalText(170),
+    status: z.enum(["draft", "published"]).default("draft"),
+  })
+  .strict()
+  .refine((p) => !p.cover_url || !!p.cover_alt?.trim(), { message: "Okładka wymaga opisu alternatywnego.", path: ["cover_alt"] })
+export type SaveBlogPostBody = z.infer<typeof SaveBlogPostSchema>

@@ -109,3 +109,10 @@
 - `/feed/google.xml`: jedna pozycja na wariant, ceny i promocje z cennika sklepu, dostępność, marka, GTIN tylko z poprawnych kodów (D-036). Link z feedu otwiera kartę z wybranym wariantem (`?wariant=`).
 - Do uruchomienia potrzebne konto Merchant Center właściciela i włączone indeksowanie na produkcji (OWN-10).
 - Testy: storefront unit 46/46, lint OK, typy OK, build OK, E2E 80/80 (backend bez zmian).
+
+## 2026-10-26: Etap 8 (blog)
+- Panel „Blog”: szkic, publikacja, wycofanie, usunięcie; adres z tytułu, stały po pierwszej publikacji; okładka z opisem alternatywnym; produkty pod wpisem; pola SEO. Treść w prostym formacie (nagłówki, listy, pogrubienie, linki), bez HTML z bazy (D-037).
+- Sklep: `/blog` ze stronicowaniem i `/blog/[slug]` (czas czytania, JSON-LD BlogPosting, ścieżka nawigacji, produkty z wpisu); wpisy w mapie strony, pusty blog z `noindex`.
+- Pełny zestaw testów integracyjnych przekroczył domyślną pamięć Node (11 instancji Medusy w jednym procesie); skrypt testów dostał `--max-old-space-size=4096`.
+- Testy: backend unit 91/91, integracyjne 49/49, storefront unit 51/51, lint OK, build OK, E2E 84/84; panel sprawdzony w przeglądarce.
+- Etap 8 zakończony poza newsletterem (E8-7, czeka na dostawcę e-mail i zgodę).

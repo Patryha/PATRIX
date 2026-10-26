@@ -104,7 +104,7 @@ Statusy: TODO · IN PROGRESS · BLOCKED · TESTING · DONE
 | E8-3 | Metadane i dane strukturalne | DONE (Etap 2) | Kanoniczne adresy, Open Graph, JSON-LD produktu i ścieżki nawigacji |
 | E8-4 | Zgody na cookies (CMP), GA4/Meta za zgodą | DONE (gotowe do włączenia) | `lib/consent.ts`, `components/consent/*`; baner tylko przy skonfigurowanych narzędziach, skrypty dopiero po zgodzie, „Ustawienia cookies” w stopce (D-035); testy komponentów i jednorazowy test w przeglądarce z identyfikatorami testowymi (axe, brak skryptów po odrzuceniu). Włączenie: identyfikatory GA4/Meta od właściciela (OWN-9) |
 | E8-5 | Feed Google Merchant Center | DONE (gotowe do podpięcia) | `/feed/google.xml` (`lib/seo/merchant-feed.ts`, `lib/data/merchant-feed.ts`), wariant w linku `?wariant=` (D-036); testy jednostkowe i E2E. Podpięcie: konto Merchant Center właściciela (OWN-10) |
-| E8-6 | Blog | TODO | |
+| E8-6 | Blog | DONE | Model `blog_post` w `patrix-cms`, `/admin/patrix/blog`, `/store/patrix/blog`, panel „Blog”, sklep `/blog` i `/blog/[slug]` (JSON-LD BlogPosting, produkty pod wpisem, mapa strony), format treści bez HTML (D-037); testy jednostkowe, integracyjne, E2E z axe, panel sprawdzony w przeglądarce. Treści wpisów: właściciel/zespół |
 | E8-7 | Newsletter z podwójnym potwierdzeniem | BLOCKED | = E4-5 (dostawca e-mail i zgoda na wysyłkę) |
 
 ## Zadania wymagające właściciela

@@ -1,5 +1,6 @@
 import { createHash, randomBytes } from "node:crypto"
 import { MedusaError, MedusaService } from "@medusajs/framework/utils"
+import BlogPost from "./models/blog-post"
 import PageVersion from "./models/page-version"
 import { LayoutContentSchema } from "./layout"
 import { PageContentSchema, type PageContent, type PageKey } from "./sections"
@@ -11,7 +12,7 @@ export const PREVIEW_TTL_MINUTES = 60
 
 export const hashToken = (token: string) => createHash("sha256").update(token).digest("hex")
 
-class PatrixCmsService extends MedusaService({ PageVersion }) {
+class PatrixCmsService extends MedusaService({ PageVersion, BlogPost }) {
   async getVersion(pageKey: PageKey, status: "draft" | "published") {
     const [row] = await this.listPageVersions({ page_key: pageKey, status }, { take: 1 })
     return row ?? null

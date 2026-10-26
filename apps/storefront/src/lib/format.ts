@@ -34,3 +34,10 @@ export function unitPrice(amount: number, measure: UnitMeasure | null | undefine
   const perBase = (amount / measure.quantity) * factor
   return { value: perBase, label: `${formatPrice(perBase, currencyCode)} / ${base}` }
 }
+
+const dateFormatter = new Intl.DateTimeFormat("pl-PL", { day: "numeric", month: "long", year: "numeric", timeZone: "Europe/Warsaw" })
+
+/** Data po polsku, np. „26 października 2026”. */
+export function formatDate(value: string | Date): string {
+  return dateFormatter.format(new Date(value))
+}
