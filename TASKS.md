@@ -79,6 +79,15 @@ Statusy: TODO · IN PROGRESS · BLOCKED · TESTING · DONE
 | E5-9 | Raporty: wartość magazynu (z uprawnieniem do finansów), eksport ruchów do CSV | DONE | Wartość w cenach zakupu netto, pozycje bez ceny wykazane osobno (D-028), 403 dla magazyniera; eksport CSV dla Excela z filtrem okresu i ochroną przed formułami; zakładka „Wartość” i przycisk „Pobierz CSV” |
 | E5-10 | Gotowość pod POS | DONE (API) | `GET /admin/patrix/warehouse/lookup?code=` (EAN, kod kreskowy, SKU → towar i stan w lokalizacjach), czytnik kodów w formularzu „Magazyn”; sprzedaż w sklepie stacjonarnym jako osobny kanał sprzedaży i lokalizacja Medusy. Kasa fiskalna i terminal płatniczy: decyzja i sprzęt właściciela (D-030) |
 
+## Etap 6: Centrum integracji
+| ID | Zadanie | Status | Rozwiązanie / weryfikacja |
+|---|---|---|---|
+| E6-1 | Fundament: manifest, sejf danych dostępowych, webhooki z podpisem, idempotencja, ponowienia, dziennik | DONE | Moduł `patrix-integrations`, `src/integrations` (manifest, rejestr adapterów), `src/lib/integrations.ts`; `/hooks/patrix/:adapter`; zadanie ponowień co minutę; panel „Integracje”; tryb produkcyjny tylko za zgodą w konfiguracji serwera (D-031); testy z adapterem testowym HMAC |
+| E6-2 | Płatności: Przelewy24, PayU, Tpay, Stripe (providery Medusy na adapterach) | BLOCKED | Konta sandbox i klucze od właściciela (OWN-4) |
+| E6-3 | Przewoźnicy: InPost, DPD, DHL, GLS, ORLEN Paczka, Poczta Polska | BLOCKED | Konta testowe od właściciela (OWN-4), cennik (OWN-3) |
+| E6-4 | Księgowość i faktury (Fakturownia, inFakt), Base, Allegro | BLOCKED | Wybór systemu i konta właściciela |
+| E6-5 | Dostawca e-mail (transakcyjne, reset hasła, newsletter) | BLOCKED | Wybór dostawcy i zgoda na wysyłkę (E3-7, E4-5) |
+
 ## Zadania wymagające właściciela
 | ID | Czego potrzeba | Status |
 |---|---|---|

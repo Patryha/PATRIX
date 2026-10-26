@@ -10,6 +10,7 @@ import {
   SetVariantCostSchema,
   StockMovementSchema,
   StockTransferSchema,
+  SaveIntegrationSchema,
   CreateStockCountSchema,
   SaveCountLinesSchema,
   UpdateBrandSchema,
@@ -25,6 +26,14 @@ export default defineMiddlewares({
   errorHandler: errorHandlerWithSecurityHeaders,
   routes: [
     { matcher: "/*", middlewares: [securityHeaders] },
+
+    // Webhooki operatorów: podpis liczony na surowej treści, limit żądań z jednego IP.
+    {
+      matcher: "/hooks/patrix/*",
+      methods: ["POST"],
+      bodyParser: { preserveRawBody: true, sizeLimit: "1mb" },
+      middlewares: [rateLimit({ name: "webhook", limit: 600, windowSeconds: 60 })],
+    },
 
     // Logowanie i rejestracja: limit prób z jednego IP.
     {
@@ -79,6 +88,7 @@ export default defineMiddlewares({
       methods: ["POST"],
       middlewares: [validateAndTransformBody(StockMovementSchema)],
     },
+    { matcher: "/admin/patrix/integrations/:adapter", methods: ["POST"], middlewares: [validateAndTransformBody(SaveIntegrationSchema)] },
     { matcher: "/admin/patrix/warehouse/transfers", methods: ["POST"], middlewares: [validateAndTransformBody(StockTransferSchema)] },
     { matcher: "/admin/patrix/warehouse/counts", methods: ["POST"], middlewares: [validateAndTransformBody(CreateStockCountSchema)] },
     {

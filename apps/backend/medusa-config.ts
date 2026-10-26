@@ -103,5 +103,6 @@ module.exports = defineConfig({
     { resolve: "./src/modules/patrix-catalog" },
     { resolve: "./src/modules/patrix-cms" },
     { resolve: "./src/modules/patrix-warehouse" },
+    { resolve: "./src/modules/patrix-integrations" },
   ],
 })

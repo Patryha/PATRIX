@@ -132,6 +132,15 @@ export const StockTransferSchema = z
   .refine((t) => t.from_location_id !== t.to_location_id, { message: "Lokalizacja docelowa musi być inna niż źródłowa.", path: ["to_location_id"] })
 export type StockTransferBody = z.infer<typeof StockTransferSchema>
 
+export const SaveIntegrationSchema = z
+  .object({
+    credentials: z.record(z.string().regex(/^[a-z0-9_]{1,40}$/), z.string().max(4000)).optional(),
+    mode: z.enum(["sandbox", "production"]).optional(),
+    enabled: z.boolean().optional(),
+  })
+  .strict()
+export type SaveIntegrationBody = z.infer<typeof SaveIntegrationSchema>
+
 export const SetVariantCostSchema = z.object({
   purchase_price: z.number().min(0).max(1_000_000),
   supplier: optionalText(200),
