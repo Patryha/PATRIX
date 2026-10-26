@@ -1,18 +1,18 @@
 # Raport testów
 
-Ostatnie uruchomienie: 2026-10-26 (Etap 4), lokalnie (PostgreSQL 16, Redis 7, Chromium 1243).
+Ostatnie uruchomienie: 2026-10-26 (Etap 4: ulubione, zestawy, menu i stopka), lokalnie (PostgreSQL 16, Redis 7, Chromium 1243).
 
 | Zestaw | Polecenie | Wynik |
 |---|---|---|
 | Backend: typy | `npm run typecheck` | OK |
-| Backend: jednostkowe | `npm run test:unit` | 49/49 OK |
-| Backend: integracyjne HTTP | `npm run test:integration:http` | 21/21 OK |
+| Backend: jednostkowe | `npm run test:unit` | 52/52 OK |
+| Backend: integracyjne HTTP | `npm run test:integration:http` | 22/22 OK |
 | Backend: build (API + panel) | `npx medusa build` | OK |
 | Storefront: lint | `npm run lint` | OK |
 | Storefront: typy | `npm run typecheck` | OK |
-| Storefront: jednostkowe/komponenty | `npm test` | 30/30 OK |
+| Storefront: jednostkowe/komponenty | `npm test` | 33/33 OK |
 | Storefront: build produkcyjny | `npm run build` | OK |
-| Storefront: E2E (desktop + Pixel 7) | `npm run test:e2e` | 60/60 OK (backend w trybie produkcyjnym, katalog [TEST]) |
+| Storefront: E2E (desktop + Pixel 7) | `npm run test:e2e` | 66/66 OK (backend w trybie produkcyjnym, katalog [TEST]) |
 | Skan zależności | `npm audit --omit=dev` | storefront: 0; backend: 0 critical, podatności high w zależnościach Medusy (patrz SECURITY.md) |
 
 ## Co jest sprawdzane
@@ -26,7 +26,7 @@ Ostatnie uruchomienie: 2026-10-26 (Etap 4), lokalnie (PostgreSQL 16, Redis 7, Ch
 - **Katalog (Etap 2):** publikacja zablokowana bez kompletu danych (400), po uzupełnieniu dozwolona; walidacja UFI i odrzucenie nieznanych pól (np. próba ustawienia `data_status`); ceny zakupu: 403 dla roli marketing (odczyt i zapis); marka przypisana do produktu nie da się usunąć (409), duplikat uchwytu odrzucony; historia cen zapisywana przy utworzeniu produktu; Store API pokazuje tylko opublikowane produkty i tylko pola publiczne (bez notatek i danych weryfikatora). Jednostkowo: reguły kompletności dla żywności, chemii i kosmetyków, suma kontrolna EAN, okno Omnibus, filtry i sortowanie listingu, bezpieczna serializacja JSON-LD.
 - **E2E (Etap 2):** karta produktu (zmiana wariantu zmienia cenę i SKU, informacja o najniższej cenie z 30 dni tylko przy obniżce, CLP, producent, JSON-LD, cena jednostkowa za kg, tabela wartości odżywczych, galeria z klawiatury, produkt niedostępny), listing (sortowanie po cenie, filtr dostępności i marki, usuwanie filtra, strona marki), axe WCAG 2.2 AA na karcie i listingu.
 - **CMS (Etap 4):** pełny cykl (brak publikacji → 404 w sklepie, szkic, token podglądu, publikacja unieważnia token, nowa kolejność, archiwum, historia, przywrócenie jako nowa wersja), odrzucanie niepoprawnej treści i niebezpiecznych linków (`javascript:`, `//`, `http:`), nieznane pola i strony, 403 dla magazyniera. Jednostkowo: schematy sekcji (alt przy obrazie, pełne CTA, reguły sekcji produktów, unikalne id, jeden pasek).
-- **E2E (Etap 4):** kolejność sekcji z CMS, „Promocje tygodnia” tylko z produktami w promocji i bez przekreślonych cen na kartach, ostatnio oglądane (karta produktu i strona główna, kolejność), axe na stronie głównej, podgląd z błędnym tokenem i `noindex`. Panel sprawdzony ręcznie w przeglądarce (przeciąganie, walidacja linku, podgląd, odrzucenie szkicu).
+- **E2E (Etap 4):** kolejność sekcji z CMS, „Promocje tygodnia” tylko z produktami w promocji i bez przekreślonych cen na kartach, ostatnio oglądane (karta produktu i strona główna, kolejność), axe na stronie głównej, podgląd z błędnym tokenem i `noindex`; ulubione (gość → licznik → przeładowanie → `/ulubione` z axe → rejestracja przenosi listę → wylogowanie → logowanie → usunięcie), zestaw (sekcja „Zestawy”, skład „W zestawie” z linkiem do składnika), stopka z CMS (kolumny linków, brak danych kontaktowych bez wpisu właściciela). Integracyjnie: strona `layout` z własnym schematem (alt przy obrazie, telefon, odrzucenie treści strony głównej), podgląd i publikacja. Panel sprawdzony ręcznie w przeglądarce (przeciąganie, walidacja linku, podgląd, odrzucenie szkicu).
 
 ## Znane ograniczenia testów
 - Docker Compose i obrazy nie zostały zbudowane (brak daemona Dockera w środowisku budowy).
@@ -35,4 +35,4 @@ Ostatnie uruchomienie: 2026-10-26 (Etap 4), lokalnie (PostgreSQL 16, Redis 7, Ch
 
 - **E2E (Etap 3):** koszyk (dodanie, licznik w nagłówku, błędny i poprawny kod rabatowy, usunięcie kodu i produktu), zamówienie jako gość z fakturą na firmę (walidacja pól i NIP, dostawa, pobranie, kwota 31,97 zł, potwierdzenie z danymi faktury, pusty koszyk po zamówieniu), przekierowanie pustego koszyka, potwierdzenie bez ciasteczka nic nie ujawnia; konto (rejestracja z walidacją hasła, przeniesienie koszyka, zakup jako klient, zamówienie w historii, wylogowanie, błędne i poprawne logowanie, ochrona przed przekierowaniem poza sklep); axe WCAG 2.2 AA w koszyku, checkoutcie i rejestracji.
 - **Unit (Etap 3):** NIP (suma kontrolna), kod pocztowy, schemat adresu i faktury, rejestracja (siła hasła, regulamin), `safeRedirect`.
-- Test historii cen (subskrybent asynchroniczny) bywał zbyt wolny przy pełnym zestawie; czas oczekiwania wydłużony do 15 s.
+- Test historii cen (subskrybent asynchroniczny) bywał zbyt wolny przy pełnym zestawie; czas oczekiwania wydłużony do 15 s. Właściwa przyczyna: testy wczytują `.env` z `REDIS_URL`, więc działający lokalnie backend przejmował zdarzenia. Od D-023 testy (`NODE_ENV=test`) zawsze używają modułów w pamięci.

@@ -3,7 +3,8 @@ import { loadEnv, defineConfig, Modules } from "@medusajs/framework/utils"
 loadEnv(process.env.NODE_ENV || "development", process.cwd())
 
 const isProduction = process.env.NODE_ENV === "production"
-const redisUrl = process.env.REDIS_URL
+// Testy integracyjne zawsze na modułach w pamięci (bez współdzielonego Redisa z lokalnym backendem).
+const redisUrl = process.env.NODE_ENV === "test" ? undefined : process.env.REDIS_URL
 
 function required(name: string): string {
   const value = process.env[name]

@@ -38,7 +38,7 @@ test.describe("ulubione", () => {
     // Po wylogowaniu przeglądarka nie pokazuje ulubionych konta
     await page.getByRole("button", { name: "Wyloguj się" }).click()
     await expect(page).toHaveURL(/\/$/)
-    await expect(page.getByRole("link", { name: "Ulubione", exact: true })).toBeVisible()
+    await expect(page.getByRole("banner").getByRole("link", { name: "Ulubione", exact: true })).toBeVisible()
 
     await page.goto("/logowanie?next=/ulubione")
     await page.getByLabel("E-mail").fill(email)
@@ -49,6 +49,6 @@ test.describe("ulubione", () => {
 
     await list.getByRole("button", { name: "Usuń [TEST] Ciastka maślane z ulubionych" }).click()
     await expect(page.getByText("Nie masz jeszcze ulubionych produktów.")).toBeVisible()
-    await expect(page.getByRole("link", { name: "Ulubione", exact: true })).toBeVisible()
+    await expect(page.getByRole("banner").getByRole("link", { name: "Ulubione", exact: true })).toBeVisible()
   })
 })

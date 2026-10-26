@@ -42,7 +42,8 @@ let defaultStore: RateLimitStore | null = null
 
 export function getRateLimitStore(): RateLimitStore {
   if (!defaultStore) {
-    defaultStore = process.env.REDIS_URL
+    // W testach (NODE_ENV=test) licznik w pamięci, jak moduły w medusa-config.
+    defaultStore = process.env.REDIS_URL && process.env.NODE_ENV !== "test"
       ? new RedisRateLimitStore(new Redis(process.env.REDIS_URL, { lazyConnect: false, maxRetriesPerRequest: 2 }))
       : new MemoryRateLimitStore()
   }

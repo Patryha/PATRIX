@@ -1,7 +1,11 @@
 import { createHash, randomBytes } from "node:crypto"
 import { MedusaError, MedusaService } from "@medusajs/framework/utils"
 import PageVersion from "./models/page-version"
+import { LayoutContentSchema } from "./layout"
 import { PageContentSchema, type PageContent, type PageKey } from "./sections"
+
+/** Schemat treści dla każdej strony CMS. */
+const SCHEMAS = { home: PageContentSchema, layout: LayoutContentSchema } as const
 
 export const PREVIEW_TTL_MINUTES = 60
 
@@ -25,9 +29,9 @@ class PatrixCmsService extends MedusaService({ PageVersion }) {
     return (last?.version ?? 0) + 1
   }
 
-  /** Zapisuje szkic (tworzy go, jeśli nie istnieje). Treść jest walidowana schematem sekcji. */
+  /** Zapisuje szkic (tworzy go, jeśli nie istnieje). Treść jest walidowana schematem danej strony. */
   async saveDraft(pageKey: PageKey, content: unknown, actor: string | null, note?: string | null) {
-    const parsed = PageContentSchema.safeParse(content)
+    const parsed = SCHEMAS[pageKey].safeParse(content)
     if (!parsed.success) {
       throw new MedusaError(MedusaError.Types.INVALID_DATA, parsed.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; "))
     }
@@ -52,7 +56,7 @@ class PatrixCmsService extends MedusaService({ PageVersion }) {
     if (!draft) {
       throw new MedusaError(MedusaError.Types.NOT_FOUND, "Brak szkicu do opublikowania")
     }
-    PageContentSchema.parse(draft.content)
+    SCHEMAS[pageKey].parse(draft.content)
     const current = await this.getVersion(pageKey, "published")
     if (current) {
       await this.updatePageVersions({ id: current.id, status: "archived" })
