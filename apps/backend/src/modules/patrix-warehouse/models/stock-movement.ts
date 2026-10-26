@@ -1,6 +1,6 @@
 import { model } from "@medusajs/framework/utils"
 
-export const MOVEMENT_TYPES = ["receipt", "issue", "adjustment", "count", "sale", "transfer"] as const
+export const MOVEMENT_TYPES = ["receipt", "issue", "adjustment", "count", "sale", "transfer", "return"] as const
 
 /** Dziennik ruchów magazynowych (tylko dopisywanie). Ilość ze znakiem: + przyjęcie, - rozchód. */
 const StockMovement = model

@@ -676,7 +676,8 @@
             "adjustment",
             "count",
             "sale",
-            "transfer"
+            "transfer",
+            "return"
           ],
           "mappedType": "enum"
         },

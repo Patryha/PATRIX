@@ -67,3 +67,8 @@
 - Eksport dziennika ruchów do CSV (Excel: średnik, polskie znaki, okres od–do).
 - Wartość magazynu w cenach zakupu netto, tylko dla osób z uprawnieniem do finansów; towar bez ceny zakupu jest wykazany osobno, nie szacujemy go (D-028).
 - Testy: backend unit 72/72, integracyjne 38/38, storefront unit 33/33, E2E 66/66; panel sprawdzony w przeglądarce (magazynier i właściciel).
+
+## 2026-10-26: Etap 5 (zwroty w magazynie)
+- Przyjęty zwrot klienta (w panelu Medusy) zapisuje ruch „zwrot klienta” i oddaje sztuki do partii, z których były sprzedane w tym zamówieniu; uszkodzone sztuki nie wracają na stan (D-029).
+- Formularz zwrotu dla klienta czeka na decyzję właściciela (sposób odesłania i zasady z regulaminu).
+- Testy: backend unit 72/72, integracyjne 39/39, storefront unit 33/33, E2E 66/66.

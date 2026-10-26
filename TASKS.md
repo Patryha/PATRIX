@@ -49,7 +49,7 @@ Statusy: TODO · IN PROGRESS · BLOCKED · TESTING · DONE
 | E3-6 | Konto klienta | DONE | Rejestracja (silne hasło, regulamin), logowanie, przeniesienie koszyka gościa na konto, historia zamówień, wylogowanie czyści koszyk; token tylko w ciasteczku httpOnly |
 | E3-7 | Reset hasła, e-maile transakcyjne | TODO | Wymaga dostawcy e-mail i zgody właściciela na wysyłkę (Etap 6) |
 | E3-8 | Paczkomaty/punkty odbioru, progi darmowej dostawy | BLOCKED | Integracje przewoźników (Etap 6) i stawki od właściciela (OWN-3); w testach „[TEST] Kurier testowy” |
-| E3-9 | Zwroty | TODO | Etap 5 (zamówienia i magazyn w panelu) |
+| E3-9 | Zwroty | IN PROGRESS | Magazyn gotowy: przyjęty zwrot (natywny w panelu Medusy) wraca do partii, z których była sprzedaż, uszkodzone sztuki nie wracają (D-029). Formularz dla klienta czeka na decyzję właściciela (sposób odesłania, zasady z regulaminu OWN-6) |
 | E3-10 | Regulamin i polityka prywatności | BLOCKED | Strony istnieją z informacją „w przygotowaniu”; treść od właściciela/prawnika (OWN-6) |
 
 ## Etap 4: Panel treści (CMS) i administracja

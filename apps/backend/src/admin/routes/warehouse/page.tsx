@@ -24,7 +24,7 @@ type StockRow = {
 }
 type Movement = {
   id: string
-  type: "receipt" | "issue" | "adjustment" | "count" | "sale" | "transfer"
+  type: "receipt" | "issue" | "adjustment" | "count" | "sale" | "transfer" | "return"
   quantity: number
   reason: string | null
   document_ref: string | null
@@ -44,6 +44,7 @@ const MOVEMENT_LABEL: Record<Movement["type"], string> = {
   count: "inwentaryzacja",
   sale: "sprzedaż",
   transfer: "przesunięcie (MM)",
+  return: "zwrot klienta",
 }
 const COUNT_STATUS: Record<StockCount["status"], { text: string; color: "blue" | "green" | "grey" }> = {
   open: { text: "otwarta", color: "blue" },

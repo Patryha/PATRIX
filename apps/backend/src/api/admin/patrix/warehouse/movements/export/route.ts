@@ -11,6 +11,7 @@ const TYPE_LABEL: Record<string, string> = {
   count: "inwentaryzacja",
   sale: "sprzedaż",
   transfer: "przesunięcie (MM)",
+  return: "zwrot klienta",
 }
 const DAY = /^\d{4}-\d{2}-\d{2}$/
 
