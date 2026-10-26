@@ -13,3 +13,6 @@ test-results/
 dist/
 *.log
 dump.rdb
+
+# Kopie zapasowe na serwerze (infra/scripts/backup.sh)
+infra/backups/

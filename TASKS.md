@@ -115,6 +115,15 @@ Statusy: TODO · IN PROGRESS · BLOCKED · TESTING · DONE
 | E9-3 | Skan bezpieczeństwa (DAST) | DONE (lokalnie), powtórzyć na stagingu | OWASP ZAP 2.x (bez kont i kluczy): skan podstawowy sklepu 0 FAIL, skan podstawowy API 0 FAIL (ostrzeżenie o braku CSP naprawione), skan aktywny sklepu (XSS, SQLi, przekierowania, path traversal i inne) 0 FAIL / 112 PASS. Dwa ostrzeżenia przyjęte z uzasadnieniem w `SECURITY.md`. HawkScan nadal wymaga `HAWK_API_KEY` |
 | E9-4 | Testy uprawnień i pełne ścieżki zakupu | DONE | Inwentarz wszystkich 47 tras `/admin/patrix` z jawnym zasobem (nowa trasa bez wpisu = czerwony test), dane finansowe niedostępne dla magazynu, obsługi klienta i marketingu; E2E: serwer odrzuca zamówienie bez akceptacji regulaminu mimo obejścia walidacji w przeglądarce. Ścieżki gość/klient/historia/pusty koszyk były już pokryte |
 
+## Etap 10: Wdrożenie
+| ID | Zadanie | Status | Uwagi |
+|---|---|---|---|
+| E10-1 | Obrazy Docker i docker compose | DONE (lokalnie) | Pełny stos (Postgres, Redis, backend, worker, sklep, Caddy z HTTPS) uruchomiony lokalnie. Naprawione: sklep nie startował w obrazie (`next.config.ts` importuje `src/`; teraz tryb `standalone`, obraz 1,55 GB → 428 MB), Medusa włączała SSL do bazy w sieci Dockera (`sslmode=disable`), worker migrował równolegle z backendem, build sklepu wymaga działającego backendu (kolejność startu w DEPLOYMENT.md). E2E 86/86 na kontenerze sklepu. CI buduje oba obrazy i sprawdza compose (D-039, D-040) |
+| E10-2 | Kopie zapasowe i odtwarzanie | DONE (lokalnie) | `infra/scripts/backup.sh` (pg_dump + wolumen plików + SHA256, rotacja), `restore.sh` (test do tymczasowej bazy lub pełne przywrócenie z potwierdzeniem); oba tryby sprawdzone na stosie compose. Kopia poza serwerem: wybór usługi przez właściciela |
+| E10-3 | Instrukcja panelu | DONE | `docs/INSTRUKCJA_PANELU.md`: logowanie i MFA, role, produkty i kompletność danych, import, magazyn, treści, integracje |
+| E10-4 | Procedura wdrożenia i lista kontrolna startu | DONE | `DEPLOYMENT.md`: pierwsze uruchomienie, aktualizacja, kopie, lista kontrolna z punktami właściciela |
+| E10-5 | Staging na serwerze, pomiar CWV i DAST na HTTPS | BLOCKED | Wymaga serwera i domeny (OWN-5); wdrożenie i publikacja tylko za zgodą właściciela |
+
 ## Zadania wymagające właściciela
 | ID | Czego potrzeba | Status |
 |---|---|---|

@@ -28,6 +28,8 @@ const securityHeaders = [
 ]
 
 const nextConfig: NextConfig = {
+  // Obraz Docker: samodzielny serwer z wkompilowaną konfiguracją (bez src/ i pełnego node_modules w obrazie).
+  output: process.env.NEXT_OUTPUT === "standalone" ? "standalone" : undefined,
   cacheComponents: true,
   partialPrefetching: true,
   poweredByHeader: false,

@@ -1,5 +1,12 @@
-# Środowisko lokalne/staging PATRIX. Sekrety podaj w pliku infra/.env (wzór: infra/.env.example).
+# Środowisko staging/produkcja PATRIX. Sekrety podaj w pliku infra/.env (wzór: infra/.env.example).
+# Kolejność pierwszego uruchomienia (DEPLOYMENT.md): backend → seed i klucz publikowalny → build sklepu → całość.
 name: patrix
+
+x-backend-env: &backend-env
+  NODE_ENV: production
+  # Baza w wewnętrznej sieci Dockera bez TLS; Medusa domyślnie włącza SSL dla każdego hosta poza localhost.
+  DATABASE_URL: postgres://patrix:${POSTGRES_PASSWORD}@postgres:5432/patrix?sslmode=disable
+  REDIS_URL: redis://redis:6379
 
 services:
   postgres:
@@ -38,31 +45,44 @@ services:
       redis: { condition: service_started }
     env_file: .env
     environment:
-      NODE_ENV: production
-      DATABASE_URL: postgres://patrix:${POSTGRES_PASSWORD}@postgres:5432/patrix
-      REDIS_URL: redis://redis:6379
+      <<: *backend-env
       MEDUSA_WORKER_MODE: server
+    # Tylko na localhost serwera: build sklepu pobiera dane z działającego backendu. Z zewnątrz ruch idzie przez Caddy.
+    ports: ["127.0.0.1:${BACKEND_HOST_PORT:-9000}:9000"]
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:9000/health').then(r=>process.exit(r.ok?0:1),()=>process.exit(1))"]
+      interval: 10s
+      start_period: 120s
+      retries: 6
 
   worker:
     build: ../apps/backend
     restart: unless-stopped
-    depends_on: [backend]
+    # Migracje wykonuje tylko backend (Medusa nie blokuje równoległych migracji), więc worker czeka na jego gotowość.
+    depends_on:
+      backend: { condition: service_healthy }
+    command: ["npx", "medusa", "start"]
     env_file: .env
     environment:
-      NODE_ENV: production
-      DATABASE_URL: postgres://patrix:${POSTGRES_PASSWORD}@postgres:5432/patrix
-      REDIS_URL: redis://redis:6379
+      <<: *backend-env
       MEDUSA_WORKER_MODE: worker
       DISABLE_MEDUSA_ADMIN: "true"
 
   storefront:
     build:
       context: ../apps/storefront
+      network: host
       args:
-        NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY: ${NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY}
-        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL}
+        MEDUSA_BACKEND_URL: http://127.0.0.1:${BACKEND_HOST_PORT:-9000}
+        NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY: ${NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY:-}
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:?ustaw NEXT_PUBLIC_SITE_URL}
+        NEXT_PUBLIC_IMAGE_HOSTS: ${NEXT_PUBLIC_IMAGE_HOSTS:-localhost}
+        NEXT_PUBLIC_ALLOW_INDEXING: ${NEXT_PUBLIC_ALLOW_INDEXING:-false}
+        NEXT_PUBLIC_GA4_ID: ${NEXT_PUBLIC_GA4_ID:-}
+        NEXT_PUBLIC_META_PIXEL_ID: ${NEXT_PUBLIC_META_PIXEL_ID:-}
     restart: unless-stopped
-    depends_on: [backend]
+    depends_on:
+      backend: { condition: service_healthy }
     environment:
       MEDUSA_BACKEND_URL: http://backend:9000
       PATRIX_ADMIN_URL: ${PATRIX_ADMIN_URL}
@@ -77,6 +97,7 @@ services:
     volumes:
       - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy-data:/data
+    depends_on: [backend, storefront]
 
 volumes:
   pg-data:

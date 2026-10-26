@@ -1,6 +1,6 @@
 # Raport testów
 
-Ostatnie uruchomienie: 2026-10-26 (Etap 9: testy i bezpieczeństwo), lokalnie (PostgreSQL 16, Redis 7, Chromium 1243).
+Ostatnie uruchomienie: 2026-10-26 (Etap 10: obrazy Docker i compose), lokalnie (PostgreSQL 16, Redis 7, Chromium 1243).
 
 | Zestaw | Polecenie | Wynik |
 |---|---|---|
@@ -13,6 +13,8 @@ Ostatnie uruchomienie: 2026-10-26 (Etap 9: testy i bezpieczeństwo), lokalnie (P
 | Storefront: jednostkowe/komponenty | `npm test` | 54/54 OK |
 | Storefront: build produkcyjny | `npm run build` | OK |
 | Storefront: E2E (desktop + Pixel 7) | `npm run test:e2e` | 86/86 OK (backend w trybie produkcyjnym, katalog [TEST]) |
+| Obrazy Docker i compose (lokalnie) | `docker build`, `docker compose up` | OK: migracje od zera, seed, logowanie, sklep przez Caddy z HTTPS, E2E 86/86 na kontenerze sklepu |
+| Kopie zapasowe | `infra/scripts/backup.sh`, `restore.sh` | OK: test odtworzenia i pełne przywrócenie bazy oraz plików |
 | DAST (OWASP ZAP, sklep: skan aktywny) | `zap-full-scan.py` | 0 FAIL, 112 PASS, 2 WARN przyjęte (SECURITY.md) |
 | DAST (OWASP ZAP, API: skan podstawowy) | `zap-baseline.py` | 0 FAIL, 61 PASS; ostrzeżenie o CSP naprawione |
 | Skan zależności | `npm audit --omit=dev` | storefront: 0; backend: 0 critical, podatności high w zależnościach Medusy (patrz SECURITY.md) |
@@ -35,7 +37,7 @@ Ostatnie uruchomienie: 2026-10-26 (Etap 9: testy i bezpieczeństwo), lokalnie (P
 - **Inwentarz uprawnień (Etap 9):** wszystkie trasy `src/api/admin/patrix/**/route.ts` porównywane z listą w teście; dla każdej sprawdzany zasób przy GET/POST/DELETE; trasy finansowe (`import/costs`, `products/:id/costs`, `variants/:id/cost`, `warehouse/value`) niedostępne dla ról magazyn, obsługa klienta, marketing. Checkout: zamówienie bez akceptacji regulaminu odrzucone po stronie serwera (E2E, po usunięciu atrybutu `required`).
 
 ## Znane ograniczenia testów
-- Docker Compose i obrazy nie zostały zbudowane (brak daemona Dockera w środowisku budowy).
+- Obrazy i compose sprawdzone lokalnie (obraz bazowy z lustra rejestru, certyfikat proxy środowiska dodany tylko w kopii Dockerfile do testu); MinIO zastąpiony wolumenem z plikami testowymi (obraz niedostępny w tym środowisku). Na serwerze jeszcze nieuruchomione.
 - DAST wykonany lokalnie OWASP ZAP (nie HawkScan, brak klucza StackHawk) i bez HTTPS; skan aktywny ograniczony do 12 minut i jednego poziomu pająka. Do powtórzenia na stagingu (Etap 10).
 - Strona 404 dla nieistniejącej kategorii/produktu zwraca HTTP 200 z `noindex` (ograniczenie strumieniowania w Next.js z Cache Components); do rozwiązania w Etapie 8 (SEO) przez `generateStaticParams`/weryfikację w proxy.
 

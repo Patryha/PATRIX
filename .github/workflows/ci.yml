@@ -105,6 +105,18 @@ jobs:
         run: |
           npx playwright install --with-deps chromium
           npm run test:e2e
+      - name: Obraz Docker sklepu (build z danymi z backendu i start)
+        working-directory: apps/storefront
+        run: |
+          docker build --network host -t patrix-storefront \
+            --build-arg MEDUSA_BACKEND_URL=http://127.0.0.1:9000 \
+            --build-arg NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY="$NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY" \
+            --build-arg NEXT_PUBLIC_SITE_URL=http://localhost:3000 .
+          docker run -d --name storefront --network host -e MEDUSA_BACKEND_URL=http://localhost:9000 patrix-storefront
+          for i in $(seq 1 30); do curl -sf -o /dev/null http://localhost:3000/ && break; sleep 2; done
+          for path in / /produkt/test-ciastka-maslane /sitemap.xml /feed/google.xml; do
+            curl -sf -o /dev/null "http://localhost:3000$path" || { echo "Błąd: $path"; docker logs storefront; exit 1; }
+          done
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
@@ -112,6 +124,19 @@ jobs:
           path: |
             apps/storefront/playwright-report
             apps/backend/backend.log
+
+  docker-backend:
+    name: Obraz Docker backendu i konfiguracja compose
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t patrix-backend apps/backend
+      - name: Poprawność docker-compose.yml (wzorcowe zmienne)
+        working-directory: infra
+        run: |
+          cp .env.example .env
+          printf 'POSTGRES_PASSWORD=ci\nS3_ACCESS_KEY_ID=ci\nS3_SECRET_ACCESS_KEY=ci-secret\n' >> .env
+          docker compose config --quiet
 
   dependency-audit:
     name: Skan zależności

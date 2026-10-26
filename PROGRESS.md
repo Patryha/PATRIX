@@ -136,3 +136,11 @@
 - OWASP ZAP: skan aktywny sklepu 0 FAIL / 112 PASS, skan podstawowy API 0 FAIL. Ostrzeżenia CSP `'unsafe-inline'` i anty-CSRF przyjęte z uzasadnieniem (SECURITY.md). Raporty HTML w `/mnt/project-files/patrix/zap/`.
 - Do powtórzenia na stagingu z HTTPS (Etap 10). HawkScan nadal czeka na klucz `HAWK_API_KEY`.
 
+## 2026-10-26: Etap 10 (obrazy Docker, compose, kopie zapasowe, dokumentacja)
+- Pierwszy realny test obrazów i compose (Docker uruchomiony w kontenerze roboczym). Znalezione i naprawione 4 błędy, przez które wdrożenie by nie ruszyło: sklep nie startował w obrazie, backend nie łączył się z bazą (SSL), worker migrował równolegle z backendem, build sklepu bez działającego backendu (D-039, D-040).
+- Pełny stos przez Caddy z HTTPS działa lokalnie; E2E 86/86 na kontenerze sklepu. CI buduje oba obrazy i sprawdza compose.
+- Kopie zapasowe: `infra/scripts/backup.sh` i `restore.sh`, test odtworzenia i pełne przywrócenie bazy oraz plików sprawdzone.
+- `docs/INSTRUKCJA_PANELU.md`, procedura wdrożenia i lista kontrolna startu w `DEPLOYMENT.md`.
+- Testy: storefront lint OK, typy OK, unit 54/54, build OK, E2E 86/86 (lokalnie i na kontenerze). Backend bez zmian kodu od ostatniego pełnego przebiegu (unit 140/140, integracyjne 49/49).
+- Czeka na właściciela: serwer i domena (OWN-5), potem staging i pomiary na HTTPS (E10-5).
+
