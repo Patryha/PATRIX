@@ -15,7 +15,7 @@ export function ProductCard({ product, priority = false }: { product: ProductSum
             fill
             sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
             className="object-contain p-4 transition-transform duration-300 ease-patrix group-hover:scale-[1.03]"
-            priority={priority}
+            loading={priority ? "eager" : "lazy"}
           />
         ) : (
           <div className="flex h-full items-center justify-center text-sm text-muted">Brak zdjęcia</div>

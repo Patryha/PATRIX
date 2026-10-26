@@ -9,7 +9,7 @@ export function BlogPostCard({ post, priority = false }: { post: BlogPostSummary
     <article className="group relative flex h-full flex-col overflow-hidden rounded-lg border border-border bg-surface transition-[box-shadow,transform,border-color] duration-200 ease-patrix hover:-translate-y-0.5 hover:border-accent hover:shadow-lg focus-within:border-accent">
       {displayableImage(post.cover_url) ? (
         <div className="relative aspect-[16/9] bg-surface-muted">
-          <Image src={post.cover_url} alt="" fill sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" className="object-cover" priority={priority} />
+          <Image src={post.cover_url} alt="" fill sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" className="object-cover" loading={priority ? "eager" : "lazy"} />
         </div>
       ) : null}
       <div className="flex flex-1 flex-col gap-2 p-4">

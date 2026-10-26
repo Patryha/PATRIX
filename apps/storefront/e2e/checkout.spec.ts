@@ -73,6 +73,11 @@ test.describe("koszyk i zamówienie", () => {
     expect(a11y.violations).toEqual([])
 
     const submit = page.getByRole("button", { name: /Zamawiam z obowiązkiem zapłaty \(31,97\s*zł\)/ })
+    // Serwer sam pilnuje akceptacji regulaminu, nawet gdy ktoś obejdzie walidację w przeglądarce.
+    await page.getByLabel(/Akceptuję/).evaluate((el) => el.removeAttribute("required"))
+    await submit.click()
+    await expect(page.getByText("Zaakceptuj regulamin i zapoznaj się z polityką prywatności.")).toBeVisible()
+    await expect(page).toHaveURL(/\/zamowienie$/)
     await page.getByLabel(/Akceptuję/).check()
     await submit.click()
 

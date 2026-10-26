@@ -1,18 +1,20 @@
 # Raport testów
 
-Ostatnie uruchomienie: 2026-10-26 (Etap 8: SEO), lokalnie (PostgreSQL 16, Redis 7, Chromium 1243).
+Ostatnie uruchomienie: 2026-10-26 (Etap 9: testy i bezpieczeństwo), lokalnie (PostgreSQL 16, Redis 7, Chromium 1243).
 
 | Zestaw | Polecenie | Wynik |
 |---|---|---|
 | Backend: typy | `npm run typecheck` | OK |
-| Backend: jednostkowe | `npm run test:unit` | 91/91 OK |
+| Backend: jednostkowe | `npm run test:unit` | 140/140 OK |
 | Backend: integracyjne HTTP | `npm run test:integration:http` | 49/49 OK (sterta 4 GB: 11 instancji Medusy w jednym procesie) |
 | Backend: build (API + panel) | `npx medusa build` | OK |
 | Storefront: lint | `npm run lint` | OK |
 | Storefront: typy | `npm run typecheck` | OK |
-| Storefront: jednostkowe/komponenty | `npm test` | 51/51 OK |
+| Storefront: jednostkowe/komponenty | `npm test` | 54/54 OK |
 | Storefront: build produkcyjny | `npm run build` | OK |
-| Storefront: E2E (desktop + Pixel 7) | `npm run test:e2e` | 84/84 OK (backend w trybie produkcyjnym, katalog [TEST]) |
+| Storefront: E2E (desktop + Pixel 7) | `npm run test:e2e` | 86/86 OK (backend w trybie produkcyjnym, katalog [TEST]) |
+| DAST (OWASP ZAP, sklep: skan aktywny) | `zap-full-scan.py` | 0 FAIL, 112 PASS, 2 WARN przyjęte (SECURITY.md) |
+| DAST (OWASP ZAP, API: skan podstawowy) | `zap-baseline.py` | 0 FAIL, 61 PASS; ostrzeżenie o CSP naprawione |
 | Skan zależności | `npm audit --omit=dev` | storefront: 0; backend: 0 critical, podatności high w zależnościach Medusy (patrz SECURITY.md) |
 
 ## Co jest sprawdzane
@@ -30,9 +32,11 @@ Ostatnie uruchomienie: 2026-10-26 (Etap 8: SEO), lokalnie (PostgreSQL 16, Redis 
 
 - **Panel (Etap 4, E4-9):** KPI: okresy 7/30/90, strefa Europe/Warsaw (także po zmianie czasu), pominięcie anulowanych i szkiców, porównanie okresów, niski stan (suma lokalizacji minus rezerwacje); integracyjnie: właściciel widzi kwoty, magazynier tylko liczby, marketing 403. Role: lista pracowników z rolami (kierownik 403), edycja roli własnej, odrzucenie nieznanych uprawnień i zmiany uchwytu, blokada edycji i usuwania ról systemowych, 409 dla roli przypisanej, audyt usunięcia. Oba ekrany panelu sprawdzone w przeglądarce (Playwright, konto lokalne). Import: parser CSV (średnik/przecinek, BOM, cudzysłowy, nowe linie w polach, polskie liczby), mapowanie kolumn, cofanie potwierdzeń; integracyjnie: nieznane kolumny, sprawdzenie z błędami (brak produktu, brak marki, zły UFI), odmowa zapisu pliku z błędami bez zmian w bazie, zapis poprawnego pliku jako „do weryfikacji”, ponowny import „bez zmian”, blokada zmian produktu opublikowanego, ceny zakupu (403 bez finansów, nieznane SKU), audyt. Zmiany masowe: publikacja tylko kompletnych (drugi produkt odrzucony z komunikatem), marka bez cofania weryfikacji, dodanie i usunięcie kategorii, brak kategorii → 400, magazynier 403. Ekran sprawdzony w przeglądarce, także plik CSV w Windows-1250.
 
+- **Inwentarz uprawnień (Etap 9):** wszystkie trasy `src/api/admin/patrix/**/route.ts` porównywane z listą w teście; dla każdej sprawdzany zasób przy GET/POST/DELETE; trasy finansowe (`import/costs`, `products/:id/costs`, `variants/:id/cost`, `warehouse/value`) niedostępne dla ról magazyn, obsługa klienta, marketing. Checkout: zamówienie bez akceptacji regulaminu odrzucone po stronie serwera (E2E, po usunięciu atrybutu `required`).
+
 ## Znane ograniczenia testów
 - Docker Compose i obrazy nie zostały zbudowane (brak daemona Dockera w środowisku budowy).
-- Skan DAST (HawkScan) nie uruchomiony: brak klucza API StackHawk; zaplanowany w Etapie 9.
+- DAST wykonany lokalnie OWASP ZAP (nie HawkScan, brak klucza StackHawk) i bez HTTPS; skan aktywny ograniczony do 12 minut i jednego poziomu pająka. Do powtórzenia na stagingu (Etap 10).
 - Strona 404 dla nieistniejącej kategorii/produktu zwraca HTTP 200 z `noindex` (ograniczenie strumieniowania w Next.js z Cache Components); do rozwiązania w Etapie 8 (SEO) przez `generateStaticParams`/weryfikację w proxy.
 
 - **E2E (Etap 3):** koszyk (dodanie, licznik w nagłówku, błędny i poprawny kod rabatowy, usunięcie kodu i produktu), zamówienie jako gość z fakturą na firmę (walidacja pól i NIP, dostawa, pobranie, kwota 31,97 zł, potwierdzenie z danymi faktury, pusty koszyk po zamówieniu), przekierowanie pustego koszyka, potwierdzenie bez ciasteczka nic nie ujawnia; konto (rejestracja z walidacją hasła, przeniesienie koszyka, zakup jako klient, zamówienie w historii, wylogowanie, błędne i poprawne logowanie, ochrona przed przekierowaniem poza sklep); axe WCAG 2.2 AA w koszyku, checkoutcie i rejestracji.
@@ -49,3 +53,14 @@ Ostatnie uruchomienie: 2026-10-26 (Etap 8: SEO), lokalnie (PostgreSQL 16, Redis 
 - **Zgody (Etap 8):** komponentowo: brak banera i przycisku bez skonfigurowanych narzędzi, brak skryptów przed zgodą i po odrzuceniu, wybór tylko analityki ładuje tylko GA4, ponowne otwarcie ustawień z zapisanym wyborem; walidacja identyfikatorów i cookie (wersja, uszkodzona wartość). W przeglądarce (build z identyfikatorami testowymi): axe WCAG 2.2 AA z banerem, odrzucenie bez zapytań do Google/Meta także po odświeżeniu, akceptacja z ustawień w stopce ładuje GA4.
 - **Feed Merchant Center (Etap 8):** jednostkowo: GTIN (cyfra kontrolna, odrzucenie puli wewnętrznej), pozycja na wariant z `item_group_id` i linkiem `?wariant=`, promocja jako `sale_price`, `identifier_exists=no` bez identyfikatorów, pominięcie produktów bez zdjęcia i wariantów bez ceny, bezwzględne adresy zdjęć, escapowanie XML. E2E: `/feed/google.xml` z produktami [TEST], bez kodów wewnętrznych jako GTIN, link z feedu otwiera kartę z zaznaczonym wariantem.
 - **Blog (Etap 8):** integracyjnie: walidacja (link `javascript:`, okładka bez opisu), 403 dla magazyniera, unikalny adres, szkic niewidoczny w Store API (lista i 404), publikacja, lista bez treści, adres stały po publikacji także po wycofaniu, data pierwszej publikacji zachowana, usunięcie. Jednostkowo: linki w treści (ścieżka sklepu, https, odrzucenie `javascript:`, `http:`, `//`), adres z tytułu bez polskich i niemieckich znaków; w sklepie parser treści (nagłówki, akapity, listy, pogrubienie, HTML jako tekst, niebezpieczne linki jako tekst), czas czytania. E2E: lista → wpis, nagłówki, lista, link do produktu, produkty pod wpisem, JSON-LD BlogPosting, axe WCAG 2.2 AA, 404 z `noindex`, wpis i `/blog` w mapie strony. Panel „Blog” sprawdzony w przeglądarce (adres z tytułu, błąd linku, szkic, publikacja, blokada adresu, usunięcie).
+- **CSP (Etap 9):** jednostkowo: tylko własna domena bez narzędzi, domeny GA4/Meta tylko przy identyfikatorach, `unsafe-eval` i `ws:` tylko w trybie deweloperskim, `upgrade-insecure-requests` tylko na https. E2E: nagłówek z `default-src 'self'` i brak naruszeń CSP na stronie głównej, kategorii, produkcie, blogu, wyszukiwarce i w podpowiedziach; wszystkie pozostałe scenariusze E2E przechodzą z nową polityką.
+- **Wydajność (Etap 9, Lighthouse 13, profil mobilny z symulowanym wolnym 4G, lokalny `next start` bez CDN, dwa pomiary po rozgrzaniu):**
+
+  | Strona | Wydajność | LCP | CLS | TBT | Dostępność | Dobre praktyki |
+  |---|---|---|---|---|---|---|
+  | Strona główna | 88–90 | 2,9–3,2 s | 0 | 250–280 ms | 100 | 100 |
+  | Kategoria | 87–90 | 3,5 s | 0,001 | 120–150 ms | 100 | 100 |
+  | Produkt | 84–85 | 3,8 s | 0 | 150–170 ms | 100 | 100 |
+  | Wpis bloga | 83–91 | 2,9–3,8 s | 0–0,001 | 220–270 ms | 100 | 100 |
+
+  Przed poprawkami: CLS produktu 0,15 i wpisu 0,09 (stopka przesuwana przez doładowaną treść), błąd kolejności nagłówków na kategorii. SEO 58–66 wynika z blokady indeksowania poza produkcją (`noindex`, D-034); opis strony jest w HTML, ale Next.js przesyła metadane stron dynamicznych strumieniowo w treści dokumentu (dla botów bez JavaScriptu, np. Bingbot, trafiają do `<head>`), czego Lighthouse nie uznaje. LCP 2,9–3,8 s w symulacji wolnego 4G to wartość „do poprawy”; sprawdzone: wyłączenie preloadu czcionek nie dało mierzalnej poprawy i dodało przesunięcie układu, więc zostało cofnięte. Miarodajny pomiar (i ewentualne dalsze kroki: CDN dla zdjęć, cache HTML na brzegu) na stagingu w Etapie 10.

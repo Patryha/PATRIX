@@ -1,4 +1,6 @@
 import type { NextConfig } from "next"
+import { trackingConfig } from "./src/lib/consent"
+import { buildCsp } from "./src/lib/csp"
 
 const isProd = process.env.NODE_ENV === "production"
 
@@ -13,8 +15,15 @@ const securityHeaders = [
   { key: "X-Frame-Options", value: "DENY" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), payment=(self)" },
-  // Bazowa polityka CSP; ścisłe script-src z nonce: Etap 9 (wymaga uzgodnienia z dostawcami płatności i analityki).
-  { key: "Content-Security-Policy", value: "frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self'" },
+  {
+    key: "Content-Security-Policy",
+    value: buildCsp({
+      dev: !isProd,
+      https: (process.env.NEXT_PUBLIC_SITE_URL ?? "").startsWith("https://"),
+      ga4: !!trackingConfig.ga4,
+      metaPixel: !!trackingConfig.metaPixel,
+    }),
+  },
   ...(isProd ? [{ key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" }] : []),
 ]
 

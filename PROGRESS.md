@@ -116,3 +116,23 @@
 - Pełny zestaw testów integracyjnych przekroczył domyślną pamięć Node (11 instancji Medusy w jednym procesie); skrypt testów dostał `--max-old-space-size=4096`.
 - Testy: backend unit 91/91, integracyjne 49/49, storefront unit 51/51, lint OK, build OK, E2E 84/84; panel sprawdzony w przeglądarce.
 - Etap 8 zakończony poza newsletterem (E8-7, czeka na dostawcę e-mail i zgodę).
+
+## 2026-10-26: Etap 9 (CSP)
+- Pełna polityka CSP sklepu: wszystko tylko z własnej domeny, domeny Google/Meta dopiero przy podanych identyfikatorach; nonce odrzucony, bo wyłączyłby częściowe prerenderowanie (D-038).
+- Testy: storefront unit 54/54, lint OK, typy OK, build OK, E2E 86/86 (w tym brak naruszeń CSP). Backend bez zmian.
+
+## 2026-10-26: Etap 9 (wydajność)
+- Pomiar Lighthouse na czterech kluczowych stronach. Naprawione: przesunięcie stopki przy doładowaniu treści (CLS 0,15 → 0), kolejność nagłówków na listingu, priorytet pobierania głównego zdjęcia. Dostępność i dobre praktyki 100/100.
+- LCP 2,9–3,8 s w symulacji wolnego 4G na lokalnym serwerze; pomiar miarodajny na stagingu z CDN (Etap 10). Wyłączenie preloadu czcionek sprawdzone i cofnięte (brak poprawy, nowe przesunięcie układu).
+- Testy: storefront unit 54/54, lint OK, typy OK, build OK, E2E 86/86.
+
+## 2026-10-26: Etap 9 (uprawnienia i ścieżka zakupu)
+- Test inwentarza tras panelu PATRIX: każda z 47 tras ma jawnie przypisany zasób; dodanie trasy bez wpisu kończy się czerwonym testem. Ceny zakupu i wartość magazynu sprawdzone jako niedostępne dla magazynu, obsługi klienta i marketingu.
+- Checkout: serwer odrzuca zamówienie bez akceptacji regulaminu także po obejściu walidacji w przeglądarce (E2E).
+- API backendu wysyła ścisłą politykę CSP (`default-src 'none'; frame-ancestors 'none'`), wynik skanu ZAP.
+- Testy: backend typy OK, unit 140/140, integracyjne 49/49; storefront lint OK, typy OK, unit 54/54, E2E zakupu 6/6.
+
+## 2026-10-26: Etap 9 (DAST) – Etap 9 zakończony
+- OWASP ZAP: skan aktywny sklepu 0 FAIL / 112 PASS, skan podstawowy API 0 FAIL. Ostrzeżenia CSP `'unsafe-inline'` i anty-CSRF przyjęte z uzasadnieniem (SECURITY.md). Raporty HTML w `/mnt/project-files/patrix/zap/`.
+- Do powtórzenia na stagingu z HTTPS (Etap 10). HawkScan nadal czeka na klucz `HAWK_API_KEY`.
+

@@ -7,6 +7,8 @@ export function applySecurityHeaders(res: MedusaResponse) {
   res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin")
   res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=()")
   res.setHeader("Cross-Origin-Opener-Policy", "same-origin")
+  // API zwraca tylko JSON: nic nie ładuje, nie da się go osadzić w ramce (panel /app nie przechodzi przez te middleware).
+  res.setHeader("Content-Security-Policy", "default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'")
   res.removeHeader("X-Powered-By")
 }
 

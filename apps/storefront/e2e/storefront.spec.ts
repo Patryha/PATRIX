@@ -153,3 +153,25 @@ test("nagłówki bezpieczeństwa są ustawione", async ({ request }) => {
   expect(res.headers()["x-content-type-options"]).toBe("nosniff")
   expect(res.headers()["x-powered-by"]).toBeUndefined()
 })
+
+test("polityka CSP: tylko własna domena i brak naruszeń na stronach sklepu", async ({ page, request }) => {
+  const csp = (await request.get("/")).headers()["content-security-policy"] ?? ""
+  expect(csp).toContain("default-src 'self'")
+  expect(csp).toContain("frame-ancestors 'none'")
+  expect(csp).toContain("connect-src 'self'")
+
+  const violations: string[] = []
+  page.on("console", (msg) => {
+    if (/Content Security Policy/i.test(msg.text())) violations.push(msg.text())
+  })
+  await page.addInitScript(() => {
+    document.addEventListener("securitypolicyviolation", (e) => console.error(`Content Security Policy: ${e.violatedDirective} ${e.blockedURI}`))
+  })
+  for (const path of ["/", "/kategoria/srodki-do-prania", "/produkt/test-krem-do-rak", "/blog/test-wpis", "/szukaj?q=krem"]) {
+    await page.goto(path)
+    await page.waitForLoadState("networkidle")
+  }
+  await page.getByRole("combobox").first().fill("krem")
+  await expect(page.getByRole("option").first()).toBeVisible()
+  expect(violations).toEqual([])
+})

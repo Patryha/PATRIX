@@ -90,7 +90,7 @@ export function HeroSlider({ section, headingLevel = 1 }: { section: Props; head
               </div>
               {slide.image_url ? (
                 <div className="relative aspect-[4/3] w-full">
-                  <Image src={slide.image_url} unoptimized={!canOptimize(slide.image_url)} alt={slide.image_alt ?? ""} fill sizes="(min-width: 768px) 40vw, 100vw" className="object-contain" priority={i === 0} />
+                  <Image src={slide.image_url} unoptimized={!canOptimize(slide.image_url)} alt={slide.image_alt ?? ""} fill sizes="(min-width: 768px) 40vw, 100vw" className="object-contain" loading={i === 0 ? "eager" : "lazy"} fetchPriority={i === 0 ? "high" : "auto"} />
                 </div>
               ) : null}
             </div>
