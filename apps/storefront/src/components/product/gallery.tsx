@@ -15,7 +15,8 @@ export function ProductGallery({ images, title }: { images: { id: string; url: s
             src={current.url}
             alt={images.length > 1 ? `${title}, zdjęcie ${active + 1} z ${images.length}` : title}
             fill
-            priority
+            loading="eager"
+            fetchPriority="high"
             sizes="(min-width: 768px) 50vw, 100vw"
             className="object-contain p-6"
           />

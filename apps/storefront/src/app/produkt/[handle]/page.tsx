@@ -125,7 +125,7 @@ export default function ProductPage(props: Props) {
     <Container className="flex flex-col gap-6 py-8">
       <Suspense
         fallback={
-          <div className="grid gap-8 md:grid-cols-2" role="status" aria-label="Ładowanie produktu">
+          <div className="grid min-h-svh content-start gap-8 md:grid-cols-2" role="status" aria-label="Ładowanie produktu">
             <Skeleton className="aspect-square" />
             <div className="flex flex-col gap-3">
               <Skeleton className="h-10 w-3/4" />

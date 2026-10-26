@@ -111,7 +111,7 @@ Statusy: TODO · IN PROGRESS · BLOCKED · TESTING · DONE
 | ID | Zadanie | Status | Uwagi |
 |---|---|---|---|
 | E9-1 | Pełna polityka CSP sklepu | DONE | `src/lib/csp.ts` w `next.config.ts`; domeny GA4/Meta tylko przy identyfikatorach; test jednostkowy i E2E bez naruszeń (D-038) |
-| E9-2 | Wydajność (Core Web Vitals) | TODO | Pomiar Lighthouse na kluczowych stronach, poprawki |
+| E9-2 | Wydajność (Core Web Vitals) | DONE (lokalnie), pomiar na stagingu w Etapie 10 | Lighthouse 13 (profil mobilny, symulowane wolne 4G) na stronie głównej, kategorii, produkcie i wpisie. Poprawki: przesunięcia układu przy doładowaniu treści (CLS 0,15 → 0), kolejność nagłówków na listingu, główne zdjęcie z `fetchPriority="high"` zamiast przestarzałego `priority`. Wyniki w `TEST_REPORT.md` |
 | E9-3 | Skan bezpieczeństwa (DAST) | TODO | HawkScan wymaga klucza `HAWK_API_KEY`; alternatywa bez kont: OWASP ZAP baseline |
 | E9-4 | Testy uprawnień i pełne ścieżki zakupu | TODO | Przegląd pokrycia ról panelu i scenariuszy zakupu |
 

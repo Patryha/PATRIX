@@ -109,7 +109,7 @@ async function PostContent({ params }: Props) {
         </header>
         {cover ? (
           <div className="relative aspect-[16/9] overflow-hidden rounded-lg bg-surface-muted">
-            <Image src={cover} alt={post.cover_alt ?? ""} fill sizes="(min-width: 768px) 768px, 100vw" className="object-cover" priority />
+            <Image src={cover} alt={post.cover_alt ?? ""} fill sizes="(min-width: 768px) 768px, 100vw" className="object-cover" loading="eager" fetchPriority="high" />
           </div>
         ) : null}
         <BlogBody body={post.body} />
@@ -128,7 +128,7 @@ export default function BlogPostPage(props: Props) {
     <Container className="flex flex-col gap-6 py-8">
       <Suspense
         fallback={
-          <div className="mx-auto flex w-full max-w-3xl flex-col gap-3" role="status" aria-label="Ładowanie wpisu">
+          <div className="mx-auto flex min-h-svh w-full max-w-3xl flex-col gap-3" role="status" aria-label="Ładowanie wpisu">
             <Skeleton className="h-10 w-3/4" />
             <Skeleton className="h-6 w-1/3" />
             <Skeleton className="h-64" />

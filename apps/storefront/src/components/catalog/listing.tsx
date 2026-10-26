@@ -93,7 +93,11 @@ export function CatalogListing({ pathname, products, brands, params, extra = {},
           ))}
         </div>
         {pageItems.length ? (
-          <ProductGrid products={pageItems} />
+          <>
+            {/* Nagłówek dla czytników ekranu: karty produktów mają h3, więc kolejność nagłówków jest ciągła. */}
+            <h2 className="sr-only">Produkty</h2>
+            <ProductGrid products={pageItems} />
+          </>
         ) : (
           <p className="rounded-lg border border-dashed border-border p-8 text-center text-muted">{hasFilters ? "Brak produktów spełniających wybrane filtry." : emptyText}</p>
         )}

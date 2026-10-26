@@ -94,7 +94,7 @@ export default function BlogPage(props: Props) {
       <h1 className="text-3xl font-extrabold md:text-4xl">Blog</h1>
       <Suspense
         fallback={
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" role="status" aria-label="Ładowanie wpisów">
+          <div className="grid min-h-svh content-start gap-4 sm:grid-cols-2 lg:grid-cols-3" role="status" aria-label="Ładowanie wpisów">
             {Array.from({ length: 3 }, (_, i) => (
               <Skeleton key={i} className="h-64" />
             ))}

@@ -120,3 +120,8 @@
 ## 2026-10-26: Etap 9 (CSP)
 - Pełna polityka CSP sklepu: wszystko tylko z własnej domeny, domeny Google/Meta dopiero przy podanych identyfikatorach; nonce odrzucony, bo wyłączyłby częściowe prerenderowanie (D-038).
 - Testy: storefront unit 54/54, lint OK, typy OK, build OK, E2E 86/86 (w tym brak naruszeń CSP). Backend bez zmian.
+
+## 2026-10-26: Etap 9 (wydajność)
+- Pomiar Lighthouse na czterech kluczowych stronach. Naprawione: przesunięcie stopki przy doładowaniu treści (CLS 0,15 → 0), kolejność nagłówków na listingu, priorytet pobierania głównego zdjęcia. Dostępność i dobre praktyki 100/100.
+- LCP 2,9–3,8 s w symulacji wolnego 4G na lokalnym serwerze; pomiar miarodajny na stagingu z CDN (Etap 10). Wyłączenie preloadu czcionek sprawdzone i cofnięte (brak poprawy, nowe przesunięcie układu).
+- Testy: storefront unit 54/54, lint OK, typy OK, build OK, E2E 86/86.
