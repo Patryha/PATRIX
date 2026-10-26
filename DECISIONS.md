@@ -64,3 +64,6 @@ Ranking liczony z ilości w zamówieniach (bez anulowanych i szkiców) z 30 dni,
 
 ## D-020 Ostatnio oglądane tylko w przeglądarce
 Lista uchwytów produktów w `localStorage` (maks. 12), bez wysyłania na serwer poza pobraniem kart produktów; nie wymaga zgody na śledzenie.
+
+## D-021 Ulubione: ciasteczko gościa, metadane konta klienta
+Gość: lista uchwytów w ciasteczku httpOnly `patrix_fav` (do 60 pozycji, 180 dni). Klient: `customer.metadata.patrix_favorites`, więc lista jest dostępna na każdym urządzeniu; po zalogowaniu lista gościa jest dołączana do konta, a ciasteczko usuwane. Dane są czyszczone przy każdym odczycie (tylko poprawne uchwyty). Osobny moduł w backendzie nie jest potrzebny, dopóki nie ma powiadomień o obniżkach ulubionych (wymagałyby zgody i dostawcy e-mail).

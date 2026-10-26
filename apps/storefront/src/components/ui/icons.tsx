@@ -82,6 +82,11 @@ export const CartIcon = (p: IconProps) => (
     <circle cx="17" cy="20" r="1.3" />
   </Icon>
 )
+export const HeartIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M12 20s-7-4.4-9-9a4.8 4.8 0 0 1 9-3 4.8 4.8 0 0 1 9 3c-2 4.6-9 9-9 9Z" />
+  </Icon>
+)
 export const UserIcon = (p: IconProps) => (
   <Icon {...p}>
     <circle cx="12" cy="8" r="4" />

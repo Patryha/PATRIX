@@ -60,7 +60,7 @@ Statusy: TODO · IN PROGRESS · BLOCKED · TESTING · DONE
 | E4-3 | Podgląd szkicu przed publikacją | DONE | Jednorazowy token (w bazie tylko skrót SHA-256), ważny 60 min, unieważniany przy publikacji; `/podglad` z `noindex` |
 | E4-4 | Sekcje sklepu: pasek informacyjny, slider, kategorie, nowości, bestsellery, promocje tygodnia, polecane, ostatnio oglądane, o marce, dostawy i płatności | DONE | Slider z pauzą (WCAG 2.2.2) i bez autoodtwarzania przy `prefers-reduced-motion`; bestsellery z zamówień z 30 dni; ostatnio oglądane tylko w przeglądarce klienta; E2E + axe |
 | E4-5 | Newsletter (zapis z podwójnym potwierdzeniem) | TODO | Wymaga dostawcy e-mail i zgody właściciela na wysyłkę (Etap 6); sekcja nie jest pokazywana, dopóki nie działa |
-| E4-6 | Ulubione | TODO | |
+| E4-6 | Ulubione | DONE | Przycisk na karcie produktu (formularz, działa bez JS), strona `/ulubione`, licznik w nagłówku; gość: ciasteczko httpOnly, klient: metadane konta (przeniesienie po zalogowaniu); E2E + axe |
 | E4-7 | Zestawy (bundles) | TODO | Sekcja „Zestawy” po dodaniu modelu zestawów |
 | E4-8 | Mega menu z grafikami, rozbudowana stopka z CMS | TODO | |
 | E4-9 | Dashboard KPI, import produktów CSV/XLSX, zmiany masowe, zarządzanie rolami w panelu | TODO | |

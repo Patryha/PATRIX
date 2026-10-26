@@ -3,6 +3,7 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 import { Suspense } from "react"
 import { RecentlyViewed, TrackRecent } from "@/components/cms/recently-viewed"
+import { FavoriteButton } from "@/components/product/favorite-button"
 import { ProductFacts } from "@/components/product/product-facts"
 import { ProductGallery } from "@/components/product/gallery"
 import { VariantPicker } from "@/components/product/variant-picker"
@@ -10,6 +11,7 @@ import { Container } from "@/components/ui/container"
 import { Skeleton } from "@/components/ui/skeleton"
 import { siteUrl } from "@/lib/config"
 import { getProductByHandle } from "@/lib/data/products"
+import { getFavorites } from "@/lib/favorites"
 import { breadcrumbJsonLd, jsonLd, productJsonLd } from "@/lib/seo/json-ld"
 
 type Props = { params: Promise<{ handle: string }> }
@@ -32,6 +34,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       images: product.thumbnail ? [product.thumbnail] : undefined,
     },
   }
+}
+
+async function FavoriteToggle({ handle }: { handle: string }) {
+  const favorites = await getFavorites().catch((): string[] => [])
+  return <FavoriteButton handle={handle} initial={favorites.includes(handle)} />
 }
 
 async function ProductContent({ params }: Props) {
@@ -85,6 +92,9 @@ async function ProductContent({ params }: Props) {
             </p>
           ) : null}
           <VariantPicker options={product.options} variants={product.variants} lowest30d={product.lowest30d} measure={product.measure} />
+          <Suspense fallback={<div className="min-h-11" />}>
+            <FavoriteToggle handle={product.handle} />
+          </Suspense>
           <ProductFacts compliance={product.compliance} description={product.description} />
         </div>
       </div>

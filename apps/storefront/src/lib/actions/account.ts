@@ -1,6 +1,7 @@
 "use server"
 
 import { redirect } from "next/navigation"
+import { attachGuestFavorites } from "../favorites"
 import { sdk } from "../medusa"
 import { clearAuthToken, clearCartId, getCartId, setAuthToken } from "../session"
 import { fieldErrors } from "../validation/checkout"
@@ -26,6 +27,7 @@ async function attachCart(token: string) {
   if (cartId) {
     await sdk.store.cart.transferCart(cartId, { fields: "id" }, { authorization: `Bearer ${token}` }).catch(() => clearCartId())
   }
+  await attachGuestFavorites(token)
 }
 
 function formValues(formData: FormData) {
