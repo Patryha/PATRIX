@@ -9,6 +9,7 @@ import {
 } from "@medusajs/medusa/core-flows"
 import { snapshotPrices } from "../lib/catalog/price-snapshot"
 import { PATRIX_CATALOG_MODULE, type PatrixCatalogService } from "../modules/patrix-catalog"
+import { PATRIX_SEO_MODULE, type PatrixSeoService } from "../modules/patrix-seo"
 
 /**
  * KATALOG TESTOWY do testów E2E i pracy lokalnej. To NIE są prawdziwe produkty:
@@ -205,6 +206,7 @@ export default async function seedTestCatalog({ container }: ExecArgs) {
   await snapshotPrices(container)
   await ensureTestShippingOption(container, profile.id)
   await ensureTestPromotion(container)
+  await ensureTestRedirect(container)
 }
 
 /** Pozycje magazynowe składników zestawu (wariant zestawu zdejmuje je ze stanu przy sprzedaży). */
@@ -281,4 +283,13 @@ async function ensureTestPromotion(container: ExecArgs["container"]) {
     },
   })
   container.resolve(ContainerRegistrationKeys.LOGGER).info("Katalog testowy: utworzono kod TEST10")
+}
+
+/** Testowe przekierowanie starego adresu do testów E2E (adres z prefiksem /test-). */
+async function ensureTestRedirect(container: ExecArgs["container"]) {
+  const seo = container.resolve<PatrixSeoService>(PATRIX_SEO_MODULE)
+  const [existing] = await seo.listRedirects({ from_path: "/test-stary-adres" })
+  if (!existing) {
+    await seo.createRedirects({ from_path: "/test-stary-adres", to_path: "/produkt/test-krem-do-rak", permanent: true, note: "[TEST] przekierowanie do testów E2E" })
+  }
 }

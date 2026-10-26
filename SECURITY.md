@@ -23,6 +23,10 @@
 - Rekomendacje: limit 300 żądań/min z IP, identyfikatory walidowane (`prod_…`, maks. 50); para „kupowane razem” dopiero z 2 różnych zamówień (D-033).
 - Statystyki fraz bez danych klienta (bez IP, identyfikatora, sesji); zmiana synonimów wymaga uprawnienia `product:write`.
 
+## SEO (Etap 8)
+- Przekierowania tylko na ścieżki sklepu (walidacja w backendzie i ponownie w proxy sklepu): brak otwartych przekierowań; adresów panelu nie można przekierować; uprawnienie `content`.
+- Staging nie jest indeksowany (`robots.txt` i metatag robots), dopóki `NEXT_PUBLIC_ALLOW_INDEXING` nie jest `true`.
+
 ## Znane ryzyka
 - `npm audit` backendu: podatności „high” w zależnościach tranzytywnych Medusy (`@graphql-tools/utils` — prototype pollution w `mergeDeep`; `vite` — dotyczy serwera deweloperskiego panelu). `lodash` podniesiony przez `overrides` do 4.18.1. Pozostałe czekają na aktualizację Medusy (Dependabot grupuje `@medusajs/*`). Produkcja nie uruchamia serwera deweloperskiego Vite.
 - Ścisłe CSP `script-src` z nonce: Etap 9 (po wyborze dostawców płatności i analityki).

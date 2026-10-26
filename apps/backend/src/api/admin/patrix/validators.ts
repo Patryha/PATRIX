@@ -163,3 +163,13 @@ export const SaveSynonymSchema = z
   })
   .strict()
 export type SaveSynonymBody = z.infer<typeof SaveSynonymSchema>
+
+export const SaveRedirectSchema = z
+  .object({
+    from_path: z.string().trim().min(1).max(500),
+    to_path: z.string().trim().min(1).max(500),
+    permanent: z.boolean().default(true),
+    note: optionalText(300),
+  })
+  .strict()
+export type SaveRedirectBody = z.infer<typeof SaveRedirectSchema>

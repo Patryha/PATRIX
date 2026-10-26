@@ -96,6 +96,17 @@ Statusy: TODO · IN PROGRESS · BLOCKED · TESTING · DONE
 | E7-3 | Wsparcie AI dla pracowników (propozycje opisów, tłumaczeń z etykiet) z akceptacją człowieka | TODO | Wymaga wyboru dostawcy modelu i zgody właściciela na płatną usługę |
 | E7-4 | Chatbot na zweryfikowanej wiedzy | TODO | Jak E7-3 |
 
+## Etap 8: Marketing i SEO
+| ID | Zadanie | Status | Rozwiązanie / weryfikacja |
+|---|---|---|---|
+| E8-1 | Mapa strony i robots.txt | DONE | `app/sitemap.ts`, `app/robots.ts`, `lib/data/sitemap.ts`; indeksowanie tylko z `NEXT_PUBLIC_ALLOW_INDEXING=true` (D-034); E2E |
+| E8-2 | Przekierowania 301/302 | DONE | Moduł `patrix-seo`, `src/lib/redirects.ts` (walidacja: tylko ścieżki sklepu, bez łańcuchów i pętli), `/admin/patrix/redirects`, `/store/patrix/redirects`, panel „Przekierowania”, `src/proxy.ts` w sklepie; testy jednostkowe, integracyjne, E2E, panel sprawdzony w przeglądarce |
+| E8-3 | Metadane i dane strukturalne | DONE (Etap 2) | Kanoniczne adresy, Open Graph, JSON-LD produktu i ścieżki nawigacji |
+| E8-4 | Zgody na cookies (CMP), GA4/Meta za zgodą | TODO | |
+| E8-5 | Feed Google Merchant Center | TODO | Konto Merchant Center właściciela potrzebne dopiero do podpięcia feedu |
+| E8-6 | Blog | TODO | |
+| E8-7 | Newsletter z podwójnym potwierdzeniem | BLOCKED | = E4-5 (dostawca e-mail i zgoda na wysyłkę) |
+
 ## Zadania wymagające właściciela
 | ID | Czego potrzeba | Status |
 |---|---|---|

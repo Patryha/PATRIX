@@ -95,3 +95,8 @@
 - Karta produktu: „Często kupowane razem” (z zamówień, para z co najmniej 2 różnych zamówień) i „Podobne produkty” (ta sama kategoria, kolejność według marki, typu i tagów). Koszyk: „Klienci kupowali też”.
 - Bez danych osobowych i historii przeglądania (D-033); sekcja bez danych się nie pokazuje.
 - Testy: backend unit 86/86, integracyjne 47/47, storefront unit 34/34, build OK, E2E 72/72.
+
+## 2026-10-26: Etap 8 (SEO: mapa strony, robots, przekierowania)
+- `/sitemap.xml` (strona główna, kategorie, marki, produkty) i `/robots.txt`; indeksowanie włączy się dopiero na produkcji (D-034).
+- Panel „Przekierowania”: stare adresy na nowe (301 na stałe albo 302 tymczasowo), z ochroną przed pętlami, łańcuchami i adresami spoza sklepu; sklep stosuje zmiany w ciągu minuty. Sprawdzony w przeglądarce.
+- Testy: backend unit 89/89, integracyjne 48/48, storefront unit 35/35, build OK, E2E 78/78.
