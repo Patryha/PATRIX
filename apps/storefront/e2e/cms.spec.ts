@@ -35,6 +35,15 @@ test.describe("strona główna z CMS", () => {
     await expect(links.nth(1)).toHaveText("[TEST] Ciastka maślane")
   })
 
+  test("stopka z CMS: kolumny z linkami, bez danych kontaktowych, dopóki nie wpisze ich właściciel", async ({ page }) => {
+    await page.goto("/koszyk")
+    const footer = page.getByRole("contentinfo")
+    await expect(footer.getByRole("navigation", { name: "Informacje" }).getByRole("link", { name: "Regulamin" })).toBeVisible()
+    await footer.getByRole("navigation", { name: "Zakupy" }).getByRole("link", { name: "Ulubione" }).click()
+    await expect(page).toHaveURL(/\/ulubione$/)
+    await expect(page.getByRole("contentinfo").locator("address")).toHaveCount(0)
+  })
+
   test("strona główna z sekcjami CMS spełnia WCAG 2.2 AA", async ({ page }) => {
     await page.goto("/")
     await page.getByRole("region", { name: "Promocje tygodnia" }).getByRole("link").first().waitFor()

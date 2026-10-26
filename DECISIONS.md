@@ -64,3 +64,12 @@ Ranking liczony z ilości w zamówieniach (bez anulowanych i szkiców) z 30 dni,
 
 ## D-020 Ostatnio oglądane tylko w przeglądarce
 Lista uchwytów produktów w `localStorage` (maks. 12), bez wysyłania na serwer poza pobraniem kart produktów; nie wymaga zgody na śledzenie.
+
+## D-021 Ulubione: ciasteczko gościa, metadane konta klienta
+Gość: lista uchwytów w ciasteczku httpOnly `patrix_fav` (do 60 pozycji, 180 dni). Klient: `customer.metadata.patrix_favorites`, więc lista jest dostępna na każdym urządzeniu; po zalogowaniu lista gościa jest dołączana do konta, a ciasteczko usuwane. Dane są czyszczone przy każdym odczycie (tylko poprawne uchwyty). Osobny moduł w backendzie nie jest potrzebny, dopóki nie ma powiadomień o obniżkach ulubionych (wymagałyby zgody i dostawcy e-mail).
+
+## D-022 Zestawy jako natywne „inventory kits” Medusy
+Zestaw to zwykły produkt, którego wariant ma kilka pozycji magazynowych (albo jedną w ilości > 1). Cenę zestawu ustala właściciel; sprzedaż zestawu rezerwuje i zdejmuje ze stanu składniki, więc dostępność zestawu wynika ze stanów składników. Skład pokazujemy na karcie produktu (endpoint szczegółów zwraca `bundles`), a sekcja CMS „Zestawy” pobiera listę z `/store/patrix/bundles`. Nie ma osobnego modelu danych do utrzymania.
+
+## D-023 Menu i stopka jako osobna strona CMS (`layout`)
+Ten sam mechanizm wersji, podglądu i publikacji co strona główna, z własnym schematem (`patrix-cms/layout.ts`). Startowa stopka zawiera tylko linki do istniejących stron; dane kontaktowe i opis firmy wpisuje właściciel, a puste pola nie są pokazywane. Obraz w menu wymaga opisu alt. Testy (`NODE_ENV=test`) używają modułów w pamięci i licznika limitów w pamięci, nawet jeśli `.env` ustawia `REDIS_URL`, aby nie dzielić zdarzeń z lokalnie działającym backendem.

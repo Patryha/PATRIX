@@ -1,24 +1,13 @@
 import { defineRouteConfig } from "@medusajs/admin-sdk"
 import { House } from "@medusajs/icons"
-import { Badge, Button, Container, Heading, Input, Label, Switch, Table, Text, Textarea, toast } from "@medusajs/ui"
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { useEffect, useState, type DragEvent } from "react"
+import { Button, Container, Input, Label, Switch, Text, Textarea } from "@medusajs/ui"
+import { useQuery } from "@tanstack/react-query"
+import { useState, type DragEvent } from "react"
+import { CmsToolbar, DiscardDraftButton, useCmsPage, VersionHistory } from "../../lib/cms-page"
 import { sdk } from "../../lib/sdk"
 import { SECTION_DEFS, sectionSummary, type Field, type ListField, type SectionType } from "./fields"
 
 type Section = Record<string, any> & { id: string; type: SectionType; enabled: boolean }
-type Version = { id: string; version: number; status: "draft" | "published" | "archived"; note: string | null; published_at: string | null; updated_at: string }
-type PageData = {
-  draft: (Version & { content: { sections: Section[] } }) | null
-  published: (Version & { content: { sections: Section[] } }) | null
-  history: Version[]
-}
-
-const STATUS: Record<Version["status"], { label: string; color: "green" | "orange" | "grey" }> = {
-  published: { label: "Opublikowana", color: "green" },
-  draft: { label: "Szkic", color: "orange" },
-  archived: { label: "Archiwum", color: "grey" },
-}
 
 const ITEM_NAMES: Record<string, string> = { slides: "slajd", messages: "komunikat", items: "kafelek" }
 
@@ -33,22 +22,6 @@ function readableError(message: string, sections: Section[]) {
 }
 
 const newId = () => `s${Math.random().toString(36).slice(2, 10)}`
-const dateTime = (v: string | null) => (v ? new Date(v).toLocaleString("pl-PL") : "—")
-
-/** Usuwa puste pola (backend traktuje je jako brak wartości) i zamienia listy uchwytów na tablice. */
-function clean(value: unknown): unknown {
-  if (Array.isArray(value)) {
-    return value.map(clean)
-  }
-  if (value && typeof value === "object") {
-    return Object.fromEntries(
-      Object.entries(value)
-        .filter(([, v]) => v !== "" && v !== undefined && v !== null)
-        .map(([k, v]) => [k, clean(v)])
-    )
-  }
-  return typeof value === "string" ? value.trim() : value
-}
 
 function FieldInput({ field, value, onChange, idPrefix, categories }: { field: Field; value: any; onChange: (v: any) => void; idPrefix: string; categories: { handle: string; name: string }[] }) {
   const id = `${idPrefix}-${field.key}`
@@ -189,30 +162,20 @@ function ListEditor({ list, items, onChange, idPrefix, categories }: { list: Lis
 }
 
 const HomepagePage = () => {
-  const queryClient = useQueryClient()
-  const { data, isLoading } = useQuery({ queryKey: ["patrix-cms-home"], queryFn: () => sdk.client.fetch<PageData>("/admin/patrix/cms/pages/home") })
+  const page = useCmsPage<{ sections: Section[] }>("home", (message, content) => readableError(message, content?.sections ?? []))
+  const { isLoading } = page
+  const sections = page.content?.sections ?? null
   const { data: cats } = useQuery({
     queryKey: ["patrix-cms-categories"],
     queryFn: () => sdk.client.fetch<{ product_categories: { handle: string; name: string }[] }>("/admin/product-categories", { query: { fields: "handle,name", limit: 500 } }),
   })
   const categories = cats?.product_categories ?? []
 
-  const [sections, setSections] = useState<Section[] | null>(null)
-  const [dirty, setDirty] = useState(false)
   const [open, setOpen] = useState<string | null>(null)
   const [dragged, setDragged] = useState<number | null>(null)
   const [newType, setNewType] = useState<SectionType>("product_rail")
 
-  useEffect(() => {
-    if (data && !dirty) {
-      setSections((data.draft ?? data.published)?.content.sections ?? [])
-    }
-  }, [data, dirty])
-
-  const update = (next: Section[]) => {
-    setSections(next)
-    setDirty(true)
-  }
+  const update = (next: Section[]) => page.update({ sections: next })
   const patch = (id: string, key: string, value: unknown) => update((sections ?? []).map((s) => (s.id === id ? { ...s, [key]: value } : s)))
   const move = (from: number, to: number) => {
     if (!sections || to < 0 || to >= sections.length || from === to) {
@@ -223,66 +186,6 @@ const HomepagePage = () => {
     next.splice(to, 0, item)
     update(next)
   }
-
-  const refresh = () => queryClient.invalidateQueries({ queryKey: ["patrix-cms-home"] })
-  const onError = (e: Error) => toast.error("Nie zapisano", { description: readableError(e.message, sections ?? []) })
-  const saveDraft = () => sdk.client.fetch("/admin/patrix/cms/pages/home/draft", { method: "POST", body: { content: clean({ sections }) } })
-
-  const save = useMutation({
-    mutationFn: saveDraft,
-    onSuccess: () => {
-      setDirty(false)
-      refresh()
-      toast.success("Zapisano szkic")
-    },
-    onError,
-  })
-  const preview = useMutation({
-    mutationFn: async () => {
-      if (dirty || !data?.draft) {
-        await saveDraft()
-      }
-      return sdk.client.fetch<{ url: string }>("/admin/patrix/cms/pages/home/preview", { method: "POST" })
-    },
-    onSuccess: ({ url }) => {
-      setDirty(false)
-      refresh()
-      window.open(url, "_blank", "noopener")
-    },
-    onError,
-  })
-  const publish = useMutation({
-    mutationFn: async () => {
-      if (dirty || !data?.draft) {
-        await saveDraft()
-      }
-      return sdk.client.fetch("/admin/patrix/cms/pages/home/publish", { method: "POST" })
-    },
-    onSuccess: () => {
-      setDirty(false)
-      refresh()
-      toast.success("Opublikowano", { description: "Sklep pokaże zmiany w ciągu kilku minut." })
-    },
-    onError,
-  })
-  const discard = useMutation({
-    mutationFn: () => sdk.client.fetch("/admin/patrix/cms/pages/home/draft", { method: "DELETE" }),
-    onSuccess: () => {
-      setDirty(false)
-      refresh()
-      toast.success("Odrzucono szkic")
-    },
-    onError,
-  })
-  const restore = useMutation({
-    mutationFn: (id: string) => sdk.client.fetch(`/admin/patrix/cms/pages/home/versions/${id}/restore`, { method: "POST" }),
-    onSuccess: () => {
-      setDirty(false)
-      refresh()
-      toast.success("Przywrócono wersję do szkicu", { description: "Sprawdź podgląd i opublikuj." })
-    },
-    onError,
-  })
 
   const addSection = () => {
     const id = newId()
@@ -302,7 +205,6 @@ const HomepagePage = () => {
     setDragged(null)
   }
 
-  const busy = save.isPending || preview.isPending || publish.isPending
   const hasBar = (sections ?? []).some((s) => s.type === "announcement_bar")
 
   if (isLoading || !sections) {
@@ -316,35 +218,12 @@ const HomepagePage = () => {
   return (
     <div className="flex flex-col gap-y-3">
       <Container className="divide-y p-0">
-        <div className="flex flex-wrap items-start justify-between gap-4 px-6 py-4">
-          <div>
-            <Heading level="h1">Strona główna</Heading>
-            <Text size="small" className="text-ui-fg-subtle">
-              Kolejność zmieniasz przeciągając sekcje albo strzałkami. Zmiany trafiają do szkicu; klienci widzą je po publikacji.
-            </Text>
-            <div className="mt-2 flex flex-wrap gap-2">
-              {data?.published ? <Badge color="green">Opublikowana: wersja {data.published.version}</Badge> : <Badge color="grey">Brak publikacji</Badge>}
-              {data?.draft ? <Badge color="orange">Szkic: wersja {data.draft.version}</Badge> : null}
-              {dirty ? <Badge color="red">Niezapisane zmiany</Badge> : null}
-            </div>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <Button size="small" variant="secondary" onClick={() => save.mutate()} isLoading={save.isPending} disabled={busy || !dirty}>
-              Zapisz szkic
-            </Button>
-            <Button size="small" variant="secondary" onClick={() => preview.mutate()} isLoading={preview.isPending} disabled={busy}>
-              Podgląd
-            </Button>
-            <Button
-              size="small"
-              onClick={() => window.confirm("Opublikować stronę główną? Klienci zobaczą zmiany w ciągu kilku minut.") && publish.mutate()}
-              isLoading={publish.isPending}
-              disabled={busy || (!dirty && !data?.draft)}
-            >
-              Opublikuj
-            </Button>
-          </div>
-        </div>
+        <CmsToolbar
+          page={page}
+          title="Strona główna"
+          description="Kolejność zmieniasz przeciągając sekcje albo strzałkami. Zmiany trafiają do szkicu; klienci widzą je po publikacji."
+          publishQuestion="Opublikować stronę główną? Klienci zobaczą zmiany w ciągu kilku minut."
+        />
 
         <ol className="flex flex-col" aria-label="Sekcje strony głównej">
           {sections.map((s, i) => {
@@ -433,51 +312,11 @@ const HomepagePage = () => {
           <Button size="small" variant="secondary" onClick={addSection}>
             Dodaj sekcję
           </Button>
-          {data?.draft ? (
-            <Button size="small" variant="transparent" onClick={() => window.confirm("Odrzucić szkic i wrócić do wersji opublikowanej?") && discard.mutate()}>
-              Odrzuć szkic
-            </Button>
-          ) : null}
+          <DiscardDraftButton page={page} />
         </div>
       </Container>
 
-      <Container className="p-0">
-        <div className="px-6 py-4">
-          <Heading level="h2">Historia wersji</Heading>
-        </div>
-        <Table>
-          <Table.Header>
-            <Table.Row>
-              <Table.HeaderCell>Wersja</Table.HeaderCell>
-              <Table.HeaderCell>Status</Table.HeaderCell>
-              <Table.HeaderCell>Notatka</Table.HeaderCell>
-              <Table.HeaderCell>Opublikowano</Table.HeaderCell>
-              <Table.HeaderCell>Zmieniono</Table.HeaderCell>
-              <Table.HeaderCell />
-            </Table.Row>
-          </Table.Header>
-          <Table.Body>
-            {(data?.history ?? []).map((v) => (
-              <Table.Row key={v.id}>
-                <Table.Cell>{v.version}</Table.Cell>
-                <Table.Cell>
-                  <Badge color={STATUS[v.status].color}>{STATUS[v.status].label}</Badge>
-                </Table.Cell>
-                <Table.Cell>{v.note ?? "—"}</Table.Cell>
-                <Table.Cell>{dateTime(v.published_at)}</Table.Cell>
-                <Table.Cell>{dateTime(v.updated_at)}</Table.Cell>
-                <Table.Cell>
-                  {v.status === "draft" ? null : (
-                    <Button size="small" variant="secondary" onClick={() => restore.mutate(v.id)} isLoading={restore.isPending}>
-                      Przywróć do szkicu
-                    </Button>
-                  )}
-                </Table.Cell>
-              </Table.Row>
-            ))}
-          </Table.Body>
-        </Table>
-      </Container>
+      <VersionHistory page={page} />
     </div>
   )
 }

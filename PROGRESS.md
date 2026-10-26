@@ -38,3 +38,10 @@
 - Seed publikuje startową wersję strony (tylko teksty o marce, bez danych firmy i cen).
 - Testy: backend unit 49/49, integracyjne 21/21, storefront unit 30/30, E2E 60/60.
 - Nie zrobione w tym kroku: newsletter (wymaga dostawcy e-mail i zgody), ulubione, zestawy, mega menu z grafikami, KPI, import.
+
+## 2026-10-26: Etap 4 (ulubione, zestawy, menu i stopka)
+- Ulubione: przycisk na karcie produktu, strona `/ulubione`, licznik w nagłówku; gość w ciasteczku, klient na koncie; po zalogowaniu lista gościa trafia na konto (D-021).
+- Zestawy: natywne zestawy magazynowe Medusy, skład „W zestawie” na karcie produktu, nowe źródło sekcji CMS „Zestawy” (D-022).
+- Menu i stopka z panelu: grafiki kategorii w menu (z opisem alt), kolumny linków, opis sklepu, kontakt i dopisek w stopce; szkic, podgląd, publikacja i historia wersji jak dla strony głównej. Wspólny kod panelu CMS w `src/admin/lib/cms-page.tsx` (D-023).
+- Testy integracyjne nie korzystają już z lokalnego Redisa (wcześniej działający backend deweloperski przechwytywał zdarzenia testów).
+- Testy: backend unit 52/52, integracyjne 22/22, storefront unit 33/33, E2E 66/66.

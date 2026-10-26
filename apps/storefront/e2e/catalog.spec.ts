@@ -69,7 +69,8 @@ test.describe("listing", () => {
   test("filtruje po dostępności i sortuje po cenie (bez JavaScriptu też działa przez GET)", async ({ page }) => {
     await page.goto("/szukaj?q=TEST")
     const cards = page.getByRole("article")
-    await expect(cards).toHaveCount(3)
+    // 4 produkty [TEST]: żel, ciastka, krem i zestaw kremów (zestaw niedostępny, bo krem nie ma stanu)
+    await expect(cards).toHaveCount(4)
 
     await page.getByLabel("Sortuj").selectOption("price_asc")
     await page.getByRole("button", { name: "Pokaż wyniki" }).click()
@@ -93,7 +94,7 @@ test.describe("listing", () => {
   test("strona marki pokazuje jej produkty", async ({ page }) => {
     await page.goto("/marka/test-marka")
     await expect(page.getByRole("heading", { level: 1, name: "[TEST] Marka testowa" })).toBeVisible()
-    await expect(page.getByRole("article")).toHaveCount(3)
+    await expect(page.getByRole("article")).toHaveCount(4)
   })
 
   test("listing spełnia WCAG 2.2 AA (axe)", async ({ page }) => {

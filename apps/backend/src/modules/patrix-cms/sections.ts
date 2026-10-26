@@ -6,16 +6,16 @@ import { z } from "@medusajs/framework/zod"
  */
 
 /** Link wewnętrzny sklepu ("/kategoria/...") albo zewnętrzny https. */
-const href = z
+export const href = z
   .string()
   .trim()
   .max(500)
   .refine((v) => /^\/(?![/\\])/.test(v) || /^https:\/\/[^\s]+$/.test(v), "Link: ścieżka sklepu (/...) lub adres https://")
 /** Obraz z magazynu plików (https) albo z katalogu publicznego sklepu ("/..."). */
-const imageUrl = href
-const text = (max: number) => z.string().trim().min(1, "Pole wymagane").max(max)
-const optionalText = (max: number) => z.string().trim().max(max).optional()
-const handle = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Uchwyt: małe litery, cyfry i myślniki")
+export const imageUrl = href
+export const text = (max: number) => z.string().trim().min(1, "Pole wymagane").max(max)
+export const optionalText = (max: number) => z.string().trim().max(max).optional()
+export const handle = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Uchwyt: małe litery, cyfry i myślniki")
 
 const base = {
   id: z.string().regex(/^[a-zA-Z0-9_-]{4,40}$/),
@@ -60,7 +60,7 @@ export const CategoryTilesSection = z.object({
   category_handles: z.array(handle).max(24).default([]),
 })
 
-export const PRODUCT_SOURCES = ["newest", "bestsellers", "on_sale", "category", "products"] as const
+export const PRODUCT_SOURCES = ["newest", "bestsellers", "on_sale", "bundles", "category", "products"] as const
 
 export const ProductRailSection = z.object({
     ...base,
@@ -137,5 +137,5 @@ export const PageContentSchema = z
   })
 export type PageContent = z.infer<typeof PageContentSchema>
 
-export const PAGE_KEYS = ["home"] as const
+export const PAGE_KEYS = ["home", "layout"] as const
 export type PageKey = (typeof PAGE_KEYS)[number]

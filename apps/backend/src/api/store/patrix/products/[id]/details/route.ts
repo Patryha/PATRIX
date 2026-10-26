@@ -1,5 +1,6 @@
 import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { ContainerRegistrationKeys, MedusaError } from "@medusajs/framework/utils"
+import { bundleContents } from "../../../../../../lib/catalog/bundles"
 import { toPublicCompliance } from "../../../../../../lib/catalog/public-compliance"
 import { PATRIX_CATALOG_MODULE, type PatrixCatalogService } from "../../../../../../modules/patrix-catalog"
 
@@ -39,5 +40,6 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
     compliance: toPublicCompliance(compliance as unknown as Record<string, unknown> | null),
     brand: brand[0] ? { id: brand[0].id, name: brand[0].name, handle: brand[0].handle } : null,
     omnibus,
+    bundles: await bundleContents(query, product.id),
   })
 }

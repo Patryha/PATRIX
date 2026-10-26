@@ -1,6 +1,8 @@
 import { Suspense } from "react"
 import { Container } from "@/components/ui/container"
+import { menuImages } from "@/lib/cms/layout"
 import { listTopCategories } from "@/lib/data/categories"
+import { getLayout } from "@/lib/data/cms"
 import { CategoryMenu } from "./category-menu"
 import { HeaderActions, HeaderActionsFallback } from "./header-actions"
 import { Logo } from "./logo"
@@ -8,8 +10,8 @@ import { SearchForm } from "./search-form"
 import { ThemeToggle } from "./theme-toggle"
 
 async function CategoryMenuLoader() {
-  const categories = await listTopCategories().catch(() => [])
-  return <CategoryMenu categories={categories} />
+  const [categories, layout] = await Promise.all([listTopCategories().catch(() => []), getLayout()])
+  return <CategoryMenu categories={categories} images={menuImages(layout)} />
 }
 
 function CategoryMenuFallback() {

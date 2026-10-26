@@ -82,6 +82,32 @@ medusaIntegrationTestRunner({
       expect((await errorOf(api.post("/admin/patrix/cms/pages/home/publish", {}, marketing))).status).toBe(404)
     })
 
+    it("menu and footer (layout page): own schema, publish, preview", async () => {
+      const layout = {
+        menu: { items: [{ category_handle: "srodki-do-prania", image_url: "https://example.test/pranie.jpg", image_alt: "Środki do prania" }] },
+        footer: { columns: [{ title: "Zakupy", links: [{ label: "Wyszukiwarka", href: "/szukaj" }] }], contact: { email: "kontakt@example.test" } },
+      }
+      // Treść strony głównej nie przechodzi schematu menu i stopki
+      expect((await errorOf(api.post("/admin/patrix/cms/pages/layout/draft", { content: CONTENT }, marketing))).status).toBe(400)
+      const noAlt = { ...layout, menu: { items: [{ category_handle: "srodki-do-prania", image_url: "https://example.test/p.jpg" }] } }
+      const missingAlt = await errorOf(api.post("/admin/patrix/cms/pages/layout/draft", { content: noAlt }, marketing))
+      expect(missingAlt.status).toBe(400)
+      expect(missingAlt.data.message).toContain("menu.items.0.image_alt")
+      const badPhone = { ...layout, footer: { ...layout.footer, contact: { phone: "zadzwoń" } } }
+      expect((await errorOf(api.post("/admin/patrix/cms/pages/layout/draft", { content: badPhone }, marketing))).status).toBe(400)
+
+      await api.post("/admin/patrix/cms/pages/layout/draft", { content: layout }, marketing)
+      const { data: preview } = await api.post("/admin/patrix/cms/pages/layout/preview", {}, marketing)
+      const token = new URL(preview.url).searchParams.get("token")
+      const { data: draft } = await api.get(`/store/patrix/cms/preview?token=${token}`, store)
+      expect(draft.page.page_key).toBe("layout")
+
+      await api.post("/admin/patrix/cms/pages/layout/publish", {}, marketing)
+      const { data } = await api.get("/store/patrix/cms/pages/layout", store)
+      expect(data.page.content.footer.contact.email).toBe("kontakt@example.test")
+      expect(data.page.content.menu.items).toHaveLength(1)
+    })
+
     it("denies staff without the content permission", async () => {
       expect((await errorOf(api.get("/admin/patrix/cms/pages/home", warehouse))).status).toBe(403)
       expect((await errorOf(api.post("/admin/patrix/cms/pages/home/draft", { content: CONTENT }, warehouse))).status).toBe(403)

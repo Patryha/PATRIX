@@ -1,17 +1,25 @@
 "use client"
 
+import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useEffect, useId, useRef, useState } from "react"
 import { ChevronRightIcon, CloseIcon, MenuIcon } from "@/components/ui/icons"
 import type { Category } from "@/lib/data/categories"
+import { canOptimize } from "@/lib/cms/images"
 import { cn } from "@/lib/cn"
 
 /**
  * Menu kategorii: na komputerze rozwijany panel (mega menu), na telefonie panel boczny.
  * Wzorzec "disclosure": przycisk z aria-expanded, Escape zamyka i oddaje fokus przyciskowi.
  */
-export function CategoryMenu({ categories }: { categories: Category[] }) {
+export function CategoryMenu({
+  categories,
+  images = {},
+}: {
+  categories: Category[]
+  images?: Record<string, { url: string; alt: string }>
+}) {
   const [open, setOpen] = useState(false)
   const panelId = useId()
   const buttonRef = useRef<HTMLButtonElement>(null)
@@ -79,6 +87,19 @@ export function CategoryMenu({ categories }: { categories: Category[] }) {
             <ul className="grid gap-x-6 gap-y-1 sm:grid-cols-2 md:grid-cols-3">
               {categories.map((category) => (
                 <li key={category.id}>
+                  {images[category.handle] ? (
+                    // Grafika kategorii z panelu (Menu i stopka): widoczna od tabletu, na telefonie lista bez obrazów.
+                    <div className="relative mb-1 hidden aspect-[16/9] overflow-hidden rounded-md bg-surface-muted md:block">
+                      <Image
+                        src={images[category.handle].url}
+                        alt={images[category.handle].alt}
+                        fill
+                        sizes="300px"
+                        className="object-cover"
+                        unoptimized={!canOptimize(images[category.handle].url)}
+                      />
+                    </div>
+                  ) : null}
                   <Link
                     href={`/kategoria/${category.handle}`}
                     className="group flex min-h-11 items-center justify-between rounded-md px-3 font-medium text-foreground transition-colors hover:bg-surface-muted hover:text-accent-strong"

@@ -165,12 +165,20 @@ export type ProductDetail = ProductSummary & {
   /** Najniższa cena z 30 dni przed obecną ceną, per wariant (Omnibus). */
   lowest30d: Record<string, number | null>
   measure: UnitMeasure | null
+  /** Skład zestawu dla wariantów, które są zestawami (pusta lista dla zwykłych produktów). */
+  bundles: BundleContents[]
 }
 
 type DetailsResponse = {
   compliance: Compliance | null
   brand: { id: string; name: string; handle: string } | null
   omnibus: { variant_id: string; lowest_price_30d: number | null }[]
+  bundles?: BundleContents[]
+}
+
+export type BundleContents = {
+  variant_id: string
+  items: { title: string; variant_title: string | null; handle: string | null; quantity: number }[]
 }
 
 function variantInStock(v: HttpTypes.StoreProductVariant) {
@@ -228,6 +236,7 @@ export async function getProductByHandle(handle: string): Promise<ProductDetail 
     compliance,
     brand: details.brand,
     lowest30d: Object.fromEntries(details.omnibus.map((o) => [o.variant_id, o.lowest_price_30d])),
+    bundles: details.bundles ?? [],
     measure:
       compliance?.net_quantity && compliance.net_quantity_unit
         ? { quantity: compliance.net_quantity, unit: compliance.net_quantity_unit }
