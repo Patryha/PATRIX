@@ -8,6 +8,9 @@ import {
   SaveDraftSchema,
   SetUserRolesSchema,
   SetVariantCostSchema,
+  StockMovementSchema,
+  CreateStockCountSchema,
+  SaveCountLinesSchema,
   UpdateBrandSchema,
   UpsertComplianceSchema,
 } from "./admin/patrix/validators"
@@ -69,6 +72,17 @@ export default defineMiddlewares({
       matcher: "/admin/patrix/products/bulk",
       methods: ["POST"],
       middlewares: [validateAndTransformBody(BulkProductsSchema)],
+    },
+    {
+      matcher: "/admin/patrix/warehouse/movements",
+      methods: ["POST"],
+      middlewares: [validateAndTransformBody(StockMovementSchema)],
+    },
+    { matcher: "/admin/patrix/warehouse/counts", methods: ["POST"], middlewares: [validateAndTransformBody(CreateStockCountSchema)] },
+    {
+      matcher: "/admin/patrix/warehouse/counts/:id/lines",
+      methods: ["POST"],
+      middlewares: [validateAndTransformBody(SaveCountLinesSchema)],
     },
     {
       matcher: "/admin/patrix/variants/:id/cost",

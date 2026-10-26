@@ -76,6 +76,7 @@ const ROUTE_RULES: Rule[] = [
   { pattern: /^\/admin\/patrix\/(brands|products|import)(\/|$)/, resource: "product" },
   { pattern: /^\/admin\/patrix\/cms(\/|$)/, resource: "content" },
   { pattern: /^\/admin\/patrix\/kpi(\/|$)/, resource: "order" },
+  { pattern: /^\/admin\/patrix\/warehouse(\/|$)/, resource: "inventory" },
 
   { pattern: /^\/admin\/orders\/[^/]+\/fulfillments(\/|$)/, resource: "fulfillment" },
   { pattern: /^\/admin\/fulfillments(\/|$)/, resource: "fulfillment" },
