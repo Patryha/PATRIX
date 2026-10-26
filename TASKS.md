@@ -107,6 +107,14 @@ Statusy: TODO · IN PROGRESS · BLOCKED · TESTING · DONE
 | E8-6 | Blog | DONE | Model `blog_post` w `patrix-cms`, `/admin/patrix/blog`, `/store/patrix/blog`, panel „Blog”, sklep `/blog` i `/blog/[slug]` (JSON-LD BlogPosting, produkty pod wpisem, mapa strony), format treści bez HTML (D-037); testy jednostkowe, integracyjne, E2E z axe, panel sprawdzony w przeglądarce. Treści wpisów: właściciel/zespół |
 | E8-7 | Newsletter z podwójnym potwierdzeniem | BLOCKED | = E4-5 (dostawca e-mail i zgoda na wysyłkę) |
 
+## Etap 9: Testy, wydajność, bezpieczeństwo
+| ID | Zadanie | Status | Uwagi |
+|---|---|---|---|
+| E9-1 | Pełna polityka CSP sklepu | DONE | `src/lib/csp.ts` w `next.config.ts`; domeny GA4/Meta tylko przy identyfikatorach; test jednostkowy i E2E bez naruszeń (D-038) |
+| E9-2 | Wydajność (Core Web Vitals) | TODO | Pomiar Lighthouse na kluczowych stronach, poprawki |
+| E9-3 | Skan bezpieczeństwa (DAST) | TODO | HawkScan wymaga klucza `HAWK_API_KEY`; alternatywa bez kont: OWASP ZAP baseline |
+| E9-4 | Testy uprawnień i pełne ścieżki zakupu | TODO | Przegląd pokrycia ról panelu i scenariuszy zakupu |
+
 ## Zadania wymagające właściciela
 | ID | Czego potrzeba | Status |
 |---|---|---|

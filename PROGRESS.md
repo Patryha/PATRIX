@@ -116,3 +116,7 @@
 - Pełny zestaw testów integracyjnych przekroczył domyślną pamięć Node (11 instancji Medusy w jednym procesie); skrypt testów dostał `--max-old-space-size=4096`.
 - Testy: backend unit 91/91, integracyjne 49/49, storefront unit 51/51, lint OK, build OK, E2E 84/84; panel sprawdzony w przeglądarce.
 - Etap 8 zakończony poza newsletterem (E8-7, czeka na dostawcę e-mail i zgodę).
+
+## 2026-10-26: Etap 9 (CSP)
+- Pełna polityka CSP sklepu: wszystko tylko z własnej domeny, domeny Google/Meta dopiero przy podanych identyfikatorach; nonce odrzucony, bo wyłączyłby częściowe prerenderowanie (D-038).
+- Testy: storefront unit 54/54, lint OK, typy OK, build OK, E2E 86/86 (w tym brak naruszeń CSP). Backend bez zmian.
