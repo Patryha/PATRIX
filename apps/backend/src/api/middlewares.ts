@@ -1,6 +1,8 @@
 import { defineMiddlewares, validateAndTransformBody } from "@medusajs/framework/http"
 import {
+  BulkProductsSchema,
   CreateBrandSchema,
+  ImportCsvSchema,
   CreateRoleSchema,
   UpdateRoleSchema,
   SaveDraftSchema,
@@ -56,6 +58,17 @@ export default defineMiddlewares({
       matcher: "/admin/patrix/cms/pages/:key/draft",
       methods: ["POST"],
       middlewares: [validateAndTransformBody(SaveDraftSchema)],
+    },
+    {
+      matcher: "/admin/patrix/import/*",
+      methods: ["POST"],
+      bodyParser: { sizeLimit: "3mb" },
+      middlewares: [validateAndTransformBody(ImportCsvSchema)],
+    },
+    {
+      matcher: "/admin/patrix/products/bulk",
+      methods: ["POST"],
+      middlewares: [validateAndTransformBody(BulkProductsSchema)],
     },
     {
       matcher: "/admin/patrix/variants/:id/cost",

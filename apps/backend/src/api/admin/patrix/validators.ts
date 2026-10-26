@@ -78,6 +78,22 @@ export const UpsertComplianceSchema = z
   .strict()
 export type UpsertComplianceBody = z.infer<typeof UpsertComplianceSchema>
 
+export const ImportCsvSchema = z.object({ csv: z.string().min(1).max(2_000_000), dry_run: z.boolean().default(true) }).strict()
+export type ImportCsvBody = z.infer<typeof ImportCsvSchema>
+
+export const BulkProductsSchema = z
+  .object({
+    product_ids: z.array(z.string().min(1)).min(1).max(200),
+    action: z.enum(["publish", "draft", "brand", "category_add", "category_remove"]),
+    value: z.string().min(1).nullish(),
+  })
+  .strict()
+  .refine((b) => b.action === "publish" || b.action === "draft" || b.action === "brand" || !!b.value, {
+    message: "Wybierz kategorię.",
+    path: ["value"],
+  })
+export type BulkProductsBody = z.infer<typeof BulkProductsSchema>
+
 export const SetVariantCostSchema = z.object({
   purchase_price: z.number().min(0).max(1_000_000),
   supplier: optionalText(200),

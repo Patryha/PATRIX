@@ -50,3 +50,6 @@
 - „Pulpit sprzedaży”: zamówienia, sprzedaż brutto, średnia wartość zamówienia (7/30/90 dni, porównanie z poprzednim okresem), zamówienia dziennie (wykres i tabela), najczęściej kupowane, do wysłania, nowe konta, niski stan magazynu, stan danych produktów. Kwoty widzą tylko osoby z uprawnieniem do finansów (D-024).
 - „Pracownicy i role”: lista pracowników z rolami i ich zmiana, role własne z macierzą uprawnień (tworzenie, edycja, usuwanie; rola przypisana nie może zostać usunięta), podgląd ról systemowych. Zmiany ról w dzienniku audytu.
 - Testy: backend unit 57/57, integracyjne 25/25; oba ekrany panelu sprawdzone w przeglądarce.
+- „Import i zmiany masowe”: import CSV danych produktów (producent, skład, ilość, alergeny, marka i in.) po uchwycie oraz cen zakupu po SKU; najpierw sprawdzenie, zapis tylko całego poprawnego pliku; import nie potwierdza etykiety i nie zmienia produktów opublikowanych (D-026). Zmiany masowe: publikacja (ze strażnikiem kompletności), wycofanie do szkicu, marka, kategoria. Pliki z Excela w Windows-1250 są odczytywane poprawnie.
+- Naprawiony niestabilny test E2E „ostatnio oglądane” (czekanie na zapis po hydratacji).
+- Testy: backend unit 66/66, integracyjne 29/29, storefront unit 33/33, E2E 66/66 (test „ostatnio oglądane” 20/20 powtórzeń).
