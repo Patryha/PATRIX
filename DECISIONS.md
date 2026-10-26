@@ -67,3 +67,6 @@ Lista uchwytów produktów w `localStorage` (maks. 12), bez wysyłania na serwer
 
 ## D-021 Ulubione: ciasteczko gościa, metadane konta klienta
 Gość: lista uchwytów w ciasteczku httpOnly `patrix_fav` (do 60 pozycji, 180 dni). Klient: `customer.metadata.patrix_favorites`, więc lista jest dostępna na każdym urządzeniu; po zalogowaniu lista gościa jest dołączana do konta, a ciasteczko usuwane. Dane są czyszczone przy każdym odczycie (tylko poprawne uchwyty). Osobny moduł w backendzie nie jest potrzebny, dopóki nie ma powiadomień o obniżkach ulubionych (wymagałyby zgody i dostawcy e-mail).
+
+## D-022 Zestawy jako natywne „inventory kits” Medusy
+Zestaw to zwykły produkt, którego wariant ma kilka pozycji magazynowych (albo jedną w ilości > 1). Cenę zestawu ustala właściciel; sprzedaż zestawu rezerwuje i zdejmuje ze stanu składniki, więc dostępność zestawu wynika ze stanów składników. Skład pokazujemy na karcie produktu (endpoint szczegółów zwraca `bundles`), a sekcja CMS „Zestawy” pobiera listę z `/store/patrix/bundles`. Nie ma osobnego modelu danych do utrzymania.

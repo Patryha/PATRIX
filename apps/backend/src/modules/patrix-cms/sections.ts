@@ -60,7 +60,7 @@ export const CategoryTilesSection = z.object({
   category_handles: z.array(handle).max(24).default([]),
 })
 
-export const PRODUCT_SOURCES = ["newest", "bestsellers", "on_sale", "category", "products"] as const
+export const PRODUCT_SOURCES = ["newest", "bestsellers", "on_sale", "bundles", "category", "products"] as const
 
 export const ProductRailSection = z.object({
     ...base,

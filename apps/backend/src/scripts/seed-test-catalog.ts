@@ -34,6 +34,8 @@ type TestProduct = {
   variants: { title: string; sku: string; ean: string; price: number }[]
   compliance: Record<string, unknown>
   salePrice?: number
+  /** Zestaw (inventory kit): składniki wskazane przez SKU wariantów utworzonych wcześniej. */
+  kitOf?: { sku: string; quantity: number }[]
 }
 
 const PRODUCTS: TestProduct[] = [
@@ -95,6 +97,24 @@ const PRODUCTS: TestProduct[] = [
       cosmetic_pao_months: 12,
     },
   },
+  {
+    handle: "test-zestaw-kremow",
+    title: "[TEST] Zestaw: 2 × Krem do rąk",
+    category: "kosmetyki-i-pielegnacja",
+    image: "/test-assets/produkt-testowy-2.png",
+    managed: true,
+    variants: [{ title: "2 × 75 ml", sku: "TEST-ZESTAW-KREM", ean: "2000000000053", price: 26.99 }],
+    kitOf: [{ sku: "TEST-KREM-75", quantity: 2 }],
+    compliance: {
+      product_kind: "cosmetic",
+      net_quantity: 150,
+      net_quantity_unit: "ml",
+      ingredients: "[TEST] AQUA, GLYCERIN (skład przykładowy)",
+      eu_responsible_name: "[TEST] Osoba odpowiedzialna",
+      eu_responsible_address: "Adres testowy 2, 00-000 Test",
+      cosmetic_pao_months: 12,
+    },
+  },
 ]
 
 export default async function seedTestCatalog({ container }: ExecArgs) {
@@ -125,6 +145,7 @@ export default async function seedTestCatalog({ container }: ExecArgs) {
       continue
     }
     const [category] = await productService.listProductCategories({ handle: item.category })
+    const kitItems = item.kitOf ? await kitInventoryItems(container, item.kitOf) : undefined
     const { result } = await createProductsWorkflow(container).run({
       input: {
         products: [
@@ -147,6 +168,7 @@ export default async function seedTestCatalog({ container }: ExecArgs) {
               allow_backorder: false,
               options: { Wariant: v.title },
               prices: [{ amount: v.price, currency_code: "pln" }],
+              ...(kitItems ? { inventory_items: kitItems } : {}),
             })),
           },
         ],
@@ -183,6 +205,25 @@ export default async function seedTestCatalog({ container }: ExecArgs) {
   await snapshotPrices(container)
   await ensureTestShippingOption(container, profile.id)
   await ensureTestPromotion(container)
+}
+
+/** Pozycje magazynowe składników zestawu (wariant zestawu zdejmuje je ze stanu przy sprzedaży). */
+async function kitInventoryItems(container: ExecArgs["container"], parts: { sku: string; quantity: number }[]) {
+  const query = container.resolve(ContainerRegistrationKeys.QUERY)
+  return Promise.all(
+    parts.map(async (part) => {
+      const { data } = await query.graph({
+        entity: "product_variant",
+        fields: ["id", "inventory_items.inventory_item_id"],
+        filters: { sku: part.sku },
+      })
+      const inventoryItemId = data[0]?.inventory_items?.[0]?.inventory_item_id
+      if (!inventoryItemId) {
+        throw new Error(`Składnik zestawu ${part.sku} nie ma pozycji magazynowej (manage_inventory).`)
+      }
+      return { inventory_item_id: inventoryItemId, required_quantity: part.quantity }
+    })
+  )
 }
 
 /** Testowa forma dostawy (kwota umowna, oznaczona [TEST]): prawdziwe stawki ustala właściciel (OWN-3). */

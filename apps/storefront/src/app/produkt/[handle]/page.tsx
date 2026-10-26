@@ -3,6 +3,7 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 import { Suspense } from "react"
 import { RecentlyViewed, TrackRecent } from "@/components/cms/recently-viewed"
+import { BundleContents } from "@/components/product/bundle-contents"
 import { FavoriteButton } from "@/components/product/favorite-button"
 import { ProductFacts } from "@/components/product/product-facts"
 import { ProductGallery } from "@/components/product/gallery"
@@ -92,6 +93,7 @@ async function ProductContent({ params }: Props) {
             </p>
           ) : null}
           <VariantPicker options={product.options} variants={product.variants} lowest30d={product.lowest30d} measure={product.measure} />
+          <BundleContents bundles={product.bundles} variantTitles={Object.fromEntries(product.variants.map((v) => [v.id, v.title]))} />
           <Suspense fallback={<div className="min-h-11" />}>
             <FavoriteToggle handle={product.handle} />
           </Suspense>

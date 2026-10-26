@@ -25,6 +25,16 @@ export async function getPreviewPage(token: string): Promise<{ version: number; 
     .catch(() => null)
 }
 
+export async function listBundleIds(limit: number): Promise<string[]> {
+  "use cache"
+  cacheLife("minutes")
+  cacheTag("products")
+  return sdk.client
+    .fetch<{ product_ids: string[] }>("/store/patrix/bundles", { query: { limit } })
+    .then((r) => r.product_ids)
+    .catch(() => [])
+}
+
 export async function listBestsellerIds(limit: number): Promise<string[]> {
   "use cache"
   cacheLife("minutes")

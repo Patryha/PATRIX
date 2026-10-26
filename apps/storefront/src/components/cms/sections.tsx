@@ -9,7 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { canOptimize } from "@/lib/cms/images"
 import type { BrandStory, CategoryTiles, InfoIcon, InfoTiles, ProductRail as ProductRailProps, RecentlyViewed as RecentlyViewedProps, Section } from "@/lib/cms/types"
 import { getCategoryByHandle, listTopCategories, type Category } from "@/lib/data/categories"
-import { listBestsellerIds } from "@/lib/data/cms"
+import { listBestsellerIds, listBundleIds } from "@/lib/data/cms"
 import { listCatalog, listProducts, listProductsByHandles, type ProductSummary } from "@/lib/data/products"
 import { AnnouncementBar } from "./announcement-bar"
 import { CmsLink } from "./cms-link"
@@ -84,8 +84,10 @@ async function railProducts(section: ProductRailProps): Promise<ProductSummary[]
     }
     case "products":
       return (await listProductsByHandles(section.product_handles ?? [])).slice(0, section.limit)
-    case "bestsellers": {
-      const ids = await listBestsellerIds(section.limit)
+    case "bestsellers":
+    case "bundles": {
+      // Kolejność z backendu (sprzedaż albo data dodania zestawu); sklep pokazuje tylko produkty z kanału sprzedaży.
+      const ids = section.source === "bundles" ? await listBundleIds(section.limit) : await listBestsellerIds(section.limit)
       const products = await listCatalog({ ids })
       const byId = new Map(products.map((p) => [p.id, p]))
       return ids.map((id) => byId.get(id)).filter((p): p is ProductSummary => !!p)

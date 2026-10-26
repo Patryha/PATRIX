@@ -27,6 +27,7 @@ export const DEFAULT_HOME: PageContent = {
     { id: "nowosci", type: "product_rail", enabled: true, title: "Nowości", source: "newest", limit: 8 },
     { id: "promocje", type: "product_rail", enabled: true, title: "Promocje tygodnia", source: "on_sale", limit: 8 },
     { id: "bestsellery", type: "product_rail", enabled: true, title: "Bestsellery", source: "bestsellers", limit: 8 },
+    { id: "zestawy", type: "product_rail", enabled: true, title: "Zestawy", source: "bundles", limit: 8 },
     { id: "ostatnio", type: "recently_viewed", enabled: true, title: "Ostatnio oglądane" },
     {
       id: "o-marce",

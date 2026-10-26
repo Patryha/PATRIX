@@ -17,7 +17,7 @@ export type HeroSlide = {
 }
 export type HeroSlider = Base & { type: "hero_slider"; autoplay: boolean; slides: HeroSlide[] }
 export type CategoryTiles = Base & { type: "category_tiles"; title: string; category_handles: string[] }
-export type ProductSource = "newest" | "bestsellers" | "on_sale" | "category" | "products"
+export type ProductSource = "newest" | "bestsellers" | "on_sale" | "bundles" | "category" | "products"
 export type ProductRail = Base & {
   type: "product_rail"
   title: string
