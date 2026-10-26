@@ -52,3 +52,15 @@ Jedyną metodą płatności w Etapie 3 jest płatność przy odbiorze (`pp_syste
 
 ## D-016 Dane do faktury w adresie rozliczeniowym
 Nazwa firmy trafia do `billing_address.company`, NIP do `billing_address.metadata.nip` (oraz metadanych koszyka/zamówienia). API sklepu nie zwraca metadanych zamówienia, a adres rozliczeniowy tak; dane przechodzą też do panelu.
+
+## D-017 (2026-10-26) CMS strony głównej: wersje w module PATRIX, treść jako JSON z walidacją
+Strona główna to lista sekcji (typ, id, widoczność, pola) zapisywana jako wersja: szkic, opublikowana albo archiwalna. Publikacja archiwizuje poprzednią wersję, przywrócenie tworzy nowy szkic. Schemat sekcji jest sprawdzany w backendzie przy każdym zapisie; linki tylko do ścieżek sklepu lub `https://`. Sklep odczytuje wyłącznie opublikowaną wersję i buforuje ją kilka minut.
+
+## D-018 Podgląd szkicu przez jednorazowy token
+Panel generuje losowy token (32 bajty), w bazie zapisujemy tylko skrót SHA-256; token wygasa po 60 minutach i przy publikacji. Strona `/podglad` ma `noindex` i nie jest buforowana.
+
+## D-019 Bestsellery z zamówień z ostatnich 30 dni
+Ranking liczony z ilości w zamówieniach (bez anulowanych i szkiców) z 30 dni, buforowany 5 minut. Przy dużym ruchu zastąpi go tabela agregatów (Etap 5/8).
+
+## D-020 Ostatnio oglądane tylko w przeglądarce
+Lista uchwytów produktów w `localStorage` (maks. 12), bez wysyłania na serwer poza pobraniem kart produktów; nie wymaga zgody na śledzenie.

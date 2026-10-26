@@ -88,3 +88,36 @@ export const UserIcon = (p: IconProps) => (
     <path d="M4 21a8 8 0 0 1 16 0" />
   </Icon>
 )
+export const CardIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <rect x="3" y="5" width="18" height="14" rx="2" />
+    <path d="M3 10h18M7 15h3" />
+  </Icon>
+)
+export const ReturnIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M9 14 4 9l5-5" />
+    <path d="M4 9h11a5 5 0 0 1 0 10h-3" />
+  </Icon>
+)
+export const BoxIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="m21 8-9-5-9 5v8l9 5 9-5z" />
+    <path d="m3 8 9 5 9-5M12 13v8" />
+  </Icon>
+)
+export const ChevronLeftIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="m15 6-6 6 6 6" />
+  </Icon>
+)
+export const PauseIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M9 6v12M15 6v12" />
+  </Icon>
+)
+export const PlayIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="m8 5 11 7-11 7z" />
+  </Icon>
+)

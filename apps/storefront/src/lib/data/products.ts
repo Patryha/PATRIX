@@ -234,3 +234,17 @@ export async function getProductByHandle(handle: string): Promise<ProductDetail 
         : null,
   }
 }
+
+/** Produkty po uchwytach, w podanej kolejności (sekcje CMS, ostatnio oglądane). Nieopublikowane są pomijane. */
+export async function listProductsByHandles(handles: string[]): Promise<ProductSummary[]> {
+  "use cache"
+  cacheLife("minutes")
+  cacheTag("products")
+  if (!handles.length) {
+    return []
+  }
+  const region = await getDefaultRegion()
+  const { products } = await sdk.store.product.list({ fields: FIELDS, region_id: region?.id, handle: handles, limit: handles.length })
+  const byHandle = new Map(products.map((p) => [p.handle, toSummary(p)]))
+  return handles.map((h) => byHandle.get(h)).filter((p): p is ProductSummary => !!p)
+}

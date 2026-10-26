@@ -30,3 +30,11 @@
 - Strony regulaminu i polityki prywatności istnieją, ale bez treści: tekst przygotowuje właściciel (OWN-6).
 - Testy: E2E 52/52 (pełny zakup jako gość i jako klient, axe WCAG 2.2 AA), storefront unit 28/28.
 - Następny krok: Etap 4 (CMS strony głównej, sekcje edytowalne).
+
+## 2026-10-26: Etap 4 (strona główna edytowalna z panelu)
+- Moduł `patrix-cms`: wersje strony (szkic, opublikowana, archiwum), historia i przywracanie, walidacja sekcji po stronie serwera, linki tylko wewnętrzne lub `https://`.
+- Panel „Strona główna”: lista sekcji z przeciąganiem i przyciskami ↑/↓, włączanie/wyłączanie, edycja pól, dodawanie i usuwanie sekcji, podgląd szkicu, publikacja, historia wersji. Dostęp przez uprawnienie `content` (kierownik, marketing).
+- Sklep: strona główna składana z sekcji CMS (pasek informacyjny, slider, kategorie, nowości, promocje tygodnia, bestsellery, polecane, ostatnio oglądane, o marce, dostawy i płatności); zapasowy układ, gdy CMS jest niedostępny. Ostatnio oglądane także na karcie produktu.
+- Seed publikuje startową wersję strony (tylko teksty o marce, bez danych firmy i cen).
+- Testy: backend unit 49/49, integracyjne 21/21, storefront unit 30/30, E2E 60/60.
+- Nie zrobione w tym kroku: newsletter (wymaga dostawcy e-mail i zgody), ulubione, zestawy, mega menu z grafikami, KPI, import.

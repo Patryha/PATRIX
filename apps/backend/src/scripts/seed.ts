@@ -13,6 +13,7 @@ import {
   updateStoresWorkflow,
 } from "@medusajs/medusa/core-flows"
 import { MAIN_CATEGORIES } from "../lib/catalog/categories"
+import { DEFAULT_HOME, PATRIX_CMS_MODULE, type PatrixCmsService } from "../modules/patrix-cms"
 import { PATRIX_SECURITY_MODULE, type PatrixSecurityService } from "../modules/patrix-security"
 
 /**
@@ -182,6 +183,14 @@ export default async function seedPatrix({ container }: ExecArgs) {
 
   logger.info("PATRIX: role pracowników")
   await security.syncSystemRoles()
+
+  logger.info("PATRIX: strona główna (pierwsza wersja, tylko gdy strona nie ma żadnej)")
+  const cms = container.resolve<PatrixCmsService>(PATRIX_CMS_MODULE)
+  const [anyVersion] = await cms.listPageVersions({ page_key: "home" }, { take: 1, withDeleted: true })
+  if (!anyVersion) {
+    await cms.saveDraft("home", DEFAULT_HOME, null, "Wersja początkowa (seed)")
+    await cms.publishDraft("home", null)
+  }
 
   logger.info(`PATRIX: gotowe. Region: ${region.id}. Klucz publikowalny: ${publishableKey.token}`)
 }
