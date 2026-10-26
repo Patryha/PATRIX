@@ -23,6 +23,7 @@ medusaIntegrationTestRunner({
         const res = await api.get("/admin/products", bearer(token))
         expect(res.headers["x-content-type-options"]).toBe("nosniff")
         expect(res.headers["x-frame-options"]).toBe("DENY")
+        expect(res.headers["content-security-policy"]).toContain("frame-ancestors 'none'")
         expect(res.headers["x-powered-by"]).toBeUndefined()
       })
     })

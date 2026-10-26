@@ -125,3 +125,10 @@
 - Pomiar Lighthouse na czterech kluczowych stronach. Naprawione: przesunięcie stopki przy doładowaniu treści (CLS 0,15 → 0), kolejność nagłówków na listingu, priorytet pobierania głównego zdjęcia. Dostępność i dobre praktyki 100/100.
 - LCP 2,9–3,8 s w symulacji wolnego 4G na lokalnym serwerze; pomiar miarodajny na stagingu z CDN (Etap 10). Wyłączenie preloadu czcionek sprawdzone i cofnięte (brak poprawy, nowe przesunięcie układu).
 - Testy: storefront unit 54/54, lint OK, typy OK, build OK, E2E 86/86.
+
+## 2026-10-26: Etap 9 (uprawnienia i ścieżka zakupu)
+- Test inwentarza tras panelu PATRIX: każda z 47 tras ma jawnie przypisany zasób; dodanie trasy bez wpisu kończy się czerwonym testem. Ceny zakupu i wartość magazynu sprawdzone jako niedostępne dla magazynu, obsługi klienta i marketingu.
+- Checkout: serwer odrzuca zamówienie bez akceptacji regulaminu także po obejściu walidacji w przeglądarce (E2E).
+- API backendu wysyła ścisłą politykę CSP (`default-src 'none'; frame-ancestors 'none'`), wynik skanu ZAP.
+- Testy: backend typy OK, unit 140/140, integracyjne 49/49; storefront lint OK, typy OK, unit 54/54, E2E zakupu 6/6.
+
