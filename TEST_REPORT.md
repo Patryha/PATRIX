@@ -10,9 +10,9 @@ Ostatnie uruchomienie: 2026-10-26 (Etap 8: SEO), lokalnie (PostgreSQL 16, Redis 
 | Backend: build (API + panel) | `npx medusa build` | OK |
 | Storefront: lint | `npm run lint` | OK |
 | Storefront: typy | `npm run typecheck` | OK |
-| Storefront: jednostkowe/komponenty | `npm test` | 40/40 OK |
+| Storefront: jednostkowe/komponenty | `npm test` | 46/46 OK |
 | Storefront: build produkcyjny | `npm run build` | OK |
-| Storefront: E2E (desktop + Pixel 7) | `npm run test:e2e` | 78/78 OK (backend w trybie produkcyjnym, katalog [TEST]) |
+| Storefront: E2E (desktop + Pixel 7) | `npm run test:e2e` | 80/80 OK (backend w trybie produkcyjnym, katalog [TEST]) |
 | Skan zależności | `npm audit --omit=dev` | storefront: 0; backend: 0 critical, podatności high w zależnościach Medusy (patrz SECURITY.md) |
 
 ## Co jest sprawdzane
@@ -47,3 +47,4 @@ Ostatnie uruchomienie: 2026-10-26 (Etap 8: SEO), lokalnie (PostgreSQL 16, Redis 
 - **Rekomendacje (Etap 7):** integracyjnie: „kupowane razem” tylko z par z 2+ ważnych zamówień (anulowane się nie liczą), bez szkiców i produktów z innego kanału, suma dla koszyka bez produktów z koszyka, „podobne” z tej samej kategorii, 400 dla pustych i niepoprawnych identyfikatorów. Jednostkowo: próg wsparcia, sumowanie dla koszyka, filtr kategorii i kolejność. E2E: „Podobne produkty” na karcie kremu (bez produktu tej samej marki z innej kategorii), brak pustych sekcji.
 - **SEO (Etap 8):** integracyjnie: przekierowania (normalizacja ścieżki, odrzucenie adresu zewnętrznego, duplikatu i łańcucha, 403 dla magazyniera, edycja na 302, publikacja w Store API, usunięcie). Jednostkowo: normalizacja i walidacja ścieżek (pętle, łańcuchy, panel), filtr celów w sklepie. E2E: sitemap z produktem, kategorią i marką bez stron `noindex`, robots.txt blokujący staging, 301 z zachowaniem parametrów UTM i obsługą końcowego ukośnika. Panel „Przekierowania” sprawdzony w przeglądarce (komunikat o łańcuchu, dodanie, usunięcie).
 - **Zgody (Etap 8):** komponentowo: brak banera i przycisku bez skonfigurowanych narzędzi, brak skryptów przed zgodą i po odrzuceniu, wybór tylko analityki ładuje tylko GA4, ponowne otwarcie ustawień z zapisanym wyborem; walidacja identyfikatorów i cookie (wersja, uszkodzona wartość). W przeglądarce (build z identyfikatorami testowymi): axe WCAG 2.2 AA z banerem, odrzucenie bez zapytań do Google/Meta także po odświeżeniu, akceptacja z ustawień w stopce ładuje GA4.
+- **Feed Merchant Center (Etap 8):** jednostkowo: GTIN (cyfra kontrolna, odrzucenie puli wewnętrznej), pozycja na wariant z `item_group_id` i linkiem `?wariant=`, promocja jako `sale_price`, `identifier_exists=no` bez identyfikatorów, pominięcie produktów bez zdjęcia i wariantów bez ceny, bezwzględne adresy zdjęć, escapowanie XML. E2E: `/feed/google.xml` z produktami [TEST], bez kodów wewnętrznych jako GTIN, link z feedu otwiera kartę z zaznaczonym wariantem.

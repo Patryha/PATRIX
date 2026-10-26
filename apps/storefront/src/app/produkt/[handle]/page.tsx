@@ -16,7 +16,7 @@ import { getProductByHandle } from "@/lib/data/products"
 import { getFavorites } from "@/lib/favorites"
 import { breadcrumbJsonLd, jsonLd, productJsonLd } from "@/lib/seo/json-ld"
 
-type Props = { params: Promise<{ handle: string }> }
+type Props = { params: Promise<{ handle: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { handle } = await params
@@ -43,8 +43,10 @@ async function FavoriteToggle({ handle }: { handle: string }) {
   return <FavoriteButton handle={handle} initial={favorites.includes(handle)} />
 }
 
-async function ProductContent({ params }: Props) {
+async function ProductContent({ params, searchParams }: Props) {
   const { handle } = await params
+  // `?wariant=` z feedu produktów (Merchant Center) wybiera wariant, którego cenę pokazuje reklama.
+  const requested = (await searchParams).wariant
   const product = await getProductByHandle(handle)
   if (!product) {
     notFound()
@@ -93,7 +95,13 @@ async function ProductContent({ params }: Props) {
               Nazwa oryginalna: <span lang="de">{product.compliance.name_original}</span>
             </p>
           ) : null}
-          <VariantPicker options={product.options} variants={product.variants} lowest30d={product.lowest30d} measure={product.measure} />
+          <VariantPicker
+            options={product.options}
+            variants={product.variants}
+            lowest30d={product.lowest30d}
+            measure={product.measure}
+            initialVariantId={typeof requested === "string" ? requested : null}
+          />
           <BundleContents bundles={product.bundles} variantTitles={Object.fromEntries(product.variants.map((v) => [v.id, v.title]))} />
           <Suspense fallback={<div className="min-h-11" />}>
             <FavoriteToggle handle={product.handle} />

@@ -104,3 +104,8 @@
 ## 2026-10-26: Etap 8 (zgody na cookies)
 - Baner zgód z równorzędnymi przyciskami „Akceptuj wszystkie” / „Odrzuć opcjonalne” i ustawieniami kategorii; „Ustawienia cookies” w stopce. Pojawia się dopiero po podaniu identyfikatorów Google Analytics 4 lub Meta Pixel (D-035); przed zgodą żaden skrypt narzędzia się nie ładuje.
 - Testy: storefront unit 40/40, build OK, E2E 78/78; baner sprawdzony w przeglądarce z identyfikatorami testowymi (axe bez błędów, brak zapytań do Google/Meta po odrzuceniu).
+
+## 2026-10-26: Etap 8 (feed Google Merchant Center)
+- `/feed/google.xml`: jedna pozycja na wariant, ceny i promocje z cennika sklepu, dostępność, marka, GTIN tylko z poprawnych kodów (D-036). Link z feedu otwiera kartę z wybranym wariantem (`?wariant=`).
+- Do uruchomienia potrzebne konto Merchant Center właściciela i włączone indeksowanie na produkcji (OWN-10).
+- Testy: storefront unit 46/46, lint OK, typy OK, build OK, E2E 80/80 (backend bez zmian).

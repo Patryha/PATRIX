@@ -8,11 +8,13 @@ import type { ProductDetail } from "@/lib/data/products"
 import type { UnitMeasure } from "@/lib/format"
 import { cn } from "@/lib/cn"
 
-type Props = Pick<ProductDetail, "options" | "variants" | "lowest30d"> & { measure: UnitMeasure | null }
+type Props = Pick<ProductDetail, "options" | "variants" | "lowest30d"> & { measure: UnitMeasure | null; initialVariantId?: string | null }
 
 /** Wybór wariantu: cena (z informacją Omnibus i ceną jednostkową), dostępność, SKU i EAN wybranego wariantu. */
-export function VariantPicker({ options, variants, lowest30d, measure }: Props) {
-  const [selected, setSelected] = useState<Record<string, string>>(() => variants[0]?.options ?? {})
+export function VariantPicker({ options, variants, lowest30d, measure, initialVariantId }: Props) {
+  const [selected, setSelected] = useState<Record<string, string>>(
+    () => (variants.find((v) => v.id === initialVariantId) ?? variants[0])?.options ?? {}
+  )
   const variant = useMemo(
     () => variants.find((v) => Object.entries(selected).every(([k, val]) => v.options[k] === val)) ?? null,
     [variants, selected]
