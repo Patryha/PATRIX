@@ -1,18 +1,18 @@
 # Raport testów
 
-Ostatnie uruchomienie: 2026-10-26 (Etap 7: wyszukiwarka i rekomendacje), lokalnie (PostgreSQL 16, Redis 7, Chromium 1243).
+Ostatnie uruchomienie: 2026-10-26 (Etap 8: SEO), lokalnie (PostgreSQL 16, Redis 7, Chromium 1243).
 
 | Zestaw | Polecenie | Wynik |
 |---|---|---|
 | Backend: typy | `npm run typecheck` | OK |
-| Backend: jednostkowe | `npm run test:unit` | 86/86 OK |
-| Backend: integracyjne HTTP | `npm run test:integration:http` | 47/47 OK |
+| Backend: jednostkowe | `npm run test:unit` | 91/91 OK |
+| Backend: integracyjne HTTP | `npm run test:integration:http` | 49/49 OK (sterta 4 GB: 11 instancji Medusy w jednym procesie) |
 | Backend: build (API + panel) | `npx medusa build` | OK |
 | Storefront: lint | `npm run lint` | OK |
 | Storefront: typy | `npm run typecheck` | OK |
-| Storefront: jednostkowe/komponenty | `npm test` | 34/34 OK |
+| Storefront: jednostkowe/komponenty | `npm test` | 51/51 OK |
 | Storefront: build produkcyjny | `npm run build` | OK |
-| Storefront: E2E (desktop + Pixel 7) | `npm run test:e2e` | 72/72 OK (backend w trybie produkcyjnym, katalog [TEST]) |
+| Storefront: E2E (desktop + Pixel 7) | `npm run test:e2e` | 84/84 OK (backend w trybie produkcyjnym, katalog [TEST]) |
 | Skan zależności | `npm audit --omit=dev` | storefront: 0; backend: 0 critical, podatności high w zależnościach Medusy (patrz SECURITY.md) |
 
 ## Co jest sprawdzane
@@ -45,3 +45,7 @@ Ostatnie uruchomienie: 2026-10-26 (Etap 7: wyszukiwarka i rekomendacje), lokalni
 - **Integracje (Etap 6):** manifest bez adapterów nie daje się włączyć (404), 403 bez uprawnienia `integration`; dane dostępowe zaszyfrowane w bazie, w odpowiedziach i audycie tylko podpowiedzi; puste pole nie nadpisuje sekretu; włączenie bez kompletu pól i tryb produkcyjny bez zgody → 400; webhook: wyłączona integracja 404, zły podpis 401 (w dzienniku), poprawny raz (duplikat ignorowany), błąd obsługi → ponowienie po terminie, po 8 próbach „wymaga reakcji” i ręczne ponowienie. Jednostkowo: harmonogram ponowień, maskowanie sekretów. Panel „Integracje” sprawdzony w przeglądarce.
 - **Wyszukiwarka (Etap 7):** integracyjnie: brak polskich znaków i literówki, słowo złożone z nazwy oryginalnej, EAN i SKU, brak szkiców i produktów z innego kanału sprzedaży, 400 dla pustej i za długiej frazy, statystyki fraz (także bez wyników), synonimy z panelu działają od razu i po usunięciu przestają, 403 na zmianę synonimów bez `product:write`, podpowiedzi bez zapisu do statystyk. Jednostkowo: normalizacja znaków, odległość edycyjna, początek słowa, synonimy wielowyrazowe, wyniki częściowe i poprawka frazy, remis rozstrzygany krótszą nazwą, sortowanie „Trafność” tylko w wyszukiwarce. E2E: wyniki bez polskich znaków, kolejność trafności, „Czy chodziło Ci o…”, podpowiedzi z klawiatury (strzałki, Escape, Enter). Panel „Wyszukiwarka” sprawdzony w przeglądarce.
 - **Rekomendacje (Etap 7):** integracyjnie: „kupowane razem” tylko z par z 2+ ważnych zamówień (anulowane się nie liczą), bez szkiców i produktów z innego kanału, suma dla koszyka bez produktów z koszyka, „podobne” z tej samej kategorii, 400 dla pustych i niepoprawnych identyfikatorów. Jednostkowo: próg wsparcia, sumowanie dla koszyka, filtr kategorii i kolejność. E2E: „Podobne produkty” na karcie kremu (bez produktu tej samej marki z innej kategorii), brak pustych sekcji.
+- **SEO (Etap 8):** integracyjnie: przekierowania (normalizacja ścieżki, odrzucenie adresu zewnętrznego, duplikatu i łańcucha, 403 dla magazyniera, edycja na 302, publikacja w Store API, usunięcie). Jednostkowo: normalizacja i walidacja ścieżek (pętle, łańcuchy, panel), filtr celów w sklepie. E2E: sitemap z produktem, kategorią i marką bez stron `noindex`, robots.txt blokujący staging, 301 z zachowaniem parametrów UTM i obsługą końcowego ukośnika. Panel „Przekierowania” sprawdzony w przeglądarce (komunikat o łańcuchu, dodanie, usunięcie).
+- **Zgody (Etap 8):** komponentowo: brak banera i przycisku bez skonfigurowanych narzędzi, brak skryptów przed zgodą i po odrzuceniu, wybór tylko analityki ładuje tylko GA4, ponowne otwarcie ustawień z zapisanym wyborem; walidacja identyfikatorów i cookie (wersja, uszkodzona wartość). W przeglądarce (build z identyfikatorami testowymi): axe WCAG 2.2 AA z banerem, odrzucenie bez zapytań do Google/Meta także po odświeżeniu, akceptacja z ustawień w stopce ładuje GA4.
+- **Feed Merchant Center (Etap 8):** jednostkowo: GTIN (cyfra kontrolna, odrzucenie puli wewnętrznej), pozycja na wariant z `item_group_id` i linkiem `?wariant=`, promocja jako `sale_price`, `identifier_exists=no` bez identyfikatorów, pominięcie produktów bez zdjęcia i wariantów bez ceny, bezwzględne adresy zdjęć, escapowanie XML. E2E: `/feed/google.xml` z produktami [TEST], bez kodów wewnętrznych jako GTIN, link z feedu otwiera kartę z zaznaczonym wariantem.
+- **Blog (Etap 8):** integracyjnie: walidacja (link `javascript:`, okładka bez opisu), 403 dla magazyniera, unikalny adres, szkic niewidoczny w Store API (lista i 404), publikacja, lista bez treści, adres stały po publikacji także po wycofaniu, data pierwszej publikacji zachowana, usunięcie. Jednostkowo: linki w treści (ścieżka sklepu, https, odrzucenie `javascript:`, `http:`, `//`), adres z tytułu bez polskich i niemieckich znaków; w sklepie parser treści (nagłówki, akapity, listy, pogrubienie, HTML jako tekst, niebezpieczne linki jako tekst), czas czytania. E2E: lista → wpis, nagłówki, lista, link do produktu, produkty pod wpisem, JSON-LD BlogPosting, axe WCAG 2.2 AA, 404 z `noindex`, wpis i `/blog` w mapie strony. Panel „Blog” sprawdzony w przeglądarce (adres z tytułu, błąd linku, szkic, publikacja, blokada adresu, usunięcie).

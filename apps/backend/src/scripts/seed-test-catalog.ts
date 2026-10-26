@@ -9,6 +9,8 @@ import {
 } from "@medusajs/medusa/core-flows"
 import { snapshotPrices } from "../lib/catalog/price-snapshot"
 import { PATRIX_CATALOG_MODULE, type PatrixCatalogService } from "../modules/patrix-catalog"
+import { PATRIX_CMS_MODULE, type PatrixCmsService } from "../modules/patrix-cms"
+import { PATRIX_SEO_MODULE, type PatrixSeoService } from "../modules/patrix-seo"
 
 /**
  * KATALOG TESTOWY do testów E2E i pracy lokalnej. To NIE są prawdziwe produkty:
@@ -205,6 +207,8 @@ export default async function seedTestCatalog({ container }: ExecArgs) {
   await snapshotPrices(container)
   await ensureTestShippingOption(container, profile.id)
   await ensureTestPromotion(container)
+  await ensureTestRedirect(container)
+  await ensureTestBlogPost(container)
 }
 
 /** Pozycje magazynowe składników zestawu (wariant zestawu zdejmuje je ze stanu przy sprzedaży). */
@@ -281,4 +285,30 @@ async function ensureTestPromotion(container: ExecArgs["container"]) {
     },
   })
   container.resolve(ContainerRegistrationKeys.LOGGER).info("Katalog testowy: utworzono kod TEST10")
+}
+
+/** Testowe przekierowanie starego adresu do testów E2E (adres z prefiksem /test-). */
+async function ensureTestRedirect(container: ExecArgs["container"]) {
+  const seo = container.resolve<PatrixSeoService>(PATRIX_SEO_MODULE)
+  const [existing] = await seo.listRedirects({ from_path: "/test-stary-adres" })
+  if (!existing) {
+    await seo.createRedirects({ from_path: "/test-stary-adres", to_path: "/produkt/test-krem-do-rak", permanent: true, note: "[TEST] przekierowanie do testów E2E" })
+  }
+}
+
+/** Wpis [TEST] do testów E2E bloga (bez treści udających poradę: tylko opis testu). */
+async function ensureTestBlogPost(container: ExecArgs["container"]) {
+  const cms = container.resolve<PatrixCmsService>(PATRIX_CMS_MODULE)
+  const [existing] = await cms.listBlogPosts({ slug: "test-wpis" })
+  if (!existing) {
+    await cms.createBlogPosts({
+      slug: "test-wpis",
+      title: "[TEST] Wpis testowy",
+      excerpt: "Wpis do testów automatycznych bloga, niewidoczny po usunięciu katalogu testowego.",
+      body: "## Sekcja testowa\n\nAkapit z **pogrubieniem** i linkiem do [kremu testowego](/produkt/test-krem-do-rak).\n\n- punkt pierwszy\n- punkt drugi",
+      product_handles: ["test-krem-do-rak"] as unknown as Record<string, unknown>,
+      status: "published",
+      published_at: new Date(),
+    })
+  }
 }

@@ -181,7 +181,7 @@ export type BundleContents = {
   items: { title: string; variant_title: string | null; handle: string | null; quantity: number }[]
 }
 
-function variantInStock(v: HttpTypes.StoreProductVariant) {
+export function variantInStock(v: HttpTypes.StoreProductVariant) {
   return !v.manage_inventory || !!v.allow_backorder || (v.inventory_quantity ?? 0) > 0
 }
 

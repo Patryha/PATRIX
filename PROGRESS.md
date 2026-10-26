@@ -95,3 +95,24 @@
 - Karta produktu: „Często kupowane razem” (z zamówień, para z co najmniej 2 różnych zamówień) i „Podobne produkty” (ta sama kategoria, kolejność według marki, typu i tagów). Koszyk: „Klienci kupowali też”.
 - Bez danych osobowych i historii przeglądania (D-033); sekcja bez danych się nie pokazuje.
 - Testy: backend unit 86/86, integracyjne 47/47, storefront unit 34/34, build OK, E2E 72/72.
+
+## 2026-10-26: Etap 8 (SEO: mapa strony, robots, przekierowania)
+- `/sitemap.xml` (strona główna, kategorie, marki, produkty) i `/robots.txt`; indeksowanie włączy się dopiero na produkcji (D-034).
+- Panel „Przekierowania”: stare adresy na nowe (301 na stałe albo 302 tymczasowo), z ochroną przed pętlami, łańcuchami i adresami spoza sklepu; sklep stosuje zmiany w ciągu minuty. Sprawdzony w przeglądarce.
+- Testy: backend unit 89/89, integracyjne 48/48, storefront unit 35/35, build OK, E2E 78/78.
+
+## 2026-10-26: Etap 8 (zgody na cookies)
+- Baner zgód z równorzędnymi przyciskami „Akceptuj wszystkie” / „Odrzuć opcjonalne” i ustawieniami kategorii; „Ustawienia cookies” w stopce. Pojawia się dopiero po podaniu identyfikatorów Google Analytics 4 lub Meta Pixel (D-035); przed zgodą żaden skrypt narzędzia się nie ładuje.
+- Testy: storefront unit 40/40, build OK, E2E 78/78; baner sprawdzony w przeglądarce z identyfikatorami testowymi (axe bez błędów, brak zapytań do Google/Meta po odrzuceniu).
+
+## 2026-10-26: Etap 8 (feed Google Merchant Center)
+- `/feed/google.xml`: jedna pozycja na wariant, ceny i promocje z cennika sklepu, dostępność, marka, GTIN tylko z poprawnych kodów (D-036). Link z feedu otwiera kartę z wybranym wariantem (`?wariant=`).
+- Do uruchomienia potrzebne konto Merchant Center właściciela i włączone indeksowanie na produkcji (OWN-10).
+- Testy: storefront unit 46/46, lint OK, typy OK, build OK, E2E 80/80 (backend bez zmian).
+
+## 2026-10-26: Etap 8 (blog)
+- Panel „Blog”: szkic, publikacja, wycofanie, usunięcie; adres z tytułu, stały po pierwszej publikacji; okładka z opisem alternatywnym; produkty pod wpisem; pola SEO. Treść w prostym formacie (nagłówki, listy, pogrubienie, linki), bez HTML z bazy (D-037).
+- Sklep: `/blog` ze stronicowaniem i `/blog/[slug]` (czas czytania, JSON-LD BlogPosting, ścieżka nawigacji, produkty z wpisu); wpisy w mapie strony, pusty blog z `noindex`.
+- Pełny zestaw testów integracyjnych przekroczył domyślną pamięć Node (11 instancji Medusy w jednym procesie); skrypt testów dostał `--max-old-space-size=4096`.
+- Testy: backend unit 91/91, integracyjne 49/49, storefront unit 51/51, lint OK, build OK, E2E 84/84; panel sprawdzony w przeglądarce.
+- Etap 8 zakończony poza newsletterem (E8-7, czeka na dostawcę e-mail i zgodę).

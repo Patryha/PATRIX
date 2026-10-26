@@ -9,7 +9,8 @@
 | Dostawy | Wysyłka ręczna Medusy (`manual_manual`) | Skonfigurowana strefa „Polska”, bez opcji i cen | Cennik od właściciela |
 | Dostawy | InPost, DPD, DHL, GLS, ORLEN Paczka, Poczta Polska | TODO (Etap 6) | |
 | Magazyn/księgowość | Base(linker), Subiekt, Comarch, Fakturownia, inFakt, ERP/WMS/POS | TODO (Etap 6) | Bez zakładania konkretnego POS przed potwierdzeniem kompatybilności |
-| Marketplace | Allegro, Google Merchant Center, Meta Commerce | TODO (Etap 6/8) | |
+| Marketplace | Google Merchant Center | Feed gotowy: `/feed/google.xml` (D-036) | Podpięcie w koncie właściciela (OWN-10), działa po włączeniu indeksowania |
+| Marketplace | Allegro, Meta Commerce | TODO | Konta właściciela |
 | Pliki | S3-compatible (MinIO/R2/S3) | Skonfigurowane warunkowo (`S3_BUCKET`) | W dev pliki lokalne |
 
 ## Centrum integracji (Etap 6, fundament)

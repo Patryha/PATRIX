@@ -1,8 +1,11 @@
 import type { Metadata, Viewport } from "next"
 import { Inter, Manrope } from "next/font/google"
+import { Suspense } from "react"
+import { ConsentManager } from "@/components/consent/consent-manager"
 import { Footer } from "@/components/layout/footer"
 import { Header } from "@/components/layout/header"
 import { ThemeStyle } from "@/components/layout/theme-style"
+import { trackingConfig } from "@/lib/consent"
 import "./globals.css"
 
 const inter = Inter({ subsets: ["latin", "latin-ext"], variable: "--font-inter", display: "swap" })
@@ -43,6 +46,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           {children}
         </main>
         <Footer />
+        {/* usePathname w banerze wymaga granicy Suspense przy Cache Components */}
+        <Suspense fallback={null}>
+          <ConsentManager config={trackingConfig} />
+        </Suspense>
       </body>
     </html>
   )
