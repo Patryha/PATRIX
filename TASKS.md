@@ -123,6 +123,9 @@ Statusy: TODO · IN PROGRESS · BLOCKED · TESTING · DONE
 | E10-3 | Instrukcja panelu | DONE | `docs/INSTRUKCJA_PANELU.md`: logowanie i MFA, role, produkty i kompletność danych, import, magazyn, treści, integracje |
 | E10-4 | Procedura wdrożenia i lista kontrolna startu | DONE | `DEPLOYMENT.md`: pierwsze uruchomienie, aktualizacja, kopie, lista kontrolna z punktami właściciela |
 | E10-5 | Staging na serwerze, pomiar CWV i DAST na HTTPS | BLOCKED | Wymaga serwera i domeny (OWN-5); wdrożenie i publikacja tylko za zgodą właściciela |
+| E10-6 | Usunięcie danych testowych przed startem | DONE | `npm run remove:test-catalog` (w obrazie `npx medusa exec ./src/scripts/remove-test-catalog.js`): bez argumentu tylko podgląd, z `usun` usuwa produkty `[TEST]`, ich pozycje magazynowe, partie, ruchy, cenniki, dostawę i kod TEST10, markę, przekierowanie i wpis testowy; zamówień nie usuwa (zgłasza je). Sprawdzone na osobnej bazie: kategorie i treści zostają, ponowny seed działa |
+| E10-7 | Kontrola konfiguracji przed wdrożeniem | DONE | `infra/scripts/preflight.sh`: puste i słabe sekrety, adresy z wzoru i localhost, spójność domen, CORS i adresów, klucz szyfrowania 32 B, MFA `required`, katalog testowy wyłączony, uprawnienia `.env`. Sprawdzone na wzorze, poprawnym i błędnym pliku |
+| E10-8 | Skrypt wdrożenia | DONE (lokalnie) | `infra/scripts/deploy.sh pierwsze` i `aktualizacja` w kolejności z DEPLOYMENT.md; obrazy buduje `docker build`, compose tylko uruchamia (D-041) |
 
 ## Zadania wymagające właściciela
 | ID | Czego potrzeba | Status |

@@ -19,7 +19,8 @@
     "test:unit": "TEST_TYPE=unit NODE_OPTIONS=--experimental-vm-modules jest --silent --runInBand --forceExit",
     "typecheck": "tsc --noEmit -p . && tsc --noEmit -p src/admin/tsconfig.json",
     "grant-role": "medusa exec ./src/scripts/grant-role.ts",
-    "seed:test-catalog": "medusa exec ./src/scripts/seed-test-catalog.ts"
+    "seed:test-catalog": "medusa exec ./src/scripts/seed-test-catalog.ts",
+    "remove:test-catalog": "medusa exec ./src/scripts/remove-test-catalog.ts"
   },
   "dependencies": {
     "@medusajs/admin-sdk": "2.22.1",

@@ -144,3 +144,10 @@
 - Testy: storefront lint OK, typy OK, unit 54/54, build OK, E2E 86/86 (lokalnie i na kontenerze). Backend bez zmian kodu od ostatniego pełnego przebiegu (unit 140/140, integracyjne 49/49).
 - Czeka na właściciela: serwer i domena (OWN-5), potem staging i pomiary na HTTPS (E10-5).
 
+## 2026-10-27/28: Etap 10 (skrypty wdrożenia)
+- `npm run remove:test-catalog`: podgląd i usunięcie danych `[TEST]` przed startem sprzedaży (zamówień nie usuwa, zgłasza je). Sprawdzone na osobnej bazie.
+- `infra/scripts/preflight.sh`: kontrola `infra/.env` przed wdrożeniem (puste i słabe sekrety, adresy z wzoru, spójność domen i CORS, MFA, katalog testowy).
+- `infra/scripts/deploy.sh pierwsze|aktualizacja`: wdrożenie w ustalonej kolejności. Próba lokalna od zera wykryła, że nowy Docker Compose nie zbuduje sklepu bez interaktywnej zgody na sieć hosta; obrazy buduje teraz `docker build`, compose tylko je uruchamia (D-041).
+- Sprawdzone lokalnie: pierwsze wdrożenie od pustych wolumenów (klucz publikowalny zapisany automatycznie, sklep i API odpowiadają przez HTTPS w Caddy), aktualizacja z kopią zapasową, założenie konta właściciela przez zaproszenie i nadanie roli (panel wymaga potem MFA).
+- Testy: backend typy OK, unit 140/140; `docker compose config` jak w CI OK. Storefront bez zmian kodu.
+- Czeka na właściciela: serwer i domena (OWN-5).

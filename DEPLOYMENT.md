@@ -27,23 +27,26 @@ Pierwsze logowanie do panelu: Profil → MFA → włącz aplikację uwierzytelni
 ## Staging / produkcja (Docker Compose)
 Wymagania serwera: Linux z Dockerem i Docker Compose v2, min. 4 GB RAM (build sklepu i backendu), domeny sklepu i API wskazujące na serwer (rekordy A/AAAA), otwarte porty 80 i 443.
 
-Pierwsze uruchomienie (kolejność ma znaczenie: sklep budowany jest z danymi z działającego backendu, a klucz publikowalny powstaje dopiero po seedzie):
+Pierwsze uruchomienie:
 ```bash
 cd infra
-cp .env.example .env            # domeny i sekrety: openssl rand -base64 48 (JWT, cookie), openssl rand -base64 32 (klucze szyfrowania)
-docker compose up -d --build postgres redis minio backend worker
-docker compose exec backend npx medusa exec ./src/scripts/seed.js          # wypisuje klucz publikowalny pk_…
-# wpisz klucz do infra/.env jako NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY
-docker compose exec backend npx medusa user -e wlasciciel@firma.pl -p '<silne hasło>'
+cp .env.example .env && chmod 600 .env   # domeny i sekrety: openssl rand -base64 48 (JWT, cookie), openssl rand -base64 32 (klucze szyfrowania)
+scripts/preflight.sh                     # kontrola .env: puste i słabe sekrety, domeny z wzoru, spójność adresów, MFA
+scripts/deploy.sh pierwsze               # obrazy, baza, backend, seed (klucz publikowalny trafia do .env), sklep, Caddy, test HTTPS
+# konto właściciela bez hasła w historii powłoki: zaproszenie, hasło ustawiasz w przeglądarce
+docker compose exec backend npx medusa user -e wlasciciel@firma.pl --invite   # wypisuje token
+#   otwórz https://<API_DOMAIN>/app/invite?token=<token>, ustaw hasło, potem nadaj rolę:
 docker compose exec backend npx medusa exec ./src/scripts/grant-role.js wlasciciel@firma.pl owner
-docker compose up -d --build storefront caddy
+#   po pierwszym logowaniu panel wymaga włączenia MFA (Profil → MFA), dopiero potem pokazuje dane
 ```
-Aktualizacja: `git pull`, potem `docker compose up -d --build backend worker`, a po starcie backendu `docker compose up -d --build storefront`.
+Aktualizacja: `git pull`, potem `scripts/deploy.sh aktualizacja` (kopia zapasowa, nowy backend i worker, po ich starcie nowy sklep, przeładowanie Caddy, test HTTPS).
+
+Kolejność ma znaczenie: sklep budowany jest z danymi z działającego backendu, a klucz publikowalny powstaje dopiero po seedzie. Obrazy buduje `deploy.sh` poleceniem `docker build` (build sklepu potrzebuje sieci hosta, a nowy Docker Compose wymaga na to interaktywnej zgody); `docker-compose.yml` tylko uruchamia gotowe obrazy `patrix-backend` (backend i worker) i `patrix-storefront`. Opcje dodatkowe dla `docker build` (np. proxy): zmienne `BACKEND_BUILD_OPTS` i `STOREFRONT_BUILD_OPTS`.
 
 - `backend` (API i panel) wykonuje migracje przy starcie; `worker` (zadania w tle) startuje dopiero, gdy backend jest gotowy, i migracji nie uruchamia (Medusa nie blokuje migracji wykonywanych równolegle).
 - Backend jest dostępny na `127.0.0.1:9000` serwera (dla buildu sklepu); z zewnątrz ruch idzie wyłącznie przez Caddy.
 - Baza łączy się bez TLS (`sslmode=disable`), bo działa w wewnętrznej sieci Dockera. Przy bazie zarządzanej poza serwerem usuń ten parametr: Medusa włączy SSL.
-- Zmienne `NEXT_PUBLIC_*` i `NEXT_PUBLIC_IMAGE_HOSTS` są wkompilowane w obraz sklepu: po ich zmianie przebuduj `storefront`.
+- Zmienne `NEXT_PUBLIC_*` i `NEXT_PUBLIC_IMAGE_HOSTS` są wkompilowane w obraz sklepu: po ich zmianie uruchom `scripts/deploy.sh aktualizacja`.
 - Obraz sklepu działa w trybie `standalone` Next.js (sam serwer i potrzebne pliki, ok. 430 MB).
 - Caddy wystawia TLS (Let's Encrypt), przekierowuje HTTP na HTTPS i dodaje nagłówki bezpieczeństwa (HSTS, nosniff, X-Frame-Options).
 - Pliki produktów: S3-compatible (MinIO w compose; w produkcji można użyć zarządzanego S3/R2 z CDN, co jest usługą płatną i wymaga decyzji właściciela).
@@ -78,10 +81,10 @@ Każdy punkt oznaczony **[W]** wymaga decyzji lub danych właściciela.
 - [ ] **[W]** Płatności: konto operatora, test w sandboxie, potem jedna transakcja testowa w produkcji za zgodą właściciela (OWN-4)
 - [ ] **[W]** Dostawy: konta przewoźników, test etykiet w sandboxie
 - [ ] **[W]** Wysyłka e-maili do klientów (dostawca, domena nadawcy SPF/DKIM) i treści wiadomości
-- [ ] Usunięty katalog testowy (`[TEST]`) i konta testowe
+- [ ] Brak danych testowych: `docker compose exec backend npx medusa exec ./src/scripts/remove-test-catalog.js` pokazuje, co zostało z katalogu `[TEST]` (np. gdy baza ze stagingu przechodzi na produkcję); z argumentem `usun` usuwa. Konta testowe usunięte w panelu
 
 **Bezpieczeństwo i działanie**
-- [ ] Silne, unikalne sekrety w `infra/.env`; plik tylko na serwerze, nie w repozytorium
+- [ ] `scripts/preflight.sh` bez błędów: silne, unikalne sekrety w `infra/.env` (plik tylko na serwerze, `chmod 600`), właściwe domeny
 - [ ] `ADMIN_MFA_ENFORCEMENT=required`, wszyscy pracownicy z MFA i właściwymi rolami
 - [ ] Integracje w trybie testowym, dopóki właściciel nie zatwierdzi produkcji (`PATRIX_ALLOW_PRODUCTION_INTEGRATIONS`)
 - [ ] Kopia nocna w cronie, kopia poza serwerem, wykonany test odtworzenia
