@@ -14,12 +14,21 @@
 
 {$SHOP_DOMAIN} {
 	import security_headers
+	# Staging: hasło na sklep w shop-auth.caddy (tworzy scripts/bootstrap-vps.sh, plik poza repozytorium).
+	# Bez tego pliku sklep jest otwarty.
+	import shop-auth*.caddy
 	encode zstd gzip
 	reverse_proxy storefront:3000
+}
+
+www.{$SHOP_DOMAIN} {
+	import security_headers
+	redir https://{$SHOP_DOMAIN}{uri} permanent
 }
 
 {$API_DOMAIN} {
 	import security_headers
 	encode zstd gzip
+	# Medusa: API, panel /app i zdjęcia produktów /static (D-042).
 	reverse_proxy backend:9000
 }

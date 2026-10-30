@@ -136,3 +136,24 @@
 - OWASP ZAP: skan aktywny sklepu 0 FAIL / 112 PASS, skan podstawowy API 0 FAIL. Ostrzeżenia CSP `'unsafe-inline'` i anty-CSRF przyjęte z uzasadnieniem (SECURITY.md). Raporty HTML w `/mnt/project-files/patrix/zap/`.
 - Do powtórzenia na stagingu z HTTPS (Etap 10). HawkScan nadal czeka na klucz `HAWK_API_KEY`.
 
+## 2026-10-26: Etap 10 (obrazy Docker, compose, kopie zapasowe, dokumentacja)
+- Pierwszy realny test obrazów i compose (Docker uruchomiony w kontenerze roboczym). Znalezione i naprawione 4 błędy, przez które wdrożenie by nie ruszyło: sklep nie startował w obrazie, backend nie łączył się z bazą (SSL), worker migrował równolegle z backendem, build sklepu bez działającego backendu (D-039, D-040).
+- Pełny stos przez Caddy z HTTPS działa lokalnie; E2E 86/86 na kontenerze sklepu. CI buduje oba obrazy i sprawdza compose.
+- Kopie zapasowe: `infra/scripts/backup.sh` i `restore.sh`, test odtworzenia i pełne przywrócenie bazy oraz plików sprawdzone.
+- `docs/INSTRUKCJA_PANELU.md`, procedura wdrożenia i lista kontrolna startu w `DEPLOYMENT.md`.
+- Testy: storefront lint OK, typy OK, unit 54/54, build OK, E2E 86/86 (lokalnie i na kontenerze). Backend bez zmian kodu od ostatniego pełnego przebiegu (unit 140/140, integracyjne 49/49).
+- Czeka na właściciela: serwer i domena (OWN-5), potem staging i pomiary na HTTPS (E10-5).
+
+## 2026-10-27/28: Etap 10 (skrypty wdrożenia)
+- `npm run remove:test-catalog`: podgląd i usunięcie danych `[TEST]` przed startem sprzedaży (zamówień nie usuwa, zgłasza je). Sprawdzone na osobnej bazie.
+- `infra/scripts/preflight.sh`: kontrola `infra/.env` przed wdrożeniem (puste i słabe sekrety, adresy z wzoru, spójność domen i CORS, MFA, katalog testowy).
+- `infra/scripts/deploy.sh pierwsze|aktualizacja`: wdrożenie w ustalonej kolejności. Próba lokalna od zera wykryła, że nowy Docker Compose nie zbuduje sklepu bez interaktywnej zgody na sieć hosta; obrazy buduje teraz `docker build`, compose tylko je uruchamia (D-041).
+- Sprawdzone lokalnie: pierwsze wdrożenie od pustych wolumenów (klucz publikowalny zapisany automatycznie, sklep i API odpowiadają przez HTTPS w Caddy), aktualizacja z kopią zapasową, założenie konta właściciela przez zaproszenie i nadanie roli (panel wymaga potem MFA).
+- Testy: backend typy OK, unit 140/140; `docker compose config` jak w CI OK. Storefront bez zmian kodu.
+- Czeka na właściciela: serwer i domena (OWN-5).
+
+## 2026-10-30: Etap 10 (serwer właściciela)
+- Właściciel ma VPS w cyber_Folks i domenę patrix.com.pl. Z kontenera roboczego nie da się połączyć z serwerem (SSH zablokowane), więc powstał `infra/scripts/bootstrap-vps.sh`: jedno polecenie na serwerze sprawdza DNS i porty, instaluje Dockera, pobiera kod, generuje sekrety, zamyka sklep hasłem na czas stagingu i wdraża.
+- Znaleziony problem: obrazów MinIO nie ma już w Docker Hub, więc wdrożenie nie ruszyłoby na serwerze. Zdjęcia produktów są teraz na dysku serwera (wolumen `uploads`, `https://api.<domena>/static`), S3 nadal opcjonalnie (D-042). Przy teście wyszedł też brak uprawnień do zapisu w wolumenie, naprawiony w obrazie backendu.
+- Testy: backend typy OK, unit 140/140; skrypt startowy od zera lokalnie OK (szczegóły w TEST_REPORT); CI PR #22 zielone.
+- Czeka na właściciela: rekordy DNS i uruchomienie skryptu na VPS.

@@ -13,3 +13,8 @@ test-results/
 dist/
 *.log
 dump.rdb
+
+# Kopie zapasowe na serwerze (infra/scripts/backup.sh)
+infra/backups/
+infra/caddy/shop-auth*.caddy
+infra/.staging-password

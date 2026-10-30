@@ -8,7 +8,7 @@
              └──────────────┘          │ apps/backend (/app,     │
                                        │ /admin API, /store API) │
                                        └──┬───────┬──────┬───────┘
-                                  PostgreSQL 16  Redis   S3 (MinIO/R2/S3)
+                                  PostgreSQL 16  Redis   pliki: dysk lub S3
                                   (dane)   (zdarzenia, workflow, blokady, sesje, rate limit)
 ```
 
@@ -33,7 +33,7 @@
 | AI | warstwa propozycji z akceptacją człowieka | Etap 7 |
 
 ## Backend: ważne elementy
-- `medusa-config.ts`: Redis (event bus, workflow engine, locking) gdy jest `REDIS_URL`; S3 gdy jest `S3_BUCKET`; sesja `patrix.sid` 8 h, cookies `httpOnly`, `secure` w produkcji; w produkcji wymagane sekrety (`JWT_SECRET`, `COOKIE_SECRET`, `AUTH_MFA_ENCRYPTION_KEY`, `PATRIX_ENCRYPTION_KEY`).
+- `medusa-config.ts`: Redis (event bus, workflow engine, locking) gdy jest `REDIS_URL`; S3 gdy jest `S3_BUCKET`, inaczej pliki na dysku (`PATRIX_FILE_URL`, D-042); sesja `patrix.sid` 8 h, cookies `httpOnly`, `secure` w produkcji; w produkcji wymagane sekrety (`JWT_SECRET`, `COOKIE_SECRET`, `AUTH_MFA_ENCRYPTION_KEY`, `PATRIX_ENCRYPTION_KEY`).
 - `src/api/middlewares.ts`: kolejność dla `/admin/*`: wymuszanie MFA → autoryzacja ról → audyt operacji zmieniających.
 - `src/lib/permissions.ts`: katalog uprawnień, mapa tras → zasób, role systemowe.
 - `src/lib/crypto.ts`: AES-256-GCM dla sekretów integracji (Etap 6).
