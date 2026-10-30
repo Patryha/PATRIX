@@ -25,7 +25,7 @@
     "@medusajs/cli": "2.22.1",
     "@medusajs/framework": "2.22.1",
     "@medusajs/medusa": "2.22.1",
-    "ioredis": "^5.11.1"
+    "ioredis": "^6.0.0"
   },
   "devDependencies": {
     "@medusajs/test-utils": "2.22.1",
