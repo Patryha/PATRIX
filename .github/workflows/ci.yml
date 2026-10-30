@@ -135,7 +135,7 @@ jobs:
         working-directory: infra
         run: |
           cp .env.example .env
-          printf 'POSTGRES_PASSWORD=ci\nS3_ACCESS_KEY_ID=ci\nS3_SECRET_ACCESS_KEY=ci-secret\n' >> .env
+          printf 'POSTGRES_PASSWORD=ci\n' >> .env
           docker compose config --quiet
 
   dependency-audit:

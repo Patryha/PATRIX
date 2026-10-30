@@ -46,10 +46,8 @@ docker compose stop caddy storefront worker backend
 psql -d postgres -c "DROP DATABASE patrix WITH (FORCE)" -c "CREATE DATABASE patrix OWNER patrix" > /dev/null
 docker compose exec -T postgres pg_restore -U patrix -d patrix --no-owner --exit-on-error < "$dir/db.dump"
 if [ -f "$dir/media.tar.gz" ]; then
-  docker compose stop minio
-  docker run --rm -v "${PROJECT}_minio-data:/data" -v "$dir:/backup:ro" "$HELPER_IMAGE" \
+  docker run --rm -v "${PROJECT}_uploads:/data" -v "$dir:/backup:ro" "$HELPER_IMAGE" \
     sh -c 'find /data -mindepth 1 -delete && tar xzf /backup/media.tar.gz -C /data'
-  docker compose start minio
 fi
 docker compose up -d backend worker storefront caddy
 echo "Odtworzono: $(count_rows patrix)"

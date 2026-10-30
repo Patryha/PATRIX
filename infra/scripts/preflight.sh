@@ -20,7 +20,7 @@ val() {
 }
 
 for name in SHOP_DOMAIN API_DOMAIN POSTGRES_PASSWORD JWT_SECRET COOKIE_SECRET AUTH_MFA_ENCRYPTION_KEY PATRIX_ENCRYPTION_KEY \
-  STORE_CORS ADMIN_CORS AUTH_CORS MEDUSA_BACKEND_URL S3_ACCESS_KEY_ID S3_SECRET_ACCESS_KEY NEXT_PUBLIC_SITE_URL PATRIX_ADMIN_URL; do
+  STORE_CORS ADMIN_CORS AUTH_CORS MEDUSA_BACKEND_URL NEXT_PUBLIC_SITE_URL PATRIX_ADMIN_URL; do
   [ -n "$(val "$name")" ] || err "$name jest puste"
 done
 
@@ -39,7 +39,9 @@ min_len JWT_SECRET "$(val JWT_SECRET)" 32
 min_len COOKIE_SECRET "$(val COOKIE_SECRET)" 32
 min_len AUTH_MFA_ENCRYPTION_KEY "$(val AUTH_MFA_ENCRYPTION_KEY)" 32
 min_len POSTGRES_PASSWORD "$(val POSTGRES_PASSWORD)" 20
-min_len S3_SECRET_ACCESS_KEY "$(val S3_SECRET_ACCESS_KEY)" 20
+if [ -n "$(val S3_BUCKET)" ]; then
+  for name in S3_ACCESS_KEY_ID S3_SECRET_ACCESS_KEY S3_FILE_URL; do [ -n "$(val "$name")" ] || err "$name jest puste (ustawiono S3_BUCKET)"; done
+fi
 [ "$(val JWT_SECRET)" != "$(val COOKIE_SECRET)" ] || err "JWT_SECRET i COOKIE_SECRET muszą być różne"
 [ "$(printf '%s' "$(val PATRIX_ENCRYPTION_KEY)" | base64 -d 2> /dev/null | wc -c)" -eq 32 ] ||
   err "PATRIX_ENCRYPTION_KEY musi mieć 32 bajty w base64 (openssl rand -base64 32)"
@@ -56,6 +58,7 @@ case ",$(val AUTH_CORS)," in
   *) err "AUTH_CORS powinien zawierać https://$api" ;;
 esac
 
+case ",$(val NEXT_PUBLIC_IMAGE_HOSTS)," in *",$api,"*) ;; *) [ -n "$(val S3_BUCKET)" ] || warn "NEXT_PUBLIC_IMAGE_HOSTS nie zawiera $api: zdjęcia produktów nie przejdą przez optymalizator" ;; esac
 [ -n "$(val NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY)" ] || warn "NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY puste: uzupełnij po seedzie, przed buildem sklepu"
 [ "$(val NEXT_PUBLIC_ALLOW_INDEXING)" != "true" ] || warn "NEXT_PUBLIC_ALLOW_INDEXING=true: sklep będzie indeksowany (tylko po zgodzie właściciela na publikację)"
 [ "$(val PATRIX_ALLOW_PRODUCTION_INTEGRATIONS)" != "true" ] || warn "PATRIX_ALLOW_PRODUCTION_INTEGRATIONS=true: integracje produkcyjne (tylko po zgodzie właściciela)"

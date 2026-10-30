@@ -50,11 +50,13 @@ smoke() {
   local shop api
   shop="$(env_val SHOP_DOMAIN)"
   api="$(env_val API_DOMAIN)"
+  # 401 = sklep odpowiada, ale jest zamknięty hasłem stagingu (shop-auth.caddy).
+  shop_ok() { case "$(curl -sk -o /dev/null -w '%{http_code}' --resolve "$shop:443:127.0.0.1" "https://$shop/")" in 200 | 401) return 0 ;; *) return 1 ;; esac; }
   for _ in $(seq 1 30); do
-    curl -skf -o /dev/null --resolve "$shop:443:127.0.0.1" "https://$shop/" && break
+    shop_ok && break
     sleep 2
   done
-  curl -skf -o /dev/null --resolve "$shop:443:127.0.0.1" "https://$shop/" || { echo "Sklep nie odpowiada przez Caddy" >&2; exit 1; }
+  shop_ok || { echo "Sklep nie odpowiada przez Caddy" >&2; exit 1; }
   curl -skf -o /dev/null --resolve "$api:443:127.0.0.1" "https://$api/health" || { echo "API nie odpowiada przez Caddy" >&2; exit 1; }
   echo "Sklep https://$shop i API https://$api odpowiadają."
 }
@@ -65,8 +67,8 @@ scripts/preflight.sh
 if [ "$mode" = pierwsze ]; then
   echo "== Obraz backendu"
   build_backend
-  echo "== Baza, kolejki, pliki, backend i worker"
-  docker compose up -d postgres redis minio backend worker
+  echo "== Baza, kolejki, backend i worker"
+  docker compose up -d postgres redis backend worker
   wait_healthy backend
 
   if [ -z "$(env_val NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY)" ]; then

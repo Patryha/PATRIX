@@ -65,7 +65,22 @@ const fileModule = process.env.S3_BUCKET
         ],
       },
     }
-  : null
+  : process.env.PATRIX_FILE_URL
+    ? {
+        // Pliki na dysku serwera (wolumen w compose), serwowane przez Medusę pod /static (D-042).
+        key: Modules.FILE,
+        resolve: "@medusajs/medusa/file",
+        options: {
+          providers: [
+            {
+              resolve: "@medusajs/medusa/file-local",
+              id: "local",
+              options: { backend_url: process.env.PATRIX_FILE_URL, private_upload_dir: "private-uploads" },
+            },
+          ],
+        },
+      }
+    : null
 
 module.exports = defineConfig({
   projectConfig: {

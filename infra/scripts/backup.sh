@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Kopia zapasowa PATRIX: baza PostgreSQL (format custom pg_dump) i pliki produktów (wolumen MinIO).
+# Kopia zapasowa PATRIX: baza PostgreSQL (format custom pg_dump) i pliki produktów (wolumen uploads).
 # Uruchamiaj na serwerze (np. z crona co noc). Kopię poza serwerem robi właściciel wybranym narzędziem
 # (patrz DEPLOYMENT.md, „Kopie zapasowe”).
 set -euo pipefail
@@ -17,12 +17,12 @@ out="$(cd "$BACKUP_DIR/$stamp" && pwd)"
 echo "Baza danych → $out/db.dump"
 docker compose exec -T postgres pg_dump -U patrix -d patrix -Fc --no-owner > "$out/db.dump"
 
-if docker volume inspect "${PROJECT}_minio-data" > /dev/null 2>&1; then
+if docker volume inspect "${PROJECT}_uploads" > /dev/null 2>&1; then
   echo "Pliki produktów → $out/media.tar.gz"
-  docker run --rm -v "${PROJECT}_minio-data:/data:ro" -v "$out:/backup" "$HELPER_IMAGE" \
+  docker run --rm -v "${PROJECT}_uploads:/data:ro" -v "$out:/backup" "$HELPER_IMAGE" \
     tar czf /backup/media.tar.gz -C /data .
 else
-  echo "Brak wolumenu ${PROJECT}_minio-data: pliki są w zewnętrznym magazynie S3 (kopia po stronie dostawcy)."
+  echo "Brak wolumenu ${PROJECT}_uploads: pliki są w zewnętrznym magazynie S3 lub jeszcze ich nie ma (kopia po stronie dostawcy)."
 fi
 
 (cd "$out" && sha256sum ./* > SHA256SUMS)
