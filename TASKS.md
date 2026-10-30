@@ -122,10 +122,11 @@ Statusy: TODO · IN PROGRESS · BLOCKED · TESTING · DONE
 | E10-2 | Kopie zapasowe i odtwarzanie | DONE (lokalnie) | `infra/scripts/backup.sh` (pg_dump + wolumen plików + SHA256, rotacja), `restore.sh` (test do tymczasowej bazy lub pełne przywrócenie z potwierdzeniem); oba tryby sprawdzone na stosie compose. Kopia poza serwerem: wybór usługi przez właściciela |
 | E10-3 | Instrukcja panelu | DONE | `docs/INSTRUKCJA_PANELU.md`: logowanie i MFA, role, produkty i kompletność danych, import, magazyn, treści, integracje |
 | E10-4 | Procedura wdrożenia i lista kontrolna startu | DONE | `DEPLOYMENT.md`: pierwsze uruchomienie, aktualizacja, kopie, lista kontrolna z punktami właściciela |
-| E10-5 | Staging na serwerze, pomiar CWV i DAST na HTTPS | BLOCKED | Wymaga serwera i domeny (OWN-5); wdrożenie i publikacja tylko za zgodą właściciela |
+| E10-5 | Staging na serwerze, pomiar CWV i DAST na HTTPS | IN PROGRESS | VPS cyber_Folks i domena patrix.com.pl od właściciela (2026-10-30). Z kontenera roboczego nie ma SSH, więc właściciel uruchamia `bootstrap-vps.sh` na serwerze po ustawieniu DNS; potem pomiary CWV i DAST na HTTPS |
 | E10-6 | Usunięcie danych testowych przed startem | DONE | `npm run remove:test-catalog` (w obrazie `npx medusa exec ./src/scripts/remove-test-catalog.js`): bez argumentu tylko podgląd, z `usun` usuwa produkty `[TEST]`, ich pozycje magazynowe, partie, ruchy, cenniki, dostawę i kod TEST10, markę, przekierowanie i wpis testowy; zamówień nie usuwa (zgłasza je). Sprawdzone na osobnej bazie: kategorie i treści zostają, ponowny seed działa |
 | E10-7 | Kontrola konfiguracji przed wdrożeniem | DONE | `infra/scripts/preflight.sh`: puste i słabe sekrety, adresy z wzoru i localhost, spójność domen, CORS i adresów, klucz szyfrowania 32 B, MFA `required`, katalog testowy wyłączony, uprawnienia `.env`. Sprawdzone na wzorze, poprawnym i błędnym pliku |
 | E10-8 | Skrypt wdrożenia | DONE (lokalnie) | `infra/scripts/deploy.sh pierwsze` i `aktualizacja` w kolejności z DEPLOYMENT.md; obrazy buduje `docker build`, compose tylko uruchamia (D-041) |
+| E10-9 | Skrypt startowy VPS | DONE (lokalnie) | `infra/scripts/bootstrap-vps.sh <domena>`: DNS, Docker, kod, sekrety, hasło na sklep na czas stagingu, wdrożenie. Pliki na dysku serwera zamiast MinIO (D-042) |
 
 ## Zadania wymagające właściciela
 | ID | Czego potrzeba | Status |
@@ -134,7 +135,7 @@ Statusy: TODO · IN PROGRESS · BLOCKED · TESTING · DONE
 | OWN-2 | Dane firmy (nazwa, adres, NIP, REGON, kontakt) do regulaminu, stopki, faktur | BLOCKED (potrzebne od Etapu 3/8) |
 | OWN-3 | Ceny, progi darmowej dostawy, cennik wysyłek | BLOCKED (Etap 3) |
 | OWN-4 | Konta i klucze sandbox operatorów płatności i przewoźników | BLOCKED (Etap 6) |
-| OWN-5 | Domena i hosting/staging | BLOCKED (Etap 10) |
+| OWN-5 | Domena i hosting/staging | Jest: patrix.com.pl, VPS cyber_Folks. Do zrobienia przez właściciela: rekordy DNS i uruchomienie skryptu startowego |
 | OWN-6 | Treść regulaminu i polityki prywatności (zatwierdzona prawnie) | BLOCKED (przed startem sprzedaży) |
 | OWN-9 | Identyfikatory Google Analytics 4 i Meta Pixel (jeśli mają być używane) | Do decyzji (E8-4) |
 | OWN-10 | Konto Google Merchant Center (weryfikacja domeny, dostawy, zwroty) i podpięcie `/feed/google.xml` | Przy starcie produkcji (E8-5) |

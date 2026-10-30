@@ -24,7 +24,7 @@ command -v apt-get > /dev/null || die "skrypt obsługuje Ubuntu i Debiana (apt-g
 say "Pakiety systemowe"
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -qq
-apt-get install -y -qq ca-certificates curl git openssl > /dev/null
+apt-get install -y -qq ca-certificates curl git openssl iproute2 > /dev/null
 
 say "Kontrola DNS"
 ip="$(curl -fsS -m 10 https://api.ipify.org || true)"
@@ -39,6 +39,14 @@ Dodaj w DNS rekordy A: $SHOP, www.$SHOP i $API → $ip, odczekaj kilka minut i u
 Bez tego certyfikaty HTTPS (Let's Encrypt) nie zostaną wydane."
   echo "$SHOP i $API → $ip"
 fi
+
+say "Porty 80 i 443"
+# Caddy potrzebuje obu portów (HTTPS i certyfikaty). Zajęte przez inny serwer WWW, np. panel hostingowy na VPS.
+busy="$(ss -ltnpH '( sport = :80 or sport = :443 )' 2> /dev/null | grep -v docker-proxy || true)"
+[ -z "$busy" ] || die "porty 80/443 zajmuje inny program:
+$busy
+Zatrzymaj go (np. apache2, nginx, panel DirectAdmin) albo użyj czystego VPS."
+echo "Wolne"
 
 say "Pamięć"
 mem_mb="$(awk '/MemTotal/ {print int($2/1024)}' /proc/meminfo)"

@@ -27,7 +27,13 @@ Pierwsze logowanie do panelu: Profil → MFA → włącz aplikację uwierzytelni
 ## Staging / produkcja (Docker Compose)
 Wymagania serwera: Linux z Dockerem i Docker Compose v2, min. 4 GB RAM (build sklepu i backendu), domeny sklepu i API wskazujące na serwer (rekordy A/AAAA), otwarte porty 80 i 443.
 
-Pierwsze uruchomienie:
+Najprościej na czystym VPS (Ubuntu lub Debian, jako root), gdy rekordy A domeny, `www` i `api` wskazują już na serwer:
+```bash
+curl -fsSL https://raw.githubusercontent.com/Patryha/PATRIX/main/infra/scripts/bootstrap-vps.sh | bash -s -- patrix.com.pl
+```
+Skrypt `infra/scripts/bootstrap-vps.sh` sprawdza DNS, w razie potrzeby dodaje plik wymiany (przy < 4 GB RAM), instaluje Dockera (oficjalny skrypt get.docker.com) i git, pobiera kod do `/opt/patrix`, tworzy `infra/.env` z losowymi sekretami i zamyka sklep hasłem na czas stagingu (login `patrix`, hasło w `/opt/patrix/infra/.staging-password`), potem uruchamia `deploy.sh pierwsze`. Przed scaleniem do `main` dodaj `PATRIX_BRANCH=<gałąź>` przed `bash`. Ponowne uruchomienie nie zmienia `.env` ani hasła. Zdjęcie hasła przy starcie sprzedaży (tylko za zgodą właściciela): usuń `infra/caddy/shop-auth.caddy` i `docker compose exec caddy caddy reload --config /etc/caddy/Caddyfile`.
+
+Pierwsze uruchomienie ręcznie:
 ```bash
 cd infra
 cp .env.example .env && chmod 600 .env   # domeny i sekrety: openssl rand -base64 48 (JWT, cookie), openssl rand -base64 32 (klucze szyfrowania)
@@ -49,12 +55,12 @@ Kolejność ma znaczenie: sklep budowany jest z danymi z działającego backendu
 - Zmienne `NEXT_PUBLIC_*` i `NEXT_PUBLIC_IMAGE_HOSTS` są wkompilowane w obraz sklepu: po ich zmianie uruchom `scripts/deploy.sh aktualizacja`.
 - Obraz sklepu działa w trybie `standalone` Next.js (sam serwer i potrzebne pliki, ok. 430 MB).
 - Caddy wystawia TLS (Let's Encrypt), przekierowuje HTTP na HTTPS i dodaje nagłówki bezpieczeństwa (HSTS, nosniff, X-Frame-Options).
-- Pliki produktów: S3-compatible (MinIO w compose; w produkcji można użyć zarządzanego S3/R2 z CDN, co jest usługą płatną i wymaga decyzji właściciela).
+- Pliki produktów: na dysku serwera w wolumenie `uploads`, serwowane przez backend pod `https://<API_DOMAIN>/static` (D-042). Zewnętrzny S3/R2 z CDN (usługa płatna, decyzja właściciela): zmienne `S3_*` w `.env`.
 - Stan: obrazy zbudowane i uruchomione lokalnie 2026-10-26 (pełny stos przez Caddy z HTTPS, E2E 86/86 na kontenerze sklepu). Na prawdziwym serwerze jeszcze nieuruchomione (brak serwera i domeny, OWN-5).
 
 ## Kopie zapasowe
 ```bash
-infra/scripts/backup.sh                               # baza (pg_dump) + pliki (wolumen MinIO) + sumy SHA256 w infra/backups/RRRRMMDD-GGMMSS
+infra/scripts/backup.sh                               # baza (pg_dump) + pliki (wolumen uploads) + sumy SHA256 w infra/backups/RRRRMMDD-GGMMSS
 infra/scripts/restore.sh infra/backups/<katalog>      # test odtworzenia do tymczasowej bazy, produkcja bez zmian
 infra/scripts/restore.sh infra/backups/<katalog> --replace   # przywrócenie (zatrzymuje sklep, wymaga wpisania TAK)
 ```

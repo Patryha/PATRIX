@@ -151,3 +151,9 @@
 - Sprawdzone lokalnie: pierwsze wdrożenie od pustych wolumenów (klucz publikowalny zapisany automatycznie, sklep i API odpowiadają przez HTTPS w Caddy), aktualizacja z kopią zapasową, założenie konta właściciela przez zaproszenie i nadanie roli (panel wymaga potem MFA).
 - Testy: backend typy OK, unit 140/140; `docker compose config` jak w CI OK. Storefront bez zmian kodu.
 - Czeka na właściciela: serwer i domena (OWN-5).
+
+## 2026-10-30: Etap 10 (serwer właściciela)
+- Właściciel ma VPS w cyber_Folks i domenę patrix.com.pl. Z kontenera roboczego nie da się połączyć z serwerem (SSH zablokowane), więc powstał `infra/scripts/bootstrap-vps.sh`: jedno polecenie na serwerze sprawdza DNS i porty, instaluje Dockera, pobiera kod, generuje sekrety, zamyka sklep hasłem na czas stagingu i wdraża.
+- Znaleziony problem: obrazów MinIO nie ma już w Docker Hub, więc wdrożenie nie ruszyłoby na serwerze. Zdjęcia produktów są teraz na dysku serwera (wolumen `uploads`, `https://api.<domena>/static`), S3 nadal opcjonalnie (D-042). Przy teście wyszedł też brak uprawnień do zapisu w wolumenie, naprawiony w obrazie backendu.
+- Testy: backend typy OK, unit 140/140; skrypt startowy od zera lokalnie OK (szczegóły w TEST_REPORT); CI PR #22 zielone.
+- Czeka na właściciela: rekordy DNS i uruchomienie skryptu na VPS.

@@ -11,7 +11,7 @@
 | Magazyn/księgowość | Base(linker), Subiekt, Comarch, Fakturownia, inFakt, ERP/WMS/POS | TODO (Etap 6) | Bez zakładania konkretnego POS przed potwierdzeniem kompatybilności |
 | Marketplace | Google Merchant Center | Feed gotowy: `/feed/google.xml` (D-036) | Podpięcie w koncie właściciela (OWN-10), działa po włączeniu indeksowania |
 | Marketplace | Allegro, Meta Commerce | TODO | Konta właściciela |
-| Pliki | S3-compatible (MinIO/R2/S3) | Skonfigurowane warunkowo (`S3_BUCKET`) | W dev pliki lokalne |
+| Pliki | Dysk serwera (wolumen `uploads`) lub S3-compatible (R2/S3) | Dysk domyślnie (`PATRIX_FILE_URL`), S3 gdy jest `S3_BUCKET` | W dev pliki lokalne |
 
 ## Centrum integracji (Etap 6, fundament)
 - Panel → „Integracje”: lista z manifestu (`src/integrations/manifest.ts`). Integracja bez adaptera ma status „w przygotowaniu” i nie da się jej włączyć ani zapisać do niej danych.

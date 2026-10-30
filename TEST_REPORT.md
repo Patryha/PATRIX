@@ -1,6 +1,6 @@
 # Raport testów
 
-Ostatnie uruchomienie: 2026-10-28 (Etap 10: skrypty wdrożenia; storefront bez zmian od 2026-10-26), lokalnie (PostgreSQL 16, Redis 7, Chromium 1243).
+Ostatnie uruchomienie: 2026-10-30 (Etap 10: skrypt startowy VPS; storefront bez zmian od 2026-10-26), lokalnie (PostgreSQL 16, Redis 7, Chromium 1243).
 
 | Zestaw | Polecenie | Wynik |
 |---|---|---|
@@ -16,6 +16,7 @@ Ostatnie uruchomienie: 2026-10-28 (Etap 10: skrypty wdrożenia; storefront bez z
 | Obrazy Docker i compose (lokalnie) | `docker build`, `docker compose up` | OK: migracje od zera, seed, logowanie, sklep przez Caddy z HTTPS, E2E 86/86 na kontenerze sklepu |
 | Kopie zapasowe | `infra/scripts/backup.sh`, `restore.sh` | OK: test odtworzenia i pełne przywrócenie bazy oraz plików |
 | Skrypty wdrożenia (lokalnie) | `preflight.sh`, `deploy.sh pierwsze`, `deploy.sh aktualizacja` | OK: kontrola `.env` (wzór, poprawny i błędny plik), pierwsze wdrożenie od pustych wolumenów do HTTPS, aktualizacja z kopią, konto właściciela z zaproszenia i rola (panel wymaga MFA) |
+| Skrypt startowy VPS (lokalnie) | `bootstrap-vps.sh sklep.localhost api.localhost` na czystym stanie | OK: sekrety wygenerowane, wdrożenie od zera, sklep 401 bez hasła / 200 z hasłem, www → 301, panel 200, zapis i odczyt pliku przez `/static` (backend i worker na wspólnym wolumenie), kopia z plikami i test odtworzenia |
 | Usunięcie danych testowych | `npm run remove:test-catalog [-- usun]` | OK na osobnej bazie: dane [TEST] usunięte, kategorie i treści zostają, ponowny seed działa |
 | DAST (OWASP ZAP, sklep: skan aktywny) | `zap-full-scan.py` | 0 FAIL, 112 PASS, 2 WARN przyjęte (SECURITY.md) |
 | DAST (OWASP ZAP, API: skan podstawowy) | `zap-baseline.py` | 0 FAIL, 61 PASS; ostrzeżenie o CSP naprawione |
